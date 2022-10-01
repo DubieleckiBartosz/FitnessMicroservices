@@ -1,5 +1,6 @@
 ﻿namespace Identity.Application.Configurations;
 
-public class DependencyInjectionApplication
+public static class DependencyInjectionApplication
 {
+
 }

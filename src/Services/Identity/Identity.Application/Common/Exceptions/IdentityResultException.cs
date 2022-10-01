@@ -1,6 +1,8 @@
-﻿namespace Identity.Application.Common.Exceptions;
+﻿using Fitness.Common.Core.Exceptions;
 
-public class IdentityResultException : IdentityApplicationException
+namespace Identity.Application.Common.Exceptions;
+
+public class IdentityResultException : FitnessApplicationException
 {
     public List<string>? Errors { get; }
 
