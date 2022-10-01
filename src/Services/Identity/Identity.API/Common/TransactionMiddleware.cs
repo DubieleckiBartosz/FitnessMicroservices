@@ -11,7 +11,11 @@
 
         public async Task Invoke(HttpContext context)
         {
-
+            if (context.Request.Method.Equals(HttpMethod.Get.Method, StringComparison.CurrentCultureIgnoreCase))
+            {
+                await _nextDelegate(context);
+                return;
+            }
         }
     }
 }
