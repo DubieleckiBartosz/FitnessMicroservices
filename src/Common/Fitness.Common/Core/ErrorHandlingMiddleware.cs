@@ -1,4 +1,8 @@
-﻿namespace Common.Infrastructure.Core.Middlewares;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+namespace Fitness.Common.Core;
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
