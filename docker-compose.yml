@@ -1,0 +1,26 @@
+version: '3.4'
+
+networks:
+  fitness-microservice-network:
+    name: fitness_network  
+
+services:
+  identitysql:
+    build:
+      context: .
+      dockerfile: sql.Dockerfile
+    #container_name: identitysql
+    restart: always
+    environment: 
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "a?i0/cEFB@v3dweF7C"
+    user: root
+    ports: 
+      - "1440:1433"
+    #volumes: 
+    #  - "identitysqldata:/var/opt/mssql"
+    networks:
+        - fitness-microservice-network
+
+volumes:
+  identitysqldata:

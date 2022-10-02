@@ -21,7 +21,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Infrastructure", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{544011F2-0F0B-4E89-A0D6-540896BC7869}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitness.Common", "src\Common\Fitness.Common\Fitness.Common.csproj", "{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitness.Common", "src\Common\Fitness.Common\Fitness.Common.csproj", "{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityDb", "IdentityDb", "{7A97FD73-21C4-4CDA-AF38-28BD35A762FE}"
+	ProjectSection(SolutionItems) = preProject
+		Identity-create-db.sql = Identity-create-db.sql
+		Identity-create-storedProcedures.sql = Identity-create-storedProcedures.sql
+		Identity-create-tables.sql = Identity-create-tables.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{A47A2932-F83B-4DAE-BD50-71C82AB7EF02}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		entrypoint.sh = entrypoint.sh
+		setupsql.sh = setupsql.sh
+		sql.Dockerfile = sql.Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +80,9 @@ Global
 		{200274FD-59B1-4708-B1C3-FB3E9D0206C9} = {60F0878C-0989-4621-B081-DB5583BD713D}
 		{544011F2-0F0B-4E89-A0D6-540896BC7869} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
 		{B7D4213F-AEC2-4007-BECA-6D45A4424A8B} = {544011F2-0F0B-4E89-A0D6-540896BC7869}
+		{2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
+		{7A97FD73-21C4-4CDA-AF38-28BD35A762FE} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
+		{A47A2932-F83B-4DAE-BD50-71C82AB7EF02} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}
