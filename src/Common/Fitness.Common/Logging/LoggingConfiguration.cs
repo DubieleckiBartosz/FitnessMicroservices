@@ -20,8 +20,7 @@ public static class LoggingConfiguration
                         rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 100000)
             )
             .WriteTo.File($"Logs/{dateTimeNowString}-All.log")
-            .WriteTo.Console();
-        //.WriteTo.Seq("http://emseq:5341")
-        // .CreateLogger();
+            .WriteTo.Console()
+            .WriteTo.Seq("http://localhost:5341"); 
     }
 }

@@ -1,11 +1,13 @@
 using Fitness.Common.Logging;
+using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService());
+builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService()); 
+
 builder.ApiConfiguration();
 
 var app = builder.Build();
@@ -16,7 +18,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+ 
+app.UseLoggerHandler();
 app.UseCustomExceptionHandler(ErrorMiddleware.GetStatusCode, ErrorMiddleware.GetErrorResponse);
 
 app.UseHttpsRedirection();
