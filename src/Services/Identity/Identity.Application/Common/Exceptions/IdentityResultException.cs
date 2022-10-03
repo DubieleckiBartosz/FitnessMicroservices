@@ -1,6 +1,4 @@
-﻿using Fitness.Common.Core.Exceptions;
-
-namespace Identity.Application.Common.Exceptions;
+﻿namespace Identity.Application.Common.Exceptions;
 
 public class IdentityResultException : FitnessApplicationException
 {

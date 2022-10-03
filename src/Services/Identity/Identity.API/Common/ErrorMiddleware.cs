@@ -20,6 +20,8 @@ public class ErrorMiddleware
     {
         var statusCode = exception switch
         {
+            BusinessException businessException => StatusCodes.Status400BadRequest,
+            AuthException authException => authException.Code,
             IdentityResultException identityResultException => (int)identityResultException.StatusCode, 
             _ => 0
         };
@@ -30,6 +32,8 @@ public class ErrorMiddleware
     private static string GetTitle(Exception exception) =>
         exception switch
         {
+            BusinessException businessException => businessException.Title,
+            AuthException authException => authException.Title,
             IdentityResultException identityResultException => identityResultException.Title, 
             _ => string.Empty
         };

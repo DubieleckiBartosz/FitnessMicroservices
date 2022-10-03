@@ -1,6 +1,35 @@
 // Global using directives
 
+global using System;
+global using System.Collections.Generic;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Linq;
 global using System.Net;
+global using System.Security.Claims;
+global using System.Text;
 global using System.Text.Json.Serialization;
+global using System.Threading.Tasks;
+global using Fitness.Common.Core.Exceptions;
+global using Fitness.Common.Logging;
+global using FluentValidation;
+global using Identity.Application.Common.Exceptions;
+global using Identity.Application.Constants;
+global using Identity.Application.Contracts.Repositories;
+global using Identity.Application.Contracts.Services;
+global using Identity.Application.Enums;
+global using Identity.Application.Models.DataTransferObjects;
 global using Identity.Application.Models.Parameters;
+global using Identity.Application.Settings;
+global using Identity.Application.Utils;
+global using Identity.Application.Validators;
+global using Identity.Application.Wrappers;
+global using Identity.Domain.Base.EnumerationClasses;
+global using Identity.Domain.Entities;
+global using Identity.Domain.ValueObjects;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
+global using Microsoft.IdentityModel.Tokens;

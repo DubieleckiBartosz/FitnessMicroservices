@@ -1,20 +1,27 @@
 ﻿namespace Identity.Application.Models.DataTransferObjects;
 
 public class AuthenticationDto
-{ 
-    public string UserName { get; }
-    public string Email { get;  }
-    public List<string> Roles { get; }
-    public string Token { get;} 
-    public string RefreshToken { get; }
-    public DateTime RefreshTokenExpiration { get;}
-    public AuthenticationDto(AuthenticationParameters parameters)
+{
+    public string UserName { get; set; }
+    public string Email { get; set; }
+    public List<string> Roles { get; set; }
+    public string Token { get; set; }
+    [JsonIgnore] 
+    public string RefreshToken { get; set; }
+    public DateTime RefreshTokenExpiration { get; set; }
+
+    public AuthenticationDto()
+    { 
+    }
+
+    public AuthenticationDto(string userName, string email, List<string> roles, string token, string refreshToken,
+        DateTime refreshTokenExpiration)
     {
-        UserName = parameters.UserName;
-        Email = parameters.Email;
-        Roles = parameters.Roles;
-        Token = parameters.Token;
-        RefreshToken = parameters.RefreshToken;
-        RefreshTokenExpiration = parameters.RefreshTokenExpiration;
+        UserName = userName;
+        Email = email;
+        Roles = roles;
+        Token = token;
+        RefreshToken = refreshToken;
+        RefreshTokenExpiration = refreshTokenExpiration;
     }
 }
