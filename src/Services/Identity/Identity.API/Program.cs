@@ -1,5 +1,4 @@
-using Fitness.Common.Logging;
-using Microsoft.AspNetCore.HttpLogging;
+using Fitness.Common.Logging; 
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
