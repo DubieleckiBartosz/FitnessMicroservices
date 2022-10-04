@@ -1,6 +1,6 @@
 ﻿namespace Identity.Application.Settings
 {
-    public class ConnectionString
+    public class ConnectionStrings
     {
         public string DefaultConnection { get; set; }
     }

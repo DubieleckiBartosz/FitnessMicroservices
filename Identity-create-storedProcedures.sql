@@ -1,4 +1,5 @@
 ﻿CREATE OR ALTER PROCEDURE [dbo].[user_createNewUser_I]
+    @roleId INT,
 	@firstName VARCHAR(50),
 	@lastName VARCHAR(50),
 	@userName VARCHAR(50),
@@ -8,13 +9,29 @@
 	@newIdentity INT OUTPUT
 AS
 BEGIN 
+	BEGIN TRANSACTION;
 
-	INSERT INTO ApplicationUsers(FirstName, LastName,
-		UserName, Email, PhoneNumber, PasswordHash) 
-		VALUES (@firstName, @lastName, @userName, 
-		@email, @phoneNumber, @passwordHash) 
+		INSERT INTO ApplicationUsers(FirstName, LastName,
+			UserName, Email, PhoneNumber, PasswordHash) 
+			VALUES (@firstName, @lastName, @userName, 
+			@email, @phoneNumber, @passwordHash) 
 		
-    SELECT @newIdentity = CAST(SCOPE_IDENTITY() AS INT) 
+		SET @newIdentity = CAST(SCOPE_IDENTITY() AS INT)
+	 
+		IF EXISTS (SELECT* FROM Roles WHERE Id = @roleId) 
+		BEGIN
+			DECLARE @userId INT;
+			INSERT INTO ApplicationUsers(FirstName, LastName,
+			UserName, Email, PhoneNumber, PasswordHash) 
+			VALUES (@firstName, @lastName, @userName, 
+			@email, @phoneNumber, @passwordHash) 
+			SET @userId = CAST(SCOPE_IDENTITY() AS INT)
+			INSERT INTO UserRoles(RoleId, UserId) VALUES(@roleId, @userId)
+		END
+
+	COMMIT TRANSACTION;
+
+	SELECT @newIdentity;
 END
 GO
 
@@ -52,9 +69,11 @@ BEGIN
 	rt.Token,
 	rt.Expires,
 	rt.Created,
-	rt.Revoked
+	rt.Revoked,
+	r.RoleId
 	FROM ApplicationUsers AS au 
-	LEFT JOIN RefreshTokens AS rt ON rt.UserId = au.Id 
+	INNER JOIN UserRoles AS r ON r.UserId = au.Id
+	LEFT JOIN RefreshTokens AS rt ON rt.UserId = r.UserId
 	WHERE au.Email = @email
 END
 GO
@@ -76,9 +95,11 @@ BEGIN
 	rt.Token,
 	rt.Expires,
 	rt.Created,
-	rt.Revoked
+	rt.Revoked,
+	r.RoleId
 	FROM RefreshTokens AS rt
 	INNER JOIN ApplicationUsers AS au ON au.Id = rt.UserId
+	INNER JOIN UserRoles AS r ON r.UserId = au.Id
 	WHERE rt.Token = @tokenKey
 END
 GO

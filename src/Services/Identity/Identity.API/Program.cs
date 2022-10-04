@@ -1,11 +1,13 @@
+using Fitness.Common.Logging; 
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService()); 
+
+builder.ApiConfiguration();
 
 var app = builder.Build();
 
@@ -15,11 +17,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+ 
+app.UseLoggerHandler();
 app.UseCustomExceptionHandler(ErrorMiddleware.GetStatusCode, ErrorMiddleware.GetErrorResponse);
 
 app.UseHttpsRedirection();
 
+app.UseCors(config =>
+{
+    config
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

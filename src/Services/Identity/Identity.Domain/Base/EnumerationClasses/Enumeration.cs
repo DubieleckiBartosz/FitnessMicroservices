@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Identity.Domain.Base.EnumerationClasses;
+﻿namespace Identity.Domain.Base.EnumerationClasses;
 
 public class Enumeration : IComparable
 {

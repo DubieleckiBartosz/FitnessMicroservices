@@ -39,7 +39,7 @@ public abstract class Entity
         return a.Equals(b);
     }
 
-    public static bool operator !=(Entity a, Entity b)
+    public static bool operator !=(Entity? a, Entity? b)
     {
         return !(a == b);
     }

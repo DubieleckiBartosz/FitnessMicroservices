@@ -1,10 +1,4 @@
-﻿using System.Text.Json;
-using Fitness.Common.Constants;
-using Fitness.Common.Core.Exceptions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-
-namespace Fitness.Common.Core;
+﻿namespace Fitness.Common.Core;
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -19,7 +13,7 @@ public class ErrorHandlingMiddleware
         _funcResponse = funcResponse ?? throw new ArgumentNullException(nameof(funcResponse));
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(HttpContext context, ILoggerManager<ErrorHandlingMiddleware> loggerManager)
     {
         try
         {
@@ -27,8 +21,7 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception e)
         {
-            //Log
-
+            loggerManager.LogError(e?.Message); 
             await HandleExceptionAsync(context, e);
         }
     }
