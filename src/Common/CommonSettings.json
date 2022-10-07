@@ -1,0 +1,7 @@
+{
+  "CacheOptions": {
+    "Enabled": true,
+    "DefaultTime": 30,
+    "RedisConnection": "localhost:6378"
+  }
+}

@@ -10,6 +10,11 @@ BEGIN
 		    Email VARCHAR(50) NULL,
 		    PasswordHash VARCHAR(MAX) NULL,
 		    PhoneNumber VARCHAR(50) NULL,
+			IsConfirmed BIT DEFAULT 0,
+			VerificationToken VARCHAR(MAX) NULL,
+			VerificationTokenExpirationDate DATETIME NULL,
+			ResetToken VARCHAR(MAX) NULL,
+			ResetTokenExpirationDate DATETIME NULL,
 			Created DATETIME NOT NULL DEFAULT GETDATE(),
 			Modified DATETIME NOT NULL DEFAULT GETDATE()
 		)
@@ -22,7 +27,7 @@ BEGIN
 			Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 			UserId INT NOT NULL,
 			Token VARCHAR(MAX) NULL,
-			Expires DATETIME NOT NULL,
+			TokenExpirationDate DATETIME NOT NULL,
 			Created DATETIME NOT NULL,
 			ReplacedByToken VARCHAR(MAX) NULL,
 			Revoked VARCHAR(250) NULL
@@ -37,7 +42,7 @@ BEGIN
 		CREATE TYPE [dbo].[UserRefreshTokensTableType] AS TABLE
 		(
 			Token VARCHAR(max) NULL,
-			Expires DATETIME NOT NULL,
+			TokenExpirationDate DATETIME NOT NULL,
 			Created DATETIME NOT NULL,
 			ReplacedByToken VARCHAR(max) NULL,
 			Revoked VARCHAR(250) NULL	

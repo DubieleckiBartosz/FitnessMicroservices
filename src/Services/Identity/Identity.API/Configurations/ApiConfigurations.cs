@@ -1,4 +1,6 @@
-﻿namespace Identity.API.Configurations
+﻿using Fitness.Common.Communication.Email;
+
+namespace Identity.API.Configurations
 {
     public static class ApiConfigurations
     {
@@ -15,7 +17,8 @@
         }
 
         private  static WebApplicationBuilder GetOptions(this WebApplicationBuilder builder)
-        {
+        { 
+            builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("EmailOptions"));
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
 

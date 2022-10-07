@@ -1,5 +1,8 @@
 ﻿CREATE OR ALTER PROCEDURE [dbo].[user_createNewUser_I]
     @roleId INT,
+	@verificationToken VARCHAR(MAX),
+	@verificationTokenExpirationDate DATETIME,
+	@isConfirmed BIT,
 	@firstName VARCHAR(50),
 	@lastName VARCHAR(50),
 	@userName VARCHAR(50),
@@ -9,24 +12,22 @@
 	@newIdentity INT OUTPUT
 AS
 BEGIN 
-	BEGIN TRANSACTION;
-
-		INSERT INTO ApplicationUsers(FirstName, LastName,
-			UserName, Email, PhoneNumber, PasswordHash) 
-			VALUES (@firstName, @lastName, @userName, 
-			@email, @phoneNumber, @passwordHash) 
+	BEGIN TRANSACTION; 
 		
-		SET @newIdentity = CAST(SCOPE_IDENTITY() AS INT)
+		
 	 
 		IF EXISTS (SELECT* FROM Roles WHERE Id = @roleId) 
 		BEGIN
-			DECLARE @userId INT;
-			INSERT INTO ApplicationUsers(FirstName, LastName,
-			UserName, Email, PhoneNumber, PasswordHash) 
-			VALUES (@firstName, @lastName, @userName, 
-			@email, @phoneNumber, @passwordHash) 
-			SET @userId = CAST(SCOPE_IDENTITY() AS INT)
-			INSERT INTO UserRoles(RoleId, UserId) VALUES(@roleId, @userId)
+			INSERT INTO ApplicationUsers(FirstName, LastName, IsConfirmed,
+						UserName, Email, PhoneNumber, PasswordHash, VerificationToken, 
+						VerificationTokenExpirationDate, ResetToken, ResetTokenExpirationDate) 
+				VALUES (@firstName, @lastName, @isConfirmed, @userName, 
+						@email, @phoneNumber, @passwordHash, @verificationToken, 
+						@verificationTokenExpirationDate, NULL, NULL) 
+				
+				SET @newIdentity = CAST(SCOPE_IDENTITY() AS INT)
+			
+			INSERT INTO UserRoles(RoleId, UserId) VALUES(@roleId, @newIdentity)
 		END
 
 	COMMIT TRANSACTION;
@@ -35,6 +36,17 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE user_confirmAccount_U
+	@userId INT,
+	@isConfirmed BIT
+AS
+BEGIN
+	UPDATE ApplicationUsers SET IsConfirmed = 1
+	WHERE Id = @userId
+END
+GO
+
+
 CREATE OR ALTER PROCEDURE [dbo].[user_addToRole_I] 
 	@userId INT, 
 	@role INT 
@@ -42,6 +54,16 @@ AS
 BEGIN 
 	INSERT INTO UserRoles(UserId, RoleId) 
 	VALUES (@userId, @role) 
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[user_clearResetToken_U] 
+	@userId INT 
+AS 
+BEGIN 
+	UPDATE ApplicationUsers 
+	SET ResetToken = NULL, ResetTokenExpirationDate = NULL  
+	WHERE Id = @userId
 END
 GO
 
@@ -65,19 +87,23 @@ BEGIN
 	au.Email,
 	au.PhoneNumber,
 	au.PasswordHash,
+	au.IsConfirmed,
+	au.VerificationToken,
+	au.VerificationTokenExpirationDate,
+	au.ResetToken,
+	au.ResetTokenExpirationDate,
 	rt.Id,
 	rt.Token,
-	rt.Expires,
+	rt.TokenExpirationDate,
 	rt.Created,
 	rt.Revoked,
 	r.RoleId
 	FROM ApplicationUsers AS au 
 	INNER JOIN UserRoles AS r ON r.UserId = au.Id
 	LEFT JOIN RefreshTokens AS rt ON rt.UserId = r.UserId
-	WHERE au.Email = @email
+	WHERE au.Email = @email 
 END
-GO
-
+GO 
 
 CREATE OR ALTER PROCEDURE [dbo].[user_getUserByToken_S]
 	@tokenKey VARCHAR(MAX)
@@ -91,19 +117,83 @@ BEGIN
 	au.Email,
 	au.PhoneNumber,
 	au.PasswordHash,
+	au.IsConfirmed,
+	au.VerificationToken,
+	au.VerificationTokenExpirationDate,
+	au.ResetToken,
+	au.ResetTokenExpirationDate,
 	rt.Id,
 	rt.Token,
-	rt.Expires,
+	rt.TokenExpirationDate,
 	rt.Created,
 	rt.Revoked,
 	r.RoleId
 	FROM RefreshTokens AS rt
 	INNER JOIN ApplicationUsers AS au ON au.Id = rt.UserId
 	INNER JOIN UserRoles AS r ON r.UserId = au.Id
-	WHERE rt.Token = @tokenKey
+	WHERE rt.Token = @tokenKey AND au.IsConfirmed = 1 
 END
 GO
 
+CREATE OR ALTER PROCEDURE [dbo].[user_getUserByVerificationToken_S]
+	@tokenKey VARCHAR(MAX)
+AS
+BEGIN 
+	SELECT
+	au.Id,
+	au.FirstName,
+	au.LastName,
+	au.UserName,
+	au.Email,
+	au.PhoneNumber,
+	au.PasswordHash,
+	au.IsConfirmed,
+	au.VerificationToken,
+	au.VerificationTokenExpirationDate,
+	au.ResetToken,
+	au.ResetTokenExpirationDate,
+	rt.Id,
+	rt.Token,
+	rt.TokenExpirationDate,
+	rt.Created,
+	rt.Revoked,
+	r.RoleId
+	FROM ApplicationUsers AS au
+	INNER JOIN UserRoles AS r ON r.UserId = au.Id
+	LEFT JOIN RefreshTokens AS rt ON rt.UserId = r.UserId 
+	WHERE au.VerificationToken = @tokenKey
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[user_getUserByResetToken_S]
+	@tokenKey VARCHAR(MAX)
+AS
+BEGIN 
+	SELECT
+	au.Id,
+	au.FirstName,
+	au.LastName,
+	au.UserName,
+	au.Email,
+	au.PhoneNumber,
+	au.PasswordHash,
+	au.IsConfirmed,
+	au.VerificationToken,
+	au.VerificationTokenExpirationDate,
+	au.ResetToken,
+	au.ResetTokenExpirationDate,
+	rt.Id,
+	rt.Token,
+	rt.TokenExpirationDate,
+	rt.Created,
+	rt.Revoked,
+	r.RoleId
+	FROM ApplicationUsers AS au
+	INNER JOIN UserRoles AS r ON r.UserId = au.Id
+	LEFT JOIN RefreshTokens AS rt ON rt.UserId = r.UserId 
+	WHERE au.ResetToken = @tokenKey 
+END
+GO
 
 CREATE OR ALTER PROCEDURE [dbo].[user_getUserRoles_S]
 @userId INT
@@ -115,35 +205,50 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE [dbo].[user_updatePassword_U]
+	@userId INT,
+	@newPassword VARCHAR(MAX)
+AS
+BEGIN
+	UPDATE ApplicationUsers SET PasswordHash = @newPassword
+	WHERE Id = @userId
+END
+GO
 
 CREATE OR ALTER PROCEDURE [dbo].[user_updateUserData_U]
 	@userId INT,
-	@email VARCHAR(50) = NULL,
+	@email VARCHAR(50) = NULL, 
+	@password VARCHAR(MAX) = NULL,
 	@phoneNumber VARCHAR(50) = NULL,
+	@resetToken VARCHAR(MAX) = NULL,
+	@resetTokenExpirationDate DATETIME = NULL,
 	@refreshTokens UserRefreshTokensTableType READONLY 
 AS
 BEGIN 
-	BEGIN TRANSACTION
+	BEGIN TRANSACTION --Add conditions
 
-	MERGE RefreshTokens AS target
-	USING (SELECT Token, Expires, Created, ReplacedByToken, Revoked FROM @refreshTokens) AS source
-	ON (target.UserId = @userId AND target.Token = source.Token)
-	WHEN MATCHED THEN 
-		UPDATE SET Token = COALESCE(source.Token, target.Token),
-		           Expires = CONVERT(DATETIME, source.Expires, 120), 
-		           Created = CONVERT(DATETIME, source.Created, 120),
-		           ReplacedByToken = COALESCE(source.ReplacedByToken, target.ReplacedByToken),
-		           Revoked = COALESCE(source.Revoked, target.Revoked)
-	WHEN NOT MATCHED THEN 
-		INSERT(UserId, Token, Expires, Created, ReplacedByToken, Revoked) 
-		VALUES(@userId, source.Token, source.Expires, source.Created,
-		source.ReplacedByToken, source.Revoked);
+		MERGE RefreshTokens AS target
+		USING (SELECT Token, TokenExpirationDate, Created, ReplacedByToken, Revoked FROM @refreshTokens) AS source
+		ON (target.UserId = @userId AND target.Token = source.Token)
+		WHEN MATCHED THEN 
+			UPDATE SET Token = COALESCE(source.Token, target.Token),
+			           TokenExpirationDate = CONVERT(DATETIME, source.TokenExpirationDate, 120), 
+			           Created = CONVERT(DATETIME, source.Created, 120),
+			           ReplacedByToken = COALESCE(source.ReplacedByToken, target.ReplacedByToken),
+			           Revoked = COALESCE(source.Revoked, target.Revoked)
+		WHEN NOT MATCHED THEN 
+			INSERT(UserId, Token, TokenExpirationDate, Created, ReplacedByToken, Revoked) 
+			VALUES(@userId, source.Token, source.TokenExpirationDate, source.Created,
+			source.ReplacedByToken, source.Revoked);
 
-	UPDATE ApplicationUsers 
-	SET Email = COALESCE(@email, Email) , 
-	PhoneNumber = COALESCE(@phoneNumber, PhoneNumber),
-	Modified = GETDATE()
-	WHERE Id = @userId
+		UPDATE ApplicationUsers 
+		SET Email = COALESCE(@email, Email) , 
+		PhoneNumber = COALESCE(@phoneNumber, PhoneNumber),
+		PasswordHash = COALESCE(@password, PasswordHash),
+		ResetToken = @resetToken,
+		ResetTokenExpirationDate = @resetTokenExpirationDate,
+		Modified = GETDATE()
+		WHERE Id = @userId
 
 	COMMIT
 END

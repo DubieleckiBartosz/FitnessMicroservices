@@ -1,4 +1,6 @@
-﻿namespace Identity.Application.Utils;
+﻿using System.Security.Cryptography;
+
+namespace Identity.Application.Utils;
 
 public static class TokenUtils
 {
@@ -9,7 +11,7 @@ public static class TokenUtils
         roleClaims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Name)).ToList());
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, $"{user.FirstName}_{user.LastName}-{user.UserName}"),
+            new Claim(ClaimTypes.Name, $"{user.FirstName}_{user.LastName}_{user.UserName}"),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
@@ -25,6 +27,14 @@ public static class TokenUtils
             signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+    }
+
+    public static string RandomTokenString()
+    { 
+        using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
+        var randomBytes = new byte[40];
+        rngCryptoServiceProvider.GetBytes(randomBytes); 
+        return BitConverter.ToString(randomBytes).Replace("-", "");
     }
 
     public static string CreateRefreshToken(this IPasswordHasher<User> passwordHasher, User user)

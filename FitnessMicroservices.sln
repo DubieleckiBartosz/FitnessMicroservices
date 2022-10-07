@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityDb", "IdentityDb", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{A47A2932-F83B-4DAE-BD50-71C82AB7EF02}"
 	ProjectSection(SolutionItems) = preProject
+		.env = .env
 		docker-compose.yml = docker-compose.yml
 		entrypoint.sh = entrypoint.sh
 		setupsql.sh = setupsql.sh

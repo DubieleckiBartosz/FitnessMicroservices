@@ -2,42 +2,49 @@
 
 public class RefreshToken : Entity
 {
-    public string Token { get; }
-    public DateTime Expires { get; }
+    public TokenValue TokenValue { get; }
     public DateTime Created { get; }
     public string? ReplacedByToken { get; private set; }
     public TokenActivity TokenActivity { get; private set; }
-    public bool IsExpired => DateTime.UtcNow >= Expires;
+    public bool IsExpired => DateTime.UtcNow >= TokenValue.TokenExpirationDate;
     public bool IsActive => TokenActivity.Revoked == null && !IsExpired;
 
-    private RefreshToken(string token)
+    private RefreshToken(TokenValue token)
     {
-        Token = token;
-        Expires = DateTime.UtcNow.AddDays(5);
+        TokenValue = token;
         Created = DateTime.UtcNow;
         TokenActivity = TokenActivity.IsNotRevoked();
     }
 
-    private RefreshToken(int id, string token, DateTime expires, DateTime created, string? replacedByToken,
+    private RefreshToken(int id, string token, DateTime tokenExpirationDate, DateTime created, string? replacedByToken,
         TokenActivity tokenActivity) :
-        this(token)
+        this(TokenValue.Load(token, tokenExpirationDate))
     {
         Id = id;
-        Expires = expires;
         Created = created;
         ReplacedByToken = replacedByToken;
         TokenActivity = tokenActivity;
     }
 
-    public static RefreshToken LoadToken(int id, string token, DateTime expires, DateTime created, string? replacedByToken,
+    public static RefreshToken LoadToken(int id, string token, DateTime tokenExpirationDate, DateTime created,
+        string? replacedByToken,
         TokenActivity tokenActivity)
     {
-        return new RefreshToken(id, token, expires, created, replacedByToken, tokenActivity);
+        return new RefreshToken(id, token, tokenExpirationDate, created, replacedByToken, tokenActivity);
     }
 
     public static RefreshToken CreateToken(string token)
     {
-        return new RefreshToken(token);
+        var tokenValue = TokenValue.CreateToken(token);
+        return new RefreshToken(tokenValue);
+    }
+
+    public string GetTokenValue() => TokenValue.Token;
+
+    public DateTime GetTokenExpirationDate()
+    {
+        return TokenValue.TokenExpirationDate ??
+               throw new ArgumentNullException(nameof(TokenValue.TokenExpirationDate));
     }
 
     public void ReplaceToken(string newToken)
