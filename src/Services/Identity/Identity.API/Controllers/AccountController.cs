@@ -2,26 +2,40 @@
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
+        public AccountController(IUserService userService)
         {
             _userService = userService;
         }
 
         [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
         [ProducesResponseType(typeof(Response<int>), 200)]
         [SwaggerOperation(Summary = "Register user")]
         [HttpPost("[action]")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterParameters parameters)
         {
-            var response = await _userService.RegisterAsync(new RegisterDto(parameters));
+            var response = await _userService.RegisterAsync(new RegisterDto(parameters), Request.Headers["origin"]);
             return Ok(response);
         }
 
         [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
+        [ProducesResponseType(typeof(Response<string>), 200)]
+        [HttpGet("confirm-account")]
+        [SwaggerOperation(Summary = "Confirm the account after creating the account")]
+        public async Task<IActionResult> ConfirmAccountByEmail([FromQuery] string code)
+        {
+            var result = await _userService.VerifyEmail(new VerifyAccountDto(code));
+            return Ok(result);
+        }
+
+
+        [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
         [ProducesResponseType(typeof(Response<AuthenticationDto>), 200)]
         [SwaggerOperation(Summary = "User login")]
         [HttpPost("[action]")]
@@ -35,6 +49,7 @@
 
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
         [ProducesResponseType(typeof(Response<AuthenticationDto>), 200)]
         [SwaggerOperation(Summary = "Refresh token")]
         [HttpPost("[action]")]
@@ -55,18 +70,29 @@
             return Ok(response);
         }
 
-        //[HttpPost("[action]")]
-        //public async Task<IActionResult> ForgotPassword()
-        //{
-        //    return Ok("OK");
-        //}
+        [ProducesResponseType(typeof(object), 500)]
+        [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(Response<string>), 200)]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordParameters parameters)
+        {
+            var result =
+                await _userService.ForgotPasswordAsync(new ForgotPasswordDto(parameters), Request.Headers["origin"]);
+            return Ok(result);
+        }
 
-        //[HttpPost("[action]")]
-        //public async Task<IActionResult> ConfirmAccount()
-        //{
-        //    return Ok("OK");
-        //}
+        [ProducesResponseType(typeof(object), 500)]
+        [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(Response<string>), 200)]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordParameters parameters)
+        {
+            var result =
+                await _userService.ResetPasswordAsync(new ResetPasswordDto(parameters));
+            return Ok(result);
+        }
 
+        [Authorize]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(object), 400)]
         [ProducesResponseType(typeof(Response<string>), 200)]
@@ -86,6 +112,7 @@
 
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
         [ProducesResponseType(typeof(Response<string>), 200)]
         [SwaggerOperation(Summary = "Add user to new role")]
         [HttpPut("[action]")]
@@ -95,19 +122,14 @@
             return Ok(result);
         }
 
-        //[HttpPut("[action]")]
-        //public async Task<IActionResult> UpdateUserData()
-        //{
-        //    return Ok("OK");
-        //}
-
+        [Authorize]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(object), 403)]
         [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
         [ProducesResponseType(typeof(Response<UserCurrentIFullInfoDto>), 200)]
         [SwaggerOperation(Summary = "Get info about current user")]
         [HttpGet("[action]")]
-        [Authorize]
         public async Task<IActionResult> GetCurrentUserInfo()
        {
            var refreshToken = Request.Cookies[ConstantKeys.CookieRefreshToken];
@@ -120,8 +142,14 @@
             return Ok(response);
         }
 
+        //[HttpPut("[action]")]
+        //public async Task<IActionResult> UpdateUserData()
+        //{
+        //    return Ok("OK");
+        //}
+
         //[HttpGet("[action]")]
-        //public async Task<IActionResult> GetUsers()
+        //public async Task<IActionResult> GetUsersBySearch()
         //{
         //    return Ok("OK");
         //}

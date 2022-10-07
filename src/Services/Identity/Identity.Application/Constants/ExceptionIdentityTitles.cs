@@ -11,5 +11,9 @@ public class ExceptionIdentityTitles
     public const string UserExists = "The user cannot exist.";
     public const string RoleDoesNotExist = "Role Search.";
     public const string ValidationError = "Validation error.";
-    public const string General = "Something went wrong.";
+    public const string General = "Something went wrong."; 
+    public const string AccountConfirmation= "Account confirmation.";
+    public const string ForgotPassword = "New token due to forgotten password.";
+    public const string ClearResetToken = "Clearing the reset token.";
+    public const string ResetToken = "Token Status.";
 }

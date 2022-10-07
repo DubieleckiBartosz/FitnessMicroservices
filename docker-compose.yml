@@ -10,18 +10,61 @@ services:
       context: .
       dockerfile: sql.Dockerfile
     container_name: fitnessmicroservices.mssql
-    restart: always
+    restart: unless-stopped
+    env_file:
+      - .env
     environment: 
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "a?i0/cEFB@v3dweF7C"
+      SA_PASSWORD: ${MSSQL_FITNESS_SERVICES_PASSWORD}
     user: root
     ports: 
       - "1440:1433"
     #volumes: 
-    #  - "identitysqldata:/var/opt/mssql"
+    #  - "fitness-sqldata:/var/opt/mssql"
     networks:
         - fitness-microservice-network
-    
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: unless-stopped 
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+    networks:
+        - fitness-microservice-network
+    #volumes:
+    #  - mongodb-data
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: unless-stopped 
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+        - fitness-microservice-network
+    depends_on:
+      - mongodb
+
+  cacheredis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped 
+    networks:
+        - fitness-microservice-network
+    ports:
+      - "6378:6379"
+    #volumes:
+    #    - redis-data:/data
+
+
   seq:
     image: datalust/seq
     restart: unless-stopped 
@@ -32,5 +75,9 @@ services:
     networks:
         - fitness-microservice-network
 
-volumes:
-  identitysqldata:
+
+
+#volumes:
+#  fitness-sqldata:
+#  mongodb-data:
+#  redis-data:

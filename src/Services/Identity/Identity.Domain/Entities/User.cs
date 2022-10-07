@@ -7,46 +7,62 @@ public class User : Entity, IAggregateRoot
     public string UserName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
+    public bool IsConfirmed { get; private set; } 
     public string PasswordHash { get; private set; }
+    public TokenValue VerificationToken { get; private set; }
+    public TokenValue? ResetToken { get; private set; }
+
     public List<RefreshToken> RefreshTokens { get; private set; }
     public List<Role> Roles { get; private set; }
 
-    private User(string firstName, string lastName, string userName, string email, string phoneNumber)
+    private User(TokenValue verificationToken, string firstName, string lastName, string userName, string email, string phoneNumber)
     {
         FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
         LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
         UserName = userName ?? throw new ArgumentNullException(nameof(userName));
         Email = email ?? throw new ArgumentNullException(nameof(email));
         PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
+        VerificationToken = verificationToken; 
+        IsConfirmed = false;
+        ResetToken = null;
         RefreshTokens = new List<RefreshToken>();
         Roles = new List<Role> {Role.User};
     }
 
-    private User(int id, string firstName, string lastName, string userName, string email, string phoneNumber,
-        string passwordHash, List<Role> roles, List<RefreshToken>? refreshTokens = null) : this(firstName, lastName, userName, email,
+    private User(int id, bool isConfirmed, string resetToken, DateTime? resetTokenExpirationDate,
+        string verificationToken, DateTime? verificationTokenExpirationDate, string firstName, string lastName, string userName,
+        string email, string phoneNumber,
+        string passwordHash, List<Role> roles, List<RefreshToken>? refreshTokens = null) : this(
+        TokenValue.Load(verificationToken, verificationTokenExpirationDate), firstName, lastName, userName, email,
         phoneNumber)
-    { 
-        Id = id ;
+    {
+        Id = id;
 
         if (refreshTokens != null && refreshTokens.Any())
         {
             RefreshTokens = refreshTokens;
         }
 
+        ResetToken = TokenValue.Load(resetToken, resetTokenExpirationDate);
+        IsConfirmed = isConfirmed; 
         PasswordHash = passwordHash ?? throw new ArgumentNullException(nameof(passwordHash));
         Roles = roles ?? throw new ArgumentNullException(nameof(roles));
     }
 
-    public static User CreateUser(string firstName, string lastName, string userName, string email, string phoneNumber)
+    public static User CreateUser(string verificationToken, string firstName, string lastName, string userName, string email, string phoneNumber)
     {
-        return new User(firstName, lastName, userName, email, phoneNumber);
+       var token = TokenValue.CreateVerificationToken(verificationToken);
+        return new User(token, firstName, lastName, userName, email, phoneNumber);
     }
 
-    public static User LoadUser(int id, string firstName, string lastName, string userName, string email,
+    public static User LoadUser(int id, bool isConfirmed, string resetToken, DateTime? resetTokenExpirationDate,
+        string verificationToken, DateTime? verificationTokenExpirationDate, string firstName, string lastName,
+        string userName, string email,
         string phoneNumber,
         string passwordHash, List<Role> roles, List<RefreshToken>? refreshTokens = null)
     {
-        return new User(id, firstName, lastName, userName, email,
+        return new User(id, isConfirmed, resetToken, resetTokenExpirationDate, verificationToken,
+            verificationTokenExpirationDate, firstName, lastName, userName, email,
             phoneNumber, passwordHash, roles, refreshTokens);
     }
 
@@ -54,6 +70,14 @@ public class User : Entity, IAggregateRoot
     {
         PasswordHash = passwordHash;
     }
+    public void ChangePasswordHash(string passwordHash)
+    { 
+        SetPasswordHash(passwordHash);
+    }
+    public void ConfirmAccount()
+    {
+        IsConfirmed = true;
+    } 
 
     public void AddNewRole(Role role)
     {
@@ -65,6 +89,15 @@ public class User : Entity, IAggregateRoot
         }
 
         Roles.Add(role);
+    }
+
+    public void ClearResetToken()
+    {
+        ResetToken = null;
+    }
+    public void SetResetToken(string resetTokenCode)
+    {
+        ResetToken = TokenValue.CreateResetToken(resetTokenCode);
     }
 
     public RefreshToken? CurrentlyActiveRefreshToken()
@@ -90,13 +123,13 @@ public class User : Entity, IAggregateRoot
 
     public RefreshToken? FindToken(string tokenKey)
     {
-        var result = RefreshTokens.SingleOrDefault(_ => _.Token == tokenKey);
+        var result = RefreshTokens.SingleOrDefault(_ => _.TokenValue?.Token == tokenKey);
         return result;
     }
 
     public void RevokeToken(string refreshTokenKey)
     {
-        var result = RefreshTokens.SingleOrDefault(_ => _.Token == refreshTokenKey);
+        var result = RefreshTokens.SingleOrDefault(_ => _.TokenValue?.Token == refreshTokenKey);
         if (result == null)
         {
             throw new BusinessException(BusinessRuleErrorMessages.TokenNotFoundErrorMessage,

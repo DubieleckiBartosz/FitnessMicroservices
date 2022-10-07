@@ -1,6 +1,8 @@
 ﻿namespace Fitness.Common.Core;
 public class ErrorHandlingMiddleware
 {
+    private const string ServerError = "Server Error";
+
     private readonly RequestDelegate _next;
     private readonly Func<Exception, int> _funcStatusCode;
     private readonly Func<Exception, int, object> _funcResponse;
@@ -64,7 +66,7 @@ public class ErrorHandlingMiddleware
             BadRequestException badRequestException => badRequestException.Title,
             DatabaseException dbException => dbException.Title,
             FitnessApplicationException fitnessApplicationException => fitnessApplicationException.Title,
-            _ => ResponseMessages.ServerError
+            _ => ServerError
         };
 }
 
