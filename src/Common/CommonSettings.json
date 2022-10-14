@@ -3,5 +3,14 @@
     "Enabled": true,
     "DefaultTime": 30,
     "RedisConnection": "localhost:6378"
+  },
+  "EventStoreOptions": {
+    "EventStoreConnection": "Server=localhost,1440;Database=FitnessEventStore;User id=sa;Password=a?i0/cEFB@v3dweF7C"
+  },
+  "MongoOutboxOptions": {
+    "DeleteAfter": false,
+    "CollectionName": "Messages",
+    "DatabaseName": "OutboxDatabase",
+    "ConnectionString": "mongodb://rootuser:rootpass@localhost:27018"
   }
 }
