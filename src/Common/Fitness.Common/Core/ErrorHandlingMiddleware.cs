@@ -55,6 +55,7 @@ public class ErrorHandlingMiddleware
             NotFoundException e => (int)e.StatusCode,
             BadRequestException e => (int)e.StatusCode,
             DatabaseException e => (int)e.StatusCode,
+            EventException e => (int)e.StatusCode,
             FitnessApplicationException e => (int)e.StatusCode,
             _ => StatusCodes.Status500InternalServerError
         };
@@ -65,6 +66,7 @@ public class ErrorHandlingMiddleware
             NotFoundException notFoundException => notFoundException.Title,
             BadRequestException badRequestException => badRequestException.Title,
             DatabaseException dbException => dbException.Title,
+            EventException eventException => eventException.Title,
             FitnessApplicationException fitnessApplicationException => fitnessApplicationException.Title,
             _ => ServerError
         };

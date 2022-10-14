@@ -41,6 +41,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{A47A29
 		sql.Dockerfile = sql.Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Training", "Training", "{8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Training.API", "src\Services\Training\Training.API\Training.API.csproj", "{91495425-CF90-45AD-8D3C-24E8B2716C49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{39365B6A-E8A4-48DB-89D5-DBBE29F33164}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStoreDb", "EventStoreDb", "{E144686E-3CF0-454A-A43D-71A55E8A2CFC}"
+	ProjectSection(SolutionItems) = preProject
+		EventStore-create-db.sql = EventStore-create-db.sql
+		EventStore-create-storedProcedures.sql = EventStore-create-storedProcedures.sql
+		EventStore-create-tables.sql = EventStore-create-tables.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +80,10 @@ Global
 		{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +101,10 @@ Global
 		{2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
 		{7A97FD73-21C4-4CDA-AF38-28BD35A762FE} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
 		{A47A2932-F83B-4DAE-BD50-71C82AB7EF02} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
+		{8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F} = {9FB2A015-61FA-4A38-8457-88922F66085E}
+		{91495425-CF90-45AD-8D3C-24E8B2716C49} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
+		{39365B6A-E8A4-48DB-89D5-DBBE29F33164} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
+		{E144686E-3CF0-454A-A43D-71A55E8A2CFC} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}

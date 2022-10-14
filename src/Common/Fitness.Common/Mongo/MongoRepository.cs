@@ -6,11 +6,17 @@ namespace Fitness.Common.Mongo;
 
 public class MongoRepository<T> : IMongoRepository<T> where T : IIdentifier
 {
-    protected IMongoCollection<T> Collection { get; }
+    public IMongoCollection<T> Collection { get; }
 
-    public MongoRepository(IMongoDatabase database, string collectionName)
+    public MongoRepository(MongoContext context)
     {
-        Collection = database.GetCollection<T>(collectionName);
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
+        var database = context.Database;
+        Collection = database.GetCollection<T>(context.CollectionName);
     }
 
     public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
@@ -30,6 +36,6 @@ public class MongoRepository<T> : IMongoRepository<T> where T : IIdentifier
 
     public async Task DeleteAsync(string id)
     {
-        await Collection.DeleteOneAsync(e => e.Id == id);
+        await Collection.DeleteOneAsync(_ => _.Id == id);
     }
 }
