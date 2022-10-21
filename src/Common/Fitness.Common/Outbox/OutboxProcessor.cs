@@ -43,7 +43,7 @@ public class OutboxProcessor : BackgroundService
         using var scope = _serviceScopeFactory.CreateScope();
         var store = scope.ServiceProvider.GetRequiredService<IOutboxStore>();
         var messageIds = await store.GetUnprocessedMessageIdsAsync();
-        var publishedMessageIds = new List<string>();
+        var publishedMessageIds = new List<Guid>();
         try
         {
             foreach (var messageId in messageIds)
