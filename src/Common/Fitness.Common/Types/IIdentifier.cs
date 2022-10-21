@@ -2,6 +2,6 @@
 {
     public interface IIdentifier
     {
-        string Id { get; }
+        Guid Id { get; }
     }
 }

@@ -17,7 +17,7 @@ public class OutboxStore : IOutboxStore
         await _mongoRepository.AddAsync(message);
     }
 
-    public async Task<IEnumerable<string>> GetUnprocessedMessageIdsAsync()
+    public async Task<IEnumerable<Guid>> GetUnprocessedMessageIdsAsync()
     {
         var filter = Builders<OutboxMessage>.Filter.Where(_ => !_.Processed.HasValue);
         var cursor = await _mongoRepository.Collection.Find(filter).ToCursorAsync();
@@ -29,7 +29,7 @@ public class OutboxStore : IOutboxStore
         return result;
     }
 
-    public async Task SetMessageToProcessedAsync(string id)
+    public async Task SetMessageToProcessedAsync(Guid id)
     {
         var filter = Builders<OutboxMessage>.Filter.Where(_ => _.Id == id);
         var update = Builders<OutboxMessage>.Update.Set(_ => _.Processed, DateTime.UtcNow);
@@ -43,13 +43,13 @@ public class OutboxStore : IOutboxStore
         }
     }
 
-    public async Task DeleteAsync(IEnumerable<string> ids)
+    public async Task DeleteAsync(IEnumerable<Guid> ids)
     {
         var filter = Builders<OutboxMessage>.Filter.In(_ => _.Id, ids);
         await _mongoRepository.Collection.DeleteManyAsync(filter);
     }
 
-    public async Task<OutboxMessage?> GetMessageAsync(string id)
+    public async Task<OutboxMessage?> GetMessageAsync(Guid id)
     {
         return await _mongoRepository.GetAsync(_ => _.Id == id);
     }

@@ -18,12 +18,7 @@ public class MongoRepository<T> : IMongoRepository<T> where T : IIdentifier
         var database = context.Database;
         Collection = database.GetCollection<T>(context.CollectionName);
     }
-
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
-    {
-        return await Collection.Find(predicate).ToListAsync();
-    }
-
+    
     public async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
     {
         return await Collection.Find(predicate).SingleOrDefaultAsync();
@@ -33,9 +28,5 @@ public class MongoRepository<T> : IMongoRepository<T> where T : IIdentifier
     {
         await Collection.InsertOneAsync(entity);
     }
-
-    public async Task DeleteAsync(string id)
-    {
-        await Collection.DeleteOneAsync(_ => _.Id == id);
-    }
+    
 }

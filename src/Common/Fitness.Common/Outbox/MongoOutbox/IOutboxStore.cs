@@ -3,8 +3,8 @@
 public interface IOutboxStore
 {
     Task AddAsync(OutboxMessage message);
-    Task<IEnumerable<string>> GetUnprocessedMessageIdsAsync();
-    Task SetMessageToProcessedAsync(string id);
-    Task DeleteAsync(IEnumerable<string> ids);
-    Task<OutboxMessage?> GetMessageAsync(string id);
+    Task<IEnumerable<Guid>> GetUnprocessedMessageIdsAsync();
+    Task SetMessageToProcessedAsync(Guid id);
+    Task DeleteAsync(IEnumerable<Guid> ids);
+    Task<OutboxMessage?> GetMessageAsync(Guid id);
 }
