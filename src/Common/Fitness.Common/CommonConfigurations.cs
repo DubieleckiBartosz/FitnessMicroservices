@@ -11,6 +11,7 @@ using Fitness.Common.EventStore;
 using Fitness.Common.EventStore.Events;
 using Fitness.Common.EventStore.Repository;
 using Fitness.Common.RabbitMQ;
+using Fitness.Common.Projection;
 
 namespace Fitness.Common;
 
@@ -18,8 +19,27 @@ public static class CommonConfigurations
 {
     public static IServiceCollection GetCommonDependencyInjection(this IServiceCollection services)
     {
+        //EMAIL
         services.AddScoped<IEmailRepository, EmailRepository>();
+
+        //LOGGER
         services.AddScoped(typeof(ILoggerManager<>), typeof(LoggerManager<>));
+
+        //EVENT
+        services.AddScoped<IStore, Store>();
+        services.AddScoped<IEventBus, EventBus>();
+        services.AddScoped<IProjection, Projection.Projection>();
+        services.AddScoped<IOutboxListener, OutboxListener>();
+        services.AddScoped<IOutboxStore, OutboxStore>();
+        services.AddScoped<IRabbitEventListener, RabbitEventListener>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+        //MONGO
+        services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+
+        //CACHE
+        services.AddScoped<ICacheRepository, CacheRepository>();
+
 
         return services;
     }
@@ -40,13 +60,9 @@ public static class CommonConfigurations
     public static IServiceCollection EventStoreConfiguration(this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.ConfigurationMongoOutboxDatabase(configuration);
+        services.GetCommonDependencyInjection();
         services.GetMediatR();
-        services.AddScoped<IStore, Store>();
-        services.AddScoped<IEventBus, EventBus>();
-        services.AddScoped<IOutboxListener, OutboxListener>(); 
-        services.AddScoped<IOutboxStore, OutboxStore>();
-        services.AddScoped<IRabbitEventListener, RabbitEventListener>();
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.Configure<EventStoreOptions>(configuration.GetSection("EventStoreOptions"));
 
@@ -59,26 +75,20 @@ public static class CommonConfigurations
         return services;
     }
 
-    public static IServiceCollection GetMongoDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigurationMongoOutboxDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var options = new MongoOutboxOptions();
         configuration.GetSection(nameof(MongoOutboxOptions)).Bind(options);
 
-        services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
-
         services.Configure<MongoOutboxOptions>(configuration.GetSection(nameof(MongoOutboxOptions)));
         services.AddSingleton<MongoContext>(_ => new MongoContext(options.ConnectionString,
             options.DatabaseName, options.CollectionName));
-
-        services.AddScoped<IOutboxStore, OutboxStore>();
 
         return services;
     }
      
     public static IServiceCollection GetCacheConfiguration(this IServiceCollection services, CacheOptions options)
     {
-        services.AddScoped<ICacheRepository, CacheRepository>();
-
         if (!options.Enabled)
         {
             services.AddDistributedMemoryCache();

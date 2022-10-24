@@ -21,12 +21,14 @@ public abstract class AggregateRoot
         return dequeuedEvents;
     }
     protected abstract void When(IEvent @event);
-    public void Apply(IEvent @event)
+
+    protected void Enqueue(IEvent @event)
     {
         Version++;
-
-        When(@event);
-
         _uncommittedEvents.Add(@event);
+    }
+    public void Apply(IEvent @event)
+    {
+        When(@event);
     }  
 }
