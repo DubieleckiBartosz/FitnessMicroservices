@@ -29,6 +29,7 @@ public class Training : AggregateRoot
     
         var @event = NewTrainingInitiated.Create(trainerId, Guid.NewGuid(), DateTime.UtcNow);
         this.Apply(@event);
+        this.Enqueue(@event);
     }
 
     public void AddUser(TrainingUser user)
@@ -41,6 +42,40 @@ public class Training : AggregateRoot
 
         var @event = UserToTrainingAdded.Create(user.Id, this.Id);
         this.Apply(@event);
+        this.Enqueue(@event);
+    }
+
+    public void AddExercise(int numberRepetitions, int breakBetweenSetsInMinutes, Guid externalExerciseId)
+    {
+        var exerciseAlreadyAdded = TrainingExercises.Any(_ => _.ExternalExerciseId == externalExerciseId);
+        if (exerciseAlreadyAdded)
+        {
+            //Throw Business Exception
+        }
+
+        if (!TrainingExercises.Any())
+        {
+            Status = TrainingStatus.InProgress;
+        }
+
+        var exercise =
+            TrainingExercise.CreateExercise(externalExerciseId, numberRepetitions, breakBetweenSetsInMinutes);
+        var @event = ExerciseAdded.Create(exercise);
+        Apply(@event);
+        Enqueue(@event);
+    }
+
+    public void RemoveExercise(Guid exerciseId)
+    {
+        var exercise = FindExercise(exerciseId);
+        if (exercise == null)
+        {
+            //Throw Business Exception
+        }
+
+        var @event = ExerciseRemoved.Create(exercise.Id);
+        Apply(@event);
+        this.Enqueue(@event);
     }
 
     public static Training Create(Guid trainerId)
@@ -57,6 +92,12 @@ public class Training : AggregateRoot
                 break;
             case UserToTrainingAdded e:
                 UserAdded(e);
+                break;
+            case ExerciseAdded e:
+                NewExerciseAdded(e);
+                break;
+            case ExerciseRemoved e:
+                TrainingExerciseRemoved(e);
                 break;
             default:
                 break; 
@@ -80,5 +121,16 @@ public class Training : AggregateRoot
         var user = TrainingUsers.First(_ => _.Id == @event.UserId);
         TrainingUsers.Remove(user);
     }
-    
+
+    public void NewExerciseAdded(ExerciseAdded @event)
+    {
+        TrainingExercises.Add(@event.Training);
+    }
+
+    public void TrainingExerciseRemoved(ExerciseRemoved @event)
+    {
+        TrainingExercises.Remove(FindExercise(exerciseId: @event.ExerciseId));
+    }
+
+    private TrainingExercise? FindExercise(Guid exerciseId) => TrainingExercises.FirstOrDefault(_ => _.Id == exerciseId);
 }

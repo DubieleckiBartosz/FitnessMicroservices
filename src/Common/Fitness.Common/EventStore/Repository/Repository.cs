@@ -22,15 +22,30 @@ public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate :
 
     public async Task AddAsync(TAggregate aggregate)
     {
+        await _eventStore.StoreAsync(aggregate, null);
+    }
+
+    public async Task AddAndPublishAsync(TAggregate aggregate)
+    {
         await _eventStore.StoreAsync(aggregate, PublishEvent);
     }
 
     public async Task UpdateAsync(TAggregate aggregate)
     {
+        await _eventStore.StoreAsync(aggregate, null);
+    }
+
+    public async Task UpdateAndPublishAsync(TAggregate aggregate)
+    {
         await _eventStore.StoreAsync(aggregate, PublishEvent);
     }
 
     public async Task DeleteAsync(TAggregate aggregate)
+    {
+        await _eventStore.StoreAsync(aggregate, null);
+    }
+
+    public async Task DeleteAndPublishAsync(TAggregate aggregate)
     {
         await _eventStore.StoreAsync(aggregate, PublishEvent);
     }
@@ -39,7 +54,7 @@ public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate :
     {
         if (stream is null)
         {
-            throw new EventException($"{nameof(stream)} was null.", "Event Is NULL");
+            throw new EventException($"{nameof(stream)} was null.", "Stream Is NULL");
         }
 
         await _eventBus.CommitStreamAsync(stream);

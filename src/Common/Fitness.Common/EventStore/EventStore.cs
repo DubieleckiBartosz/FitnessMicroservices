@@ -1,11 +1,13 @@
 ﻿using Fitness.Common.EventStore.Aggregate;
 using Fitness.Common.EventStore.Events;
-using Newtonsoft.Json;
+using Fitness.Common.Projection;
+using Newtonsoft.Json; 
 
 namespace Fitness.Common.EventStore;
 
 public class EventStore : IEventStore
 {
+    private readonly Dictionary<Type, List<IProjection>> _projections = new();
     private readonly IStore _store;
 
     public EventStore(IStore store)
@@ -31,6 +33,11 @@ public class EventStore : IEventStore
                 if (action != null)
                 {
                     await action(stream);
+                }
+
+                if (@event != null)
+                {
+                    await ApplyProjections(@event);
                 }
             }
         }
@@ -86,4 +93,31 @@ public class EventStore : IEventStore
             await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion++, action);
         }
     }
+
+    public void RegisterProjection(IProjection projection)
+    {
+        foreach (var eventType in projection.Handles)
+        {
+            if (!_projections.ContainsKey(eventType))
+            {
+                _projections[eventType] = new List<IProjection>();
+            }
+
+            _projections[eventType].Add(projection);
+        }
+    }
+
+    private async Task ApplyProjections(IEvent @event, CancellationToken ct = default)
+    {
+        if (!_projections.ContainsKey(@event.GetType()))
+        {
+            return;
+        }
+
+        foreach (var projection in _projections[@event.GetType()])
+        {
+            await projection.Handle(@event, ct);
+        }
+    }
+
 }
