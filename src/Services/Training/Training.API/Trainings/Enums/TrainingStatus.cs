@@ -4,5 +4,5 @@ public enum TrainingStatus
 {
     Created = 1,
     InProgress = 2,
-    shared = 3
+    Shared = 3
 }

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Fitness.Common.EventStore.Events;
-using Microsoft.EntityFrameworkCore;
+﻿using Fitness.Common.EventStore.Events;
 
 namespace Fitness.Common.Projection;
 
@@ -17,34 +15,7 @@ public abstract class Projection : IProjection
         _handlers[@event.GetType()](@event, ct);
 }
 
-public abstract class ReadModelAction<TEntity> : Projection where TEntity : class, IRead
-{
-    private readonly DbSet<TEntity> _dbSet;
-
-    protected ReadModelAction(DbContext dbContext)
-    {
-        _dbSet = dbContext.Set<TEntity>() ?? throw new ArgumentNullException(nameof(dbContext));
-    }
-    protected void Projects<IEvent>(DbSet<TEntity> dbSet, Func<DbSet<TEntity>, IEvent, IQueryable<TEntity>> getEntity,
-        Func<TEntity, IEvent, TEntity> handle
-    )
-    {
-        Projects<IEvent>(async (@event, _) =>
-        {
-            var entity = await getEntity(dbSet, @event).FirstOrDefaultAsync(_);
-            var updatedEntity = handle(entity ?? (TEntity)RuntimeHelpers.GetUninitializedObject(typeof(TEntity)),
-                @event);
-
-            if (entity == null)
-            {
-                await _dbSet.AddAsync(updatedEntity, _);
-            }
-            else
-            {
-                _dbSet.Update(updatedEntity);
-            }
-        });
-    }
-
-
+public abstract class ReadModelAction<TEntity> : Projection where TEntity : class 
+{ 
+    protected void Projects(Func<IEvent, CancellationToken, Task> handler) => Projects<IEvent>(handler);
 }

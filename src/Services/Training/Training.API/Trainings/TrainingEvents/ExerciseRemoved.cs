@@ -2,11 +2,11 @@
 
 namespace Training.API.Trainings.TrainingEvents
 {
-    public record ExerciseRemoved(Guid ExerciseId) : IEvent
+    public record ExerciseRemoved(Guid ExerciseId, Guid TrainingId) : IEvent
     {
-        public static ExerciseRemoved Create(Guid exerciseId)
+        public static ExerciseRemoved Create(Guid exerciseId, Guid trainingId)
         {
-            return new ExerciseRemoved(exerciseId);
+            return new ExerciseRemoved(exerciseId, trainingId);
         }
     }
 }

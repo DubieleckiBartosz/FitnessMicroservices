@@ -10,13 +10,14 @@ public class EventStore : IEventStore
     private readonly Dictionary<Type, List<IProjection>> _projections = new();
     private readonly IStore _store;
 
-    public EventStore(IStore store)
+    public EventStore(IStore store, List<IProjection>? projections = null)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
+        projections?.ForEach(RegisterProjection);
     }
 
     public async Task AppendEventAsync<TAggregate>(Guid streamId, IEvent @event, long? expectedVersion = null,
-        Func<StreamState, Task>? action = null) where TAggregate : AggregateRoot
+        Func<StreamState, Task>? action = null) where TAggregate : Aggregate.Aggregate
     {
         var assemblyQualifiedName = typeof(TAggregate)?.AssemblyQualifiedName;
         if (assemblyQualifiedName != null)
@@ -54,7 +55,7 @@ public class EventStore : IEventStore
     }
 
     public async Task<TAggregate> AggregateStreamAsync<TAggregate>(Guid streamId, long? atStreamVersion = null,
-        DateTime? atTimestamp = null) where TAggregate : AggregateRoot
+        DateTime? atTimestamp = null) where TAggregate : Aggregate.Aggregate
     {
         var aggregate = (TAggregate) Activator.CreateInstance(typeof(TAggregate), true)!;
 
@@ -83,13 +84,13 @@ public class EventStore : IEventStore
     }
 
     public async Task StoreAsync<TAggregate>(TAggregate aggregate, Func<StreamState, Task>? action = null)
-        where TAggregate : AggregateRoot
+        where TAggregate : Aggregate.Aggregate
     {
         var events = aggregate.DequeueUncommittedEvents();
 
         var initialVersion = aggregate.Version - events.Count;
         foreach (var @event in events)
-        {
+        { 
             await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion++, action);
         }
     }

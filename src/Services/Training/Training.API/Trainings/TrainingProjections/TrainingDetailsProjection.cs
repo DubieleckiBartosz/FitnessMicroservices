@@ -1,27 +1,92 @@
-﻿using Fitness.Common.Projection;
-using Microsoft.EntityFrameworkCore;
-using Training.API.Database;
+﻿using Fitness.Common.Core.Exceptions;
+using Fitness.Common.Projection;
+using Training.API.Constants;
+using Training.API.Repositories.Interfaces;
 using Training.API.Trainings.ReadModels;
 using Training.API.Trainings.TrainingEvents;
 
-namespace Training.API.Trainings.TrainingProjections
+namespace Training.API.Trainings.TrainingProjections;
+
+public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 {
-    public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
+    private readonly IWrapperRepository _wrapperRepository;
+    private readonly ITrainingRepository _trainingRepository; 
+
+    public TrainingDetailsProjection(IWrapperRepository? wrapperRepository) 
     {
-        private readonly DbSet<TrainingDetails> _trainingDetails;
+        _trainingRepository = wrapperRepository?.TrainingRepository ?? throw new ArgumentNullException(nameof(wrapperRepository));
+        _wrapperRepository = wrapperRepository;
+        Projects<NewTrainingInitiated>(Handle);
+        Projects<UserToTrainingAdded>(Handle);
+        Projects<ExerciseAdded>(Handle);
+        Projects<ExerciseRemoved>(Handle);
+    }
 
-        public TrainingDetailsProjection(TrainingContext trainingContext) : base(trainingContext)
+    private async Task Handle(NewTrainingInitiated @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
         {
-            _trainingDetails = trainingContext.Trainings;
-            Projects<NewTrainingInitiated>(_trainingDetails, (dbSet, e) => dbSet.Where(_ => _.TrainingId == e.TrainingId), (readModel, @event) => TrainingDetails.Create(@event));
-            Projects<UserToTrainingAdded>(_trainingDetails, (dbSet, e) => dbSet.Where(_ => _.TrainingId == e.TrainingId), (readModel, @event) => readModel.UserAdded(@event));
-            Projects<ExerciseAdded>(_trainingDetails, (dbSet, e) => dbSet.Where(_ => _.TrainingId == e.TrainingId), (readModel, @event) => readModel.NewExerciseAdded(@event));
-            Projects<ExerciseRemoved>(_trainingDetails, (dbSet, e) => dbSet.Where(_ => _.TrainingId == e.TrainingId), (readModel, @event) => readModel.TrainingExerciseRemoved(@event));
+            throw new ArgumentNullException(nameof(@event));
         }
 
-        private async Task<TrainingDetails?> GetTrainingDetailsAsync(DbSet<TrainingDetails> dbSet, Guid trainingId)
+        var newTraining = TrainingDetails.Create(@event);
+        await _trainingRepository.CreateAsync(newTraining, cancellationToken);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+
+    private async Task Handle(UserToTrainingAdded @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
         {
-            return await dbSet.FirstOrDefaultAsync(_ => _.TrainingId == trainingId);
+            throw new ArgumentNullException(nameof(@event));
         }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+
+        training.UserAdded(@event);
+
+        _trainingRepository.Update(training);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+
+    private async Task Handle(ExerciseAdded @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+
+        training.NewExerciseAdded(@event);
+
+        _trainingRepository.Update(training);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+
+    private async Task Handle(ExerciseRemoved @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+        training.TrainingExerciseRemoved(@event);
+
+        _trainingRepository.Update(training);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+
+    private async Task<TrainingDetails> GetTrainingDetails(Guid trainingId, CancellationToken cancellationToken = default)
+    {
+        var training = await _trainingRepository.GetTrainingDetailsAsync(trainingId, cancellationToken);
+
+        if (training == null)
+        {
+            throw new NotFoundException(Strings.TrainingNotFoundMessage, Strings.TrainingNotFoundTitle);
+        }
+
+        return training;
     }
 }

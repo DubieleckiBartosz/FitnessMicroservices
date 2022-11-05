@@ -15,15 +15,25 @@ public class TrainingRepository : ITrainingRepository
         _trainings = context?.Trainings ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<TrainingDetails> GetTrainingDetails(Guid trainingId)
+    public async Task CreateAsync(TrainingDetails training, CancellationToken cancellationToken = default)
     {
-        return await Details.Where(x => x.TrainingId == trainingId).FirstOrDefaultAsync() ??
+        await _trainings.AddAsync(training,cancellationToken);
+    }
+
+    public void Update(TrainingDetails training)
+    {
+        _trainings.Update(training);
+    }
+
+    public async Task<TrainingDetails> GetTrainingDetailsAsync(Guid trainingId, CancellationToken cancellationToken = default)
+    {
+        return await Details.FirstOrDefaultAsync(x => x.Id == trainingId, cancellationToken) ??
                throw new InvalidOperationException();
     }
 
-    public async Task<TrainingDetails> GetTrainingsByStatus(Guid trainingId, TrainingStatus status)
+    public async Task<TrainingDetails> GetTrainingsByStatusAsync(Guid trainingId, TrainingStatus status, CancellationToken cancellationToken = default)
     {
-        return await Details.Where(x => x.Status == status).FirstOrDefaultAsync() ??
+        return await Details.FirstOrDefaultAsync(x => x.Status == status, cancellationToken) ??
                throw new InvalidOperationException();
     }
 

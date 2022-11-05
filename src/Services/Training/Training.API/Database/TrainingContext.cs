@@ -1,18 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Training.API.Trainings;
+using Training.API.Database.Extensions;
 using Training.API.Trainings.ReadModels;
 
-namespace Training.API.Database
-{
-    public class TrainingContext : DbContext
+namespace Training.API.Database;
+
+public class TrainingContext : DbContext
+{ 
+    public DbSet<TrainingDetails> Trainings { get; set; }
+    public DbSet<TrainerInfo> TrainerInfos { get; set; }
+    public DbSet<TrainingUser> TrainingUsers { get; set; }
+    public DbSet<TrainingExercise> TrainingExercises { get; set; }
+
+    public TrainingContext(DbContextOptions<TrainingContext> options) : base(options)
     {
-        public DbSet<TrainingDetails> Trainings { get; set; }
-        public DbSet<TrainingUser> TrainingUsers { get; set; }
-        public DbSet<TrainingExercise> TrainingExercises { get; set; }
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    { 
+        base.OnModelCreating(modelBuilder);
 
-        public TrainingContext(DbContextOptions<TrainingContext> options) : base(options)
-        {
+        modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly); 
+    }
 
-        }
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ChangeTracker.SetAuditProperties();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
+    {
+        ChangeTracker.SetAuditProperties();
+        return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    public override int SaveChanges()
+    {
+        ChangeTracker.SetAuditProperties();
+        return base.SaveChanges();
+    }
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        ChangeTracker.SetAuditProperties();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 }

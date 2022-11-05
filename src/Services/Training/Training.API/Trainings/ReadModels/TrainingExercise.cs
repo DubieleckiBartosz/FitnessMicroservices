@@ -1,17 +1,20 @@
-﻿namespace Training.API.Trainings;
+﻿using Fitness.Common.Projection;
 
-public class TrainingExercise
+namespace Training.API.Trainings.ReadModels;
+
+public class TrainingExercise : IRead
 {
     public Guid Id { get; private set; }
+    public bool IsDeleted { get; set; }
     public Guid ExternalExerciseId { get; private set; }
     public int NumberRepetitions { get; private set; }
-    public int BreakBetweenSetsInMinutes { get; private set; } 
+    public int BreakBetweenSetsInMinutes { get; private set; }
 
     private TrainingExercise(Guid externalExerciseId, int numberRepetitions, int breakBetweenSetsInMinutes)
     {
         ExternalExerciseId = externalExerciseId;
         NumberRepetitions = numberRepetitions;
-        BreakBetweenSetsInMinutes = breakBetweenSetsInMinutes; 
+        BreakBetweenSetsInMinutes = breakBetweenSetsInMinutes;
         Id = Guid.NewGuid();
     }
 

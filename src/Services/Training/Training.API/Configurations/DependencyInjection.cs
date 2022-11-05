@@ -7,7 +7,7 @@ namespace Training.API.Configurations
     {
         public static WebApplicationBuilder RegisterTypes(this WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<ITrainingRepository, TrainingRepository>();
+            builder.Services.AddScoped<IWrapperRepository, WrapperRepository>(); 
 
             return builder;
         }

@@ -2,7 +2,7 @@
 
 namespace Fitness.Common.EventStore.Repository;
 
-public interface IRepository<TAggregate> where TAggregate : AggregateRoot
+public interface IRepository<TAggregate> where TAggregate : Aggregate.Aggregate
 {
     Task<TAggregate> GetAsync(Guid id);
     Task AddAsync(TAggregate aggregate);

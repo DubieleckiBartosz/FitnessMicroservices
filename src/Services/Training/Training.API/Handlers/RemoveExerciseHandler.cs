@@ -5,7 +5,7 @@ using MediatR;
 using Training.API.Commands.ExerciseCommands;
 using Training.API.Constants;
 
-namespace Training.API.EventHandlers
+namespace Training.API.Handlers
 {
     public class RemoveExerciseHandler : ICommandHandler<RemoveExerciseCommand, Unit>
     {
