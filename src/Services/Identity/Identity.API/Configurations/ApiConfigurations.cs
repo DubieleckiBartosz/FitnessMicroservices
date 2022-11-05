@@ -1,4 +1,5 @@
-﻿using Fitness.Common.Communication.Email;
+﻿using Fitness.Common;
+using Fitness.Common.Communication.Email;
 
 namespace Identity.API.Configurations
 {
@@ -8,8 +9,13 @@ namespace Identity.API.Configurations
         {
             builder.GetOptions();
             builder.Services.GetConfigurationLayers(); 
-            builder.Services.AddEndpointsApiExplorer(); 
-            builder.Services.GetJwtBearer(builder.Configuration);
+            builder.Services.AddEndpointsApiExplorer();
+
+            var issuer = builder.Configuration["JwtSettings:Issuer"];
+            var audience = builder.Configuration["JwtSettings:Audience"];
+            var key = builder.Configuration["JwtSettings:Key"];
+
+            builder.Services.RegisterJwtBearer(issuer, audience, key);
             builder.Services.AddControllers().AddFluentValidation();
             builder.Services.GetSwaggerConfiguration();
 

@@ -22,8 +22,8 @@ public static class DependencyInjectionApplication
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IUserService, UserService>();
 
-        //Common
-        services.GetCommonDependencyInjection();
+        //Mail + Logger
+        services.GetAccessoriesDependencyInjection();
 
         return services;
     }

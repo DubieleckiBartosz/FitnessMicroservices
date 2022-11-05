@@ -4,9 +4,10 @@ using Training.API.Trainings.TrainingEvents;
 
 namespace Training.API.Trainings.ReadModels;
 
-public class TrainingDetails : IRead
+public class TrainingDetails : IRead 
 {
-    public Guid TrainingId { get; set; }
+    public Guid Id { get; private set; }
+    public bool IsDeleted { get; set; }
     public Guid CreatorId { get; set; }
     public bool IsActive { get; set; }
     public decimal? Price { get; set; }
@@ -19,12 +20,12 @@ public class TrainingDetails : IRead
     public List<TrainingExercise> TrainingExercises { get; set; }
     public List<TrainingUser> TrainingUsers { get; set; }
 
-    public TrainingDetails()
+    internal TrainingDetails()
     {
     }
     private TrainingDetails(Guid trainingId, Guid creatorId, DateTime created)
     {
-        TrainingId = trainingId;
+        Id = trainingId;
         CreatorId = creatorId;
         IsActive = false;
         Status = TrainingStatus.Created;
@@ -34,7 +35,7 @@ public class TrainingDetails : IRead
 
     public static TrainingDetails Create(NewTrainingInitiated @event)
     {
-        return new TrainingDetails(@event.TrainingId, @event.TrainerId, @event.Created);
+        return new TrainingDetails(@event.TrainingId, @event.CreatorId, @event.Created);
     } 
 
     public TrainingDetails UserAdded(UserToTrainingAdded @event)

@@ -6,7 +6,7 @@ using Training.API.Trainings.TrainingEvents;
 
 namespace Training.API.Trainings;
 
-public class Training : AggregateRoot
+public class Training : Aggregate
 {
     public bool IsActive { get; private set; }
     public decimal? Price { get; private set; }
@@ -16,7 +16,7 @@ public class Training : AggregateRoot
     public int? DurationTrainingInMinutes { get; private set; }
     public int? BreakBetweenExercisesInMinutes { get; private set; }
     public DateTime Created { get; private set; }
-    public Guid TrainerId { get; private set; }
+    public Guid CreatorId { get; private set; }
     public List<TrainingExercise> TrainingExercises { get; private set; }
     public List<TrainingUser> TrainingUsers { get; private set; }
 
@@ -24,10 +24,10 @@ public class Training : AggregateRoot
     {
     }
 
-    private Training(Guid trainerId)
+    private Training(Guid creatorId)
     {
     
-        var @event = NewTrainingInitiated.Create(trainerId, Guid.NewGuid(), DateTime.UtcNow);
+        var @event = NewTrainingInitiated.Create(creatorId, Guid.NewGuid(), DateTime.UtcNow);
         this.Apply(@event);
         this.Enqueue(@event);
     }
@@ -60,7 +60,7 @@ public class Training : AggregateRoot
 
         var exercise =
             TrainingExercise.CreateExercise(externalExerciseId, numberRepetitions, breakBetweenSetsInMinutes);
-        var @event = ExerciseAdded.Create(exercise);
+        var @event = ExerciseAdded.Create(exercise, this.Id);
         Apply(@event);
         Enqueue(@event);
     }
@@ -73,14 +73,14 @@ public class Training : AggregateRoot
             //Throw Business Exception
         }
 
-        var @event = ExerciseRemoved.Create(exercise.Id);
+        var @event = ExerciseRemoved.Create(exercise.Id, this.Id);
         Apply(@event);
         this.Enqueue(@event);
     }
 
-    public static Training Create(Guid trainerId)
+    public static Training Create(Guid creatorId)
     {
-        return new Training(trainerId);
+        return new Training(creatorId);
     }
 
     protected override void When(IEvent @event)
@@ -108,10 +108,10 @@ public class Training : AggregateRoot
     {
         Id = @event.TrainingId;
         IsActive = false;
-        Status = TrainingStatus.shared;
+        Status = TrainingStatus.Created;
         Availability = TrainingAvailability.Private;
         Created = @event.Created;
-        TrainerId = @event.TrainerId;
+        CreatorId = @event.CreatorId;
         TrainingExercises = new List<TrainingExercise>();
         TrainingUsers = new List<TrainingUser>();
     }
@@ -129,7 +129,13 @@ public class Training : AggregateRoot
 
     public void TrainingExerciseRemoved(ExerciseRemoved @event)
     {
-        TrainingExercises.Remove(FindExercise(exerciseId: @event.ExerciseId));
+        var result = FindExercise(exerciseId: @event.ExerciseId);
+        if (result != null)
+        {
+            //Throw Business Exception
+        }
+
+        TrainingExercises.Remove(result);
     }
 
     private TrainingExercise? FindExercise(Guid exerciseId) => TrainingExercises.FirstOrDefault(_ => _.Id == exerciseId);

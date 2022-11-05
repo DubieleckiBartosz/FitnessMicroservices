@@ -2,11 +2,11 @@
 
 namespace Training.API.Commands.TrainingCommands
 {
-    public record TrainingInitiationCommand(Guid TrainerId) : ICommand<Guid>
+    public record TrainingInitiationCommand(int UserId) : ICommand<Guid>
     {
-        public static TrainingInitiationCommand Create(Guid trainerId) 
+        public static TrainingInitiationCommand Create(int userId) 
         {
-            return new TrainingInitiationCommand(trainerId);
+            return new TrainingInitiationCommand(userId);
         }
     }
 }

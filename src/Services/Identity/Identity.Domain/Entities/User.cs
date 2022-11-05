@@ -11,7 +11,6 @@ public class User : Entity, IAggregateRoot
     public string PasswordHash { get; private set; }
     public TokenValue VerificationToken { get; private set; }
     public TokenValue? ResetToken { get; private set; }
-
     public List<RefreshToken> RefreshTokens { get; private set; }
     public List<Role> Roles { get; private set; }
 

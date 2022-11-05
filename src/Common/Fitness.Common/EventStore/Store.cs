@@ -34,8 +34,8 @@ public class Store : IStore
         await _connection.WithConnection(_ =>
             _.ExecuteAsync("event_AppendEvent_IU", param, commandType: CommandType.StoredProcedure));
 
-        var resultVersion = param.Get<bool>("@resultVersion");
-        if (!resultVersion)
+        var resultVersionSuccess = param.Get<int>("@resultVersion");
+        if (resultVersionSuccess == 0)
         {
             throw new EventException("Expected version did not match the stream version!", "Bad Stream Version");
         }

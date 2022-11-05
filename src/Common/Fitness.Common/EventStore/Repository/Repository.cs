@@ -3,7 +3,7 @@ using Fitness.Common.EventStore.Events;
 
 namespace Fitness.Common.EventStore.Repository;
 
-public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate : AggregateRoot
+public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate : Aggregate.Aggregate
 {
     private readonly IEventStore _eventStore;
     private readonly IEventBus _eventBus;

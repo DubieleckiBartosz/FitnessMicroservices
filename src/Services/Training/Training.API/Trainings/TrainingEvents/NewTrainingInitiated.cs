@@ -2,11 +2,11 @@
 
 namespace Training.API.Trainings.TrainingEvents
 {
-    public record NewTrainingInitiated(Guid TrainerId, Guid TrainingId, DateTime Created) : IEvent
+    public record NewTrainingInitiated(Guid CreatorId, Guid TrainingId, DateTime Created) : IEvent
     {
-        public static NewTrainingInitiated Create(Guid trainerId, Guid trainingId, DateTime created)
+        public static NewTrainingInitiated Create(Guid creatorId, Guid trainingId, DateTime created)
         {
-            return new NewTrainingInitiated(trainerId, trainingId, created);
+            return new NewTrainingInitiated(creatorId, trainingId, created);
         }
     }
 }

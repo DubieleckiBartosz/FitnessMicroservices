@@ -3,29 +3,36 @@ using Newtonsoft.Json;
 
 namespace Fitness.Common.EventStore.Aggregate;
 
-public abstract class AggregateRoot 
+public abstract class Aggregate 
 {
     public Guid Id { get; protected set; }
     public int Version { get; protected set; }
     public DateTime CreatedUtc { get; protected set; }
 
     [JsonIgnore]
-    private readonly List<IEvent> _uncommittedEvents = new List<IEvent>();
+    private readonly Queue<IEvent>? _uncommittedEvents = new Queue<IEvent>();
 
     public IReadOnlyList<IEvent> DequeueUncommittedEvents()
     {
-        var dequeuedEvents = _uncommittedEvents.AsReadOnly();
+        if (_uncommittedEvents == null)
+        {
+            return new List<IEvent>();
+        }
 
-        _uncommittedEvents.Clear();
+        var dequeuedEvents = new List<IEvent>();
+        for (var i = 0; i < _uncommittedEvents.Count; i++)
+        {
+            dequeuedEvents.Add(_uncommittedEvents.Dequeue());
+        } 
 
-        return dequeuedEvents;
+        return dequeuedEvents.AsReadOnly();
     }
     protected abstract void When(IEvent @event);
 
     protected void Enqueue(IEvent @event)
-    {
+    { 
         Version++;
-        _uncommittedEvents.Add(@event);
+        _uncommittedEvents?.Enqueue(@event);
     }
     public void Apply(IEvent @event)
     {
