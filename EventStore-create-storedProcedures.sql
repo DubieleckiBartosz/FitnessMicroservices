@@ -51,7 +51,13 @@ CREATE OR ALTER PROCEDURE event_GetBySearch_S
 	@streamId UNIQUEIDENTIFIER
 AS
 BEGIN
-	SELECT * FROM [Events]
+	SELECT 
+	Id as Id,
+	StreamId as StreamId,
+	[Data] as [StreamData], 
+	[Type] as EventType, 
+	[Version] as [Version] 
+	FROM [Events]
 	WHERE StreamId = @streamId
 	AND (@atTimestamp IS NULL OR Created <= @atTimestamp)
 	AND (@streamVersion IS NULL OR [Version] = @streamVersion)

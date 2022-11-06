@@ -26,7 +26,7 @@ public class Store : IStore
         param.Add("@id", stream.Id);
         param.Add("@data", stream.StreamData);
         param.Add("@type", stream.EventType);
-        param.Add("@streamId", stream.AggregateId);
+        param.Add("@streamId", stream.StreamId);
         param.Add("@streamType", stream.StreamType);
         param.Add("@expectedStreamVersion", expectedVersion);
         param.Add("@resultVersion", -1, DbType.Int32, ParameterDirection.Output);
