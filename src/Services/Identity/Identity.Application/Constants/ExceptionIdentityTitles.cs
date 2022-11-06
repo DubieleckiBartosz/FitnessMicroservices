@@ -16,4 +16,5 @@ public class ExceptionIdentityTitles
     public const string ForgotPassword = "New token due to forgotten password.";
     public const string ClearResetToken = "Clearing the reset token.";
     public const string ResetToken = "Token Status.";
+    public const string TrainerNotFoundTitle = "Trainer not found.";
 }

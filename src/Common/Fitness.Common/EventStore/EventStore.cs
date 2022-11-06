@@ -69,7 +69,10 @@ public class EventStore : IEventStore
         var version = 0;
         foreach (var @event in events)
         {
-            var data = JsonConvert.DeserializeObject<IEvent>(@event.StreamData);
+            var data = JsonConvert.DeserializeObject<IEvent>(@event.StreamData, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
 
             if (data == null)
             {
@@ -77,7 +80,7 @@ public class EventStore : IEventStore
             }
 
             aggregate.Apply(data);
-            aggregate.SetNewValue(nameof(aggregate.Version), version++);
+            aggregate.SetNewValue(nameof(aggregate.Version), ++version);
         }
 
         return aggregate;

@@ -1,5 +1,4 @@
-﻿using Fitness.Common.Abstractions;
-using MediatR;
+﻿using MediatR;
 
 namespace Training.API.Commands.ExerciseCommands
 {

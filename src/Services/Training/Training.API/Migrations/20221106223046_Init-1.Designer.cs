@@ -12,7 +12,7 @@ using Training.API.Database;
 namespace Training.API.Migrations
 {
     [DbContext(typeof(TrainingContext))]
-    [Migration("20221105164911_Init-1")]
+    [Migration("20221106223046_Init-1")]
     partial class Init1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,34 +24,9 @@ namespace Training.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainerInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TrainerName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("YearsExperience")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TrainerInfos", (string)null);
-                });
-
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingDetails", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<int>("Availability")
@@ -62,9 +37,6 @@ namespace Training.API.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uuid");
 
                     b.Property<int?>("DurationTrainingInMinutes")
                         .HasColumnType("integer");
@@ -81,42 +53,15 @@ namespace Training.API.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("TrainerUniqueCode")
+                        .HasColumnType("uuid");
+
                     b.Property<int?>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorId");
-
                     b.ToTable("Trainings", (string)null);
-                });
-
-            modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingExercise", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("BreakBetweenSetsInMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ExternalExerciseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("NumberRepetitions")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("TrainingDetailsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingDetailsId");
-
-                    b.ToTable("TrainingExercises", (string)null);
                 });
 
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingUser", b =>
@@ -162,18 +107,38 @@ namespace Training.API.Migrations
 
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingDetails", b =>
                 {
-                    b.HasOne("Training.API.Trainings.ReadModels.TrainerInfo", null)
-                        .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.OwnsMany("Training.API.Trainings.ReadModels.TrainingExercise", "TrainingExercises", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
 
-            modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingExercise", b =>
-                {
-                    b.HasOne("Training.API.Trainings.ReadModels.TrainingDetails", null)
-                        .WithMany("TrainingExercises")
-                        .HasForeignKey("TrainingDetailsId");
+                            b1.Property<int>("BreakBetweenSetsInMinutes")
+                                .HasColumnType("integer");
+
+                            b1.Property<Guid>("ExternalExerciseId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<bool>("IsDeleted")
+                                .HasColumnType("boolean");
+
+                            b1.Property<int>("NumberRepetitions")
+                                .HasColumnType("integer");
+
+                            b1.Property<Guid>("TrainingDetailsId")
+                                .HasColumnType("uuid");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("TrainingDetailsId");
+
+                            b1.ToTable("TrainingExercises", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("TrainingDetailsId");
+                        });
+
+                    b.Navigation("TrainingExercises");
                 });
 
             modelBuilder.Entity("TrainingDetailsTrainingUser", b =>
@@ -189,11 +154,6 @@ namespace Training.API.Migrations
                         .HasForeignKey("TrainingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingDetails", b =>
-                {
-                    b.Navigation("TrainingExercises");
                 });
 #pragma warning restore 612, 618
         }

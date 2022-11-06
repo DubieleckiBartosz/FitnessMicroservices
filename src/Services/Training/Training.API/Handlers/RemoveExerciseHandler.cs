@@ -1,9 +1,6 @@
-﻿using Fitness.Common.Abstractions;
-using Fitness.Common.Core.Exceptions;
+﻿using Fitness.Common.Core.Exceptions;
 using Fitness.Common.EventStore.Repository;
 using MediatR;
-using Training.API.Commands.ExerciseCommands;
-using Training.API.Constants;
 
 namespace Training.API.Handlers
 {

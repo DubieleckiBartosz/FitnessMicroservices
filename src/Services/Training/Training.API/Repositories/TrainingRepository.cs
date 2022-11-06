@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Training.API.Database;
 using Training.API.Repositories.Interfaces;
-using Training.API.Trainings.Enums;
-using Training.API.Trainings.ReadModels;
 
 namespace Training.API.Repositories;
 
@@ -39,8 +37,7 @@ public class TrainingRepository : ITrainingRepository
 
     private IQueryable<TrainingDetails> GetDetails()
     {
-        return _trainings.AsNoTracking()
-            .Include(_ => _.TrainingExercises)
+        return _trainings.Include(_ => _.TrainingExercises)
             .Include(_ => _.TrainingUsers);
     }
 }

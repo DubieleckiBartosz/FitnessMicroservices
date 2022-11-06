@@ -1,17 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders; 
-using Training.API.Trainings.ReadModels;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Training.API.Database.TypeConfigurations;
+//namespace Training.API.Database.TypeConfigurations;
 
-public class ExerciseTypeConfiguration : BaseTypeConfiguration<TrainingExercise>
-{
-    public override void Configure(EntityTypeBuilder<TrainingExercise> builder)
-    {
-        builder.ToTable("TrainingExercises");
+//public class ExerciseTypeConfiguration : BaseTypeConfiguration<TrainingExercise>
+//{
+//    public override void Configure(EntityTypeBuilder<TrainingExercise> builder)
+//    {
+//        builder.ToTable("TrainingExercises");
 
-        builder.HasKey(a => a.Id);
+//        builder.HasKey(_ => _.Id);
+//        builder.Property(_ => _.Id).ValueGeneratedNever();
 
-        base.Configure(builder);
-    }
-}
+//        base.Configure(builder);
+//    }
+//}

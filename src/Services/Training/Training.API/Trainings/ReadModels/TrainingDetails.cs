@@ -1,6 +1,5 @@
-﻿using Fitness.Common.Projection;
-using Training.API.Trainings.Enums;
-using Training.API.Trainings.TrainingEvents;
+﻿using Fitness.Common.Extensions;
+using Fitness.Common.Projection;
 
 namespace Training.API.Trainings.ReadModels;
 
@@ -8,7 +7,7 @@ public class TrainingDetails : IRead
 {
     public Guid Id { get; private set; }
     public bool IsDeleted { get; set; }
-    public Guid CreatorId { get; set; }
+    public Guid TrainerUniqueCode { get; set; }
     public bool IsActive { get; set; }
     public decimal? Price { get; set; }
     public TrainingStatus Status { get; set; }
@@ -23,19 +22,19 @@ public class TrainingDetails : IRead
     internal TrainingDetails()
     {
     }
-    private TrainingDetails(Guid trainingId, Guid creatorId, DateTime created)
+    private TrainingDetails(Guid trainingId, Guid trainerUniqueCode, DateTime created)
     {
         Id = trainingId;
-        CreatorId = creatorId;
+        TrainerUniqueCode = trainerUniqueCode;
         IsActive = false;
-        Status = TrainingStatus.Created;
+        Status = TrainingStatus.Init;
         Availability = TrainingAvailability.Private;
         Created = created;
     }
 
     public static TrainingDetails Create(NewTrainingInitiated @event)
     {
-        return new TrainingDetails(@event.TrainingId, @event.CreatorId, @event.Created);
+        return new TrainingDetails(@event.TrainingId, @event.TrainerUniqueCode, @event.Created);
     } 
 
     public TrainingDetails UserAdded(UserToTrainingAdded @event)
@@ -48,7 +47,22 @@ public class TrainingDetails : IRead
 
     public TrainingDetails NewExerciseAdded(ExerciseAdded @event)
     {
-        TrainingExercises.Add(@event.Training);
+        if (!TrainingExercises.Any())
+        {
+            Status = TrainingStatus.InProgress;
+        }
+
+        var newExercise = @event.Exercise;
+        var exercise = TrainingExercises.FirstOrDefault(_ => _.ExternalExerciseId == newExercise.ExternalExerciseId);
+        if (exercise == null)
+        {
+            TrainingExercises.Add(newExercise);
+        }
+        else
+        {
+            TrainingExercises.Replace(exercise,
+                exercise.Update(newExercise.NumberRepetitions, newExercise.BreakBetweenSetsInMinutes));
+        }
 
         return this;
     }

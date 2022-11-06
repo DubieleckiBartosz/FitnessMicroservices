@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Training.API.Trainings.ReadModels;
 
 namespace Training.API.Database.TypeConfigurations
 {

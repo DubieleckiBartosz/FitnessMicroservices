@@ -13,6 +13,7 @@ using Fitness.Common.EventStore.Repository;
 using Fitness.Common.RabbitMQ;
 using Fitness.Common.Projection;
 using Fitness.Common.Abstractions;
+using Fitness.Common.Behaviours;
 using Fitness.Common.CommonServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -43,7 +44,8 @@ public static class CommonConfigurations
         services.AddScoped<IStore, Store>();
         services.AddScoped<IEventBus, EventBus>();
         services.AddScoped<IEventStore, EventStore.EventStore>(_ =>
-            new EventStore.EventStore(_.GetService<IStore>() ?? throw new ArgumentNullException(nameof(IStore)), projectionFunc?.Invoke(_)));
+            new EventStore.EventStore(_.GetService<IStore>() ?? throw new ArgumentNullException(nameof(IStore)),
+                projectionFunc?.Invoke(_)));
         services.AddScoped<IOutboxListener, OutboxListener>();
         services.AddScoped<IOutboxStore, OutboxStore>();
         services.AddScoped<IRabbitEventListener, RabbitEventListener>();
@@ -53,22 +55,13 @@ public static class CommonConfigurations
         services.AddHttpContextAccessor();
         services.AddTransient<ICurrentUser, CurrentUser>();
 
-
         //MONGO
         services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 
+        //PIPELINES
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+
         return services;
-    }
-
-    //AFTER BUILD method
-    public static IEventStore? RegisterProjections(this WebApplication app, List<IProjection> projections)
-    {
-        using var scope = app.Services.CreateScope();
-        var services = scope.ServiceProvider;
-        var result = services.GetService<IEventStore>();
-        projections.ForEach(_ => result?.RegisterProjection(_));
-
-        return result;
     }
 
     public static IServiceCollection GetAutoMapper(this IServiceCollection services, Assembly assembly)

@@ -48,6 +48,8 @@ public class UserRepository : BaseRepository<UserRepository>, IUserRepository
 
         var roleId = user.Roles.LastOrDefault()?.Id;
         param.Add("@userId", user.Id);
+        param.Add("@trainerCode", user.TrainerCode);
+        param.Add("@trainerYearsExperience", user.TrainerYearsExperience);
         param.Add("@role", roleId);
 
         var result =

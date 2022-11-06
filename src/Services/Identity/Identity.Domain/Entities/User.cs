@@ -9,6 +9,8 @@ public class User : Entity, IAggregateRoot
     public string PhoneNumber { get; }
     public bool IsConfirmed { get; private set; } 
     public string PasswordHash { get; private set; }
+    public int? TrainerYearsExperience { get; private set; }
+    public string? TrainerCode { get; private set; }
     public TokenValue VerificationToken { get; private set; }
     public TokenValue? ResetToken { get; private set; }
     public List<RefreshToken> RefreshTokens { get; private set; }
@@ -24,18 +26,24 @@ public class User : Entity, IAggregateRoot
         VerificationToken = verificationToken; 
         IsConfirmed = false;
         ResetToken = null;
+        TrainerYearsExperience = null;
+        TrainerCode = null;
         RefreshTokens = new List<RefreshToken>();
         Roles = new List<Role> {Role.User};
     }
 
-    private User(int id, bool isConfirmed, string resetToken, DateTime? resetTokenExpirationDate,
-        string verificationToken, DateTime? verificationTokenExpirationDate, string firstName, string lastName, string userName,
+    private User(int id, int? trainerYearsExperience, string? trainerCode, bool isConfirmed, string resetToken,
+        DateTime? resetTokenExpirationDate,
+        string verificationToken, DateTime? verificationTokenExpirationDate, string firstName, string lastName,
+        string userName,
         string email, string phoneNumber,
         string passwordHash, List<Role> roles, List<RefreshToken>? refreshTokens = null) : this(
         TokenValue.Load(verificationToken, verificationTokenExpirationDate), firstName, lastName, userName, email,
         phoneNumber)
     {
         Id = id;
+        TrainerCode = trainerCode;
+        TrainerYearsExperience = trainerYearsExperience;
 
         if (refreshTokens != null && refreshTokens.Any())
         {
@@ -54,13 +62,15 @@ public class User : Entity, IAggregateRoot
         return new User(token, firstName, lastName, userName, email, phoneNumber);
     }
 
-    public static User LoadUser(int id, bool isConfirmed, string resetToken, DateTime? resetTokenExpirationDate,
+    public static User LoadUser(int id, int? trainerYearsExperience, string? trainerCode, bool isConfirmed,
+        string resetToken, DateTime? resetTokenExpirationDate,
         string verificationToken, DateTime? verificationTokenExpirationDate, string firstName, string lastName,
         string userName, string email,
         string phoneNumber,
         string passwordHash, List<Role> roles, List<RefreshToken>? refreshTokens = null)
     {
-        return new User(id, isConfirmed, resetToken, resetTokenExpirationDate, verificationToken,
+        return new User(id, trainerYearsExperience, trainerCode, isConfirmed, resetToken, resetTokenExpirationDate,
+            verificationToken,
             verificationTokenExpirationDate, firstName, lastName, userName, email,
             phoneNumber, passwordHash, roles, refreshTokens);
     }
@@ -88,6 +98,20 @@ public class User : Entity, IAggregateRoot
         }
 
         Roles.Add(role);
+    }
+
+    public void MarkAsTrainer(int? yearsExperience)
+    {
+        if (TrainerCode != null)
+        {
+            throw new BusinessException(BusinessRuleErrorMessages.UniqueUserRoleErrorMessage,
+                BusinessExceptionTitles.UniqueRoleTitle);
+        }
+
+        TrainerYearsExperience = yearsExperience;
+        TrainerCode = Guid.NewGuid().ToString();
+
+        this.AddNewRole(Role.Trainer);
     }
 
     public void ClearResetToken()

@@ -16,6 +16,7 @@ public class ExceptionIdentityMessages
     public const string UserNotFound = "User not found.";
     public const string UserRolesNotFound = "Unable to get user roles.";
     public const string IncorrectData = "Incorrect data! Check data and try again.";
+    public const string TrainerNotFoundMessage = "Trainer cannot be null.";
 
     public static string RoleNotFound(List<string> allRoles)
     {

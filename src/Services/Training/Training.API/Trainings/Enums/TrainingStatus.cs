@@ -2,7 +2,7 @@
 
 public enum TrainingStatus
 {
-    Created = 1,
+    Init = 1,
     InProgress = 2,
     Shared = 3
 }

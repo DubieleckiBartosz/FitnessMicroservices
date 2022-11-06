@@ -1,6 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-
-namespace Training.API.Trainings.TrainingEvents
+﻿namespace Training.API.Trainings.TrainingEvents
 {
     public record UserToTrainingAdded(Guid UserId, Guid TrainingId) : IEvent
     {

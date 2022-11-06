@@ -124,6 +124,19 @@
 
         [Authorize]
         [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(object), 400)]
+        [ProducesResponseType(typeof(object), 500)]
+        [ProducesResponseType(typeof(Response<string>), 200)]
+        [SwaggerOperation(Summary = "Add user to trainer role")]
+        [HttpPut("[action]")]
+        public async Task<IActionResult> AddTrainerRoleToUser([FromBody] UserTrainerRoleParameters parameters)
+        {
+            var result = await this._userService.AddToTrainerRoleAsync(new UserTrainerRoleDto(parameters));
+            return Ok(result);
+        }
+
+        [Authorize]
+        [ProducesResponseType(401)]
         [ProducesResponseType(typeof(object), 403)]
         [ProducesResponseType(typeof(object), 400)]
         [ProducesResponseType(typeof(object), 500)]

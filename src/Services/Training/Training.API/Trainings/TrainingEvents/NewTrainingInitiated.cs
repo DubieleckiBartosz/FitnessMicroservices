@@ -1,12 +1,10 @@
-﻿using Fitness.Common.EventStore.Events;
-
-namespace Training.API.Trainings.TrainingEvents
+﻿namespace Training.API.Trainings.TrainingEvents
 {
-    public record NewTrainingInitiated(Guid CreatorId, Guid TrainingId, DateTime Created) : IEvent
+    public record NewTrainingInitiated(Guid TrainerUniqueCode, Guid TrainingId, DateTime Created) : IEvent
     {
-        public static NewTrainingInitiated Create(Guid creatorId, Guid trainingId, DateTime created)
+        public static NewTrainingInitiated Create(Guid trainerUniqueCode, Guid trainingId, DateTime created)
         {
-            return new NewTrainingInitiated(creatorId, trainingId, created);
+            return new NewTrainingInitiated(trainerUniqueCode, trainingId, created);
         }
     }
 }
