@@ -1,7 +1,4 @@
-﻿using Training.API.Trainings.Enums;
-using Training.API.Trainings.ReadModels;
-
-namespace Training.API.Repositories.Interfaces
+﻿namespace Training.API.Repositories.Interfaces
 {
     public interface ITrainingRepository
     {

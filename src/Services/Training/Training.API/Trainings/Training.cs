@@ -1,8 +1,5 @@
-﻿using Fitness.Common.EventStore.Aggregate;
-using Fitness.Common.EventStore.Events;
-using Training.API.Trainings.Enums;
-using Training.API.Trainings.ReadModels;
-using Training.API.Trainings.TrainingEvents;
+﻿using Fitness.Common.Extensions;
+using Training.API.Common.Exceptions;
 
 namespace Training.API.Trainings;
 
@@ -16,7 +13,7 @@ public class Training : Aggregate
     public int? DurationTrainingInMinutes { get; private set; }
     public int? BreakBetweenExercisesInMinutes { get; private set; }
     public DateTime Created { get; private set; }
-    public Guid CreatorId { get; private set; }
+    public Guid TrainerUniqueCode { get; private set; }
     public List<TrainingExercise> TrainingExercises { get; private set; }
     public List<TrainingUser> TrainingUsers { get; private set; }
 
@@ -24,10 +21,10 @@ public class Training : Aggregate
     {
     }
 
-    private Training(Guid creatorId)
+    private Training(Guid trainerUniqueCode)
     {
     
-        var @event = NewTrainingInitiated.Create(creatorId, Guid.NewGuid(), DateTime.UtcNow);
+        var @event = NewTrainingInitiated.Create(trainerUniqueCode, Guid.NewGuid(), DateTime.UtcNow);
         this.Apply(@event);
         this.Enqueue(@event);
     }
@@ -35,32 +32,23 @@ public class Training : Aggregate
     public void AddUser(TrainingUser user)
     {
         var userAlreadyAdded = TrainingUsers.Any(_ => _.Id == user.Id);
-        if (userAlreadyAdded) 
+        if (userAlreadyAdded)
         {
-            //Throw Business Exception
+            throw new TrainingServiceBusinessException(Strings.UserDuplicationTitle, Strings.UserDuplicationMessage); 
         }
 
         var @event = UserToTrainingAdded.Create(user.Id, this.Id);
         this.Apply(@event);
         this.Enqueue(@event);
     }
-
+     
     public void AddExercise(int numberRepetitions, int breakBetweenSetsInMinutes, Guid externalExerciseId)
     {
-        var exerciseAlreadyAdded = TrainingExercises.Any(_ => _.ExternalExerciseId == externalExerciseId);
-        if (exerciseAlreadyAdded)
-        {
-            //Throw Business Exception
-        }
-
-        if (!TrainingExercises.Any())
-        {
-            Status = TrainingStatus.InProgress;
-        }
-
         var exercise =
             TrainingExercise.CreateExercise(externalExerciseId, numberRepetitions, breakBetweenSetsInMinutes);
+
         var @event = ExerciseAdded.Create(exercise, this.Id);
+
         Apply(@event);
         Enqueue(@event);
     }
@@ -70,7 +58,7 @@ public class Training : Aggregate
         var exercise = FindExercise(exerciseId);
         if (exercise == null)
         {
-            //Throw Business Exception
+            throw new TrainingServiceBusinessException(Strings.ExerciseNotFoundTitle, Strings.ExerciseNotFoundMessage);
         }
 
         var @event = ExerciseRemoved.Create(exercise.Id, this.Id);
@@ -78,9 +66,9 @@ public class Training : Aggregate
         this.Enqueue(@event);
     }
 
-    public static Training Create(Guid creatorId)
+    public static Training Create(Guid trainerUniqueCode)
     {
-        return new Training(creatorId);
+        return new Training(trainerUniqueCode);
     }
 
     protected override void When(IEvent @event)
@@ -108,10 +96,10 @@ public class Training : Aggregate
     {
         Id = @event.TrainingId;
         IsActive = false;
-        Status = TrainingStatus.Created;
+        Status = TrainingStatus.Init;
         Availability = TrainingAvailability.Private;
         Created = @event.Created;
-        CreatorId = @event.CreatorId;
+        TrainerUniqueCode = @event.TrainerUniqueCode;
         TrainingExercises = new List<TrainingExercise>();
         TrainingUsers = new List<TrainingUser>();
     }
@@ -119,20 +107,35 @@ public class Training : Aggregate
     public void UserAdded(UserToTrainingAdded @event)
     {
         var user = TrainingUsers.First(_ => _.Id == @event.UserId);
-        TrainingUsers.Remove(user);
+        TrainingUsers.Add(user);
     }
 
     public void NewExerciseAdded(ExerciseAdded @event)
     {
-        TrainingExercises.Add(@event.Training);
+        if (!TrainingExercises.Any())
+        {
+            Status = TrainingStatus.InProgress;
+        }
+
+        var newExercise = @event.Exercise;
+        var exercise = TrainingExercises.FirstOrDefault(_ => _.ExternalExerciseId == newExercise.ExternalExerciseId);
+        if (exercise == null)
+        {
+            TrainingExercises.Add(newExercise);
+        }
+        else
+        {
+            TrainingExercises.Replace(exercise,
+                exercise.Update(newExercise.NumberRepetitions, newExercise.BreakBetweenSetsInMinutes));
+        }
     }
 
     public void TrainingExerciseRemoved(ExerciseRemoved @event)
     {
         var result = FindExercise(exerciseId: @event.ExerciseId);
-        if (result != null)
+        if (result == null)
         {
-            //Throw Business Exception
+            throw new TrainingServiceBusinessException(Strings.ExerciseNotFoundTitle, Strings.ExerciseNotFoundMessage);
         }
 
         TrainingExercises.Remove(result);

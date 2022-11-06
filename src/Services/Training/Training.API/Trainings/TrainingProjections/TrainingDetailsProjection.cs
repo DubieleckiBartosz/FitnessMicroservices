@@ -1,9 +1,6 @@
 ﻿using Fitness.Common.Core.Exceptions;
 using Fitness.Common.Projection;
-using Training.API.Constants;
 using Training.API.Repositories.Interfaces;
-using Training.API.Trainings.ReadModels;
-using Training.API.Trainings.TrainingEvents;
 
 namespace Training.API.Trainings.TrainingProjections;
 
@@ -45,7 +42,6 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 
         training.UserAdded(@event);
 
-        _trainingRepository.Update(training);
         await _wrapperRepository.SaveAsync(cancellationToken);
     }
 
@@ -59,9 +55,7 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
 
         training.NewExerciseAdded(@event);
-
-        _trainingRepository.Update(training);
-        await _wrapperRepository.SaveAsync(cancellationToken);
+        await _wrapperRepository.SaveAsync(cancellationToken); 
     }
 
     private async Task Handle(ExerciseRemoved @event, CancellationToken cancellationToken = default)
@@ -74,7 +68,6 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
         training.TrainingExerciseRemoved(@event);
 
-        _trainingRepository.Update(training);
         await _wrapperRepository.SaveAsync(cancellationToken);
     }
 

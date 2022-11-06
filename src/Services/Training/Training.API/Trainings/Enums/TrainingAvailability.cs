@@ -1,9 +1,8 @@
-﻿namespace Training.API.Trainings.Enums
+﻿namespace Training.API.Trainings.Enums;
+
+public enum TrainingAvailability
 {
-    public enum TrainingAvailability
-    {
-        Public = 1,
-        Group = 2,
-        Private = 3
-    }
+    Public = 1,
+    Group = 2,
+    Private = 3
 }

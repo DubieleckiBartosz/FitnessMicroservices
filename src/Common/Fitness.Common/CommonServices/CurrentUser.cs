@@ -29,7 +29,15 @@ public class CurrentUser : ICurrentUser
                 return default;
             }
 
-            return int.TryParse(result, out int identifier) ? identifier : default;
+            return int.TryParse(result, out var identifier) ? identifier : default;
+        }
+    }
+    
+    public string? TrainerCode
+    {
+        get
+        {
+           return Claims?.Claims.FirstOrDefault(_ => _.Type == CommonConstants.ClaimTrainerType)?.Value; 
         }
     }
 }

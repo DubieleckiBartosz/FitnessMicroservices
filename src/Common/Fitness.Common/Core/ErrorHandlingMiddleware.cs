@@ -49,8 +49,11 @@ public class ErrorHandlingMiddleware
     private static int GetStatusCode(Exception exception) =>
         exception switch
         {
+            ArgumentOutOfRangeException => StatusCodes.Status400BadRequest,
             ArgumentNullException => StatusCodes.Status400BadRequest,
             ArgumentException => StatusCodes.Status400BadRequest,
+            InvalidOperationException => StatusCodes.Status400BadRequest,
+            ValidatorException => StatusCodes.Status400BadRequest,
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
             NotFoundException e => (int)e.StatusCode,
             BadRequestException e => (int)e.StatusCode,
@@ -70,6 +73,31 @@ public class ErrorHandlingMiddleware
             FitnessApplicationException fitnessApplicationException => fitnessApplicationException.Title,
             _ => ServerError
         };
+
+    public static IReadOnlyList<string>? AssignErrors(Exception exception)
+    {
+        IReadOnlyList<string>? errors = null;
+
+        if (exception is ValidatorException validatorException)
+        {
+            errors = validatorException.Errors;
+        }
+
+        return errors; 
+    }
+
+    public static object GetBaseErrorResponse(Exception exception, int statusCode)
+    { 
+        var response = new
+        {
+            title = ErrorHandlingMiddleware.GetGlobalTitle(exception),
+            status = statusCode,
+            detail = exception.Message,
+            errors = ErrorHandlingMiddleware.AssignErrors(exception)
+        };
+
+        return response;
+    }
 }
 
 public static class ExceptionHandlerMiddlewareExtensions

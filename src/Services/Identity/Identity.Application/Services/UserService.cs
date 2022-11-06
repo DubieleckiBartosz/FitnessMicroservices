@@ -155,6 +155,33 @@ public class UserService : IUserService
         return Response<string>.Ok(ResponseStrings.OperationSuccess);
     }
 
+    public async Task<Response<string>> AddToTrainerRoleAsync(UserTrainerRoleDto userTrainerRoleDto)
+    {
+        if (userTrainerRoleDto == null)
+        {
+            throw new ArgumentNullException(nameof(userTrainerRoleDto));
+        }
+
+        var user = await this._userRepository.FindByEmailAsync(userTrainerRoleDto.Email);
+        if (user == null)
+        {
+            throw new IdentityResultException(ExceptionIdentityMessages.UserNotFound,
+                ExceptionIdentityTitles.UserByEmail, HttpStatusCode.NotFound, null);
+        }
+
+        if (!user.IsConfirmed)
+        {
+            throw new IdentityResultException(ExceptionIdentityMessages.AccountNotApproval,
+                ExceptionIdentityTitles.UserByEmail, HttpStatusCode.BadRequest, null);
+        }
+        
+        user.MarkAsTrainer(userTrainerRoleDto.YearsExperience);
+
+        await this._userRepository.AddToRoleAsync(user);
+
+        return Response<string>.Ok(ResponseStrings.OperationSuccess);
+    }
+
     public async Task<Response<AuthenticationDto>> RefreshTokenAsync(string refreshTokenKey)
     {
         if (string.IsNullOrEmpty(refreshTokenKey))

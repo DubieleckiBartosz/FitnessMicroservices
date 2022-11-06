@@ -12,27 +12,39 @@
 	@newIdentity INT OUTPUT
 AS
 BEGIN 
-	BEGIN TRANSACTION; 
-		
-		
+	BEGIN TRY
+		BEGIN TRANSACTION; 
 	 
-		IF EXISTS (SELECT* FROM Roles WHERE Id = @roleId) 
-		BEGIN
-			INSERT INTO ApplicationUsers(FirstName, LastName, IsConfirmed,
-						UserName, Email, PhoneNumber, PasswordHash, VerificationToken, 
-						VerificationTokenExpirationDate, ResetToken, ResetTokenExpirationDate) 
-				VALUES (@firstName, @lastName, @isConfirmed, @userName, 
-						@email, @phoneNumber, @passwordHash, @verificationToken, 
-						@verificationTokenExpirationDate, NULL, NULL) 
+			IF EXISTS (SELECT* FROM Roles WHERE Id = @roleId) 
+			BEGIN
+				INSERT INTO ApplicationUsers(FirstName, LastName, IsConfirmed,
+							UserName, Email, PhoneNumber, PasswordHash, VerificationToken, 
+							VerificationTokenExpirationDate, ResetToken, ResetTokenExpirationDate) 
+					VALUES (@firstName, @lastName, @isConfirmed, @userName, 
+							@email, @phoneNumber, @passwordHash, @verificationToken, 
+							@verificationTokenExpirationDate, NULL, NULL) 
 				
-				SET @newIdentity = CAST(SCOPE_IDENTITY() AS INT)
+					SET @newIdentity = CAST(SCOPE_IDENTITY() AS INT)
 			
-			INSERT INTO UserRoles(RoleId, UserId) VALUES(@roleId, @newIdentity)
+				INSERT INTO UserRoles(RoleId, UserId) VALUES(@roleId, @newIdentity)
+			END
+
+		COMMIT TRANSACTION;
+
+		SELECT @newIdentity;
+	END TRY  
+	BEGIN CATCH
+	    IF (XACT_STATE()) = -1
+        BEGIN
+			ROLLBACK TRANSACTION
 		END
-
-	COMMIT TRANSACTION;
-
-	SELECT @newIdentity;
+  
+		IF (XACT_STATE()) = 1
+        BEGIN
+			COMMIT TRANSACTION
+		END
+		
+	END CATCH
 END
 GO
 
@@ -49,11 +61,38 @@ GO
 
 CREATE OR ALTER PROCEDURE [dbo].[user_addToRole_I] 
 	@userId INT, 
-	@role INT 
+	@role INT,
+	@trainerCode VARCHAR(MAX) = NULL,
+	@trainerYearsExperience INT = NULL
 AS 
 BEGIN 
-	INSERT INTO UserRoles(UserId, RoleId) 
-	VALUES (@userId, @role) 
+	BEGIN TRY  
+		BEGIN TRANSACTION;
+
+			IF(@trainerCode IS NOT NULL)
+			BEGIN
+				UPDATE ApplicationUsers SET TrainerCode = @trainerCode, 
+											TrainerYearsExperience = @trainerYearsExperience
+				WHERE Id = @userId;
+			END;
+
+			INSERT INTO UserRoles(UserId, RoleId) 
+			VALUES (@userId, @role)
+	
+		COMMIT TRANSACTION;
+	END TRY  
+	BEGIN CATCH
+	    IF (XACT_STATE()) = -1
+        BEGIN
+			ROLLBACK TRANSACTION
+		END
+  
+		IF (XACT_STATE()) = 1
+        BEGIN
+			COMMIT TRANSACTION
+		END
+		
+	END CATCH
 END
 GO
 
@@ -92,6 +131,8 @@ BEGIN
 	au.VerificationTokenExpirationDate,
 	au.ResetToken,
 	au.ResetTokenExpirationDate,
+	au.TrainerCode,
+	au.TrainerYearsExperience,
 	rt.Id,
 	rt.Token,
 	rt.TokenExpirationDate,
@@ -122,6 +163,8 @@ BEGIN
 	au.VerificationTokenExpirationDate,
 	au.ResetToken,
 	au.ResetTokenExpirationDate,
+	au.TrainerCode,
+	au.TrainerYearsExperience,
 	rt.Id,
 	rt.Token,
 	rt.TokenExpirationDate,
@@ -152,6 +195,8 @@ BEGIN
 	au.VerificationTokenExpirationDate,
 	au.ResetToken,
 	au.ResetTokenExpirationDate,
+	au.TrainerCode,
+	au.TrainerYearsExperience,
 	rt.Id,
 	rt.Token,
 	rt.TokenExpirationDate,
@@ -182,6 +227,8 @@ BEGIN
 	au.VerificationTokenExpirationDate,
 	au.ResetToken,
 	au.ResetTokenExpirationDate,
+	au.TrainerCode,
+	au.TrainerYearsExperience,
 	rt.Id,
 	rt.Token,
 	rt.TokenExpirationDate,
@@ -225,31 +272,45 @@ CREATE OR ALTER PROCEDURE [dbo].[user_updateUserData_U]
 	@refreshTokens UserRefreshTokensTableType READONLY 
 AS
 BEGIN 
-	BEGIN TRANSACTION --Add conditions
+	BEGIN TRY  
+		BEGIN TRANSACTION --Add conditions
 
-		MERGE RefreshTokens AS target
-		USING (SELECT Token, TokenExpirationDate, Created, ReplacedByToken, Revoked FROM @refreshTokens) AS source
-		ON (target.UserId = @userId AND target.Token = source.Token)
-		WHEN MATCHED THEN 
-			UPDATE SET Token = COALESCE(source.Token, target.Token),
-			           TokenExpirationDate = CONVERT(DATETIME, source.TokenExpirationDate, 120), 
-			           Created = CONVERT(DATETIME, source.Created, 120),
-			           ReplacedByToken = COALESCE(source.ReplacedByToken, target.ReplacedByToken),
-			           Revoked = COALESCE(source.Revoked, target.Revoked)
-		WHEN NOT MATCHED THEN 
-			INSERT(UserId, Token, TokenExpirationDate, Created, ReplacedByToken, Revoked) 
-			VALUES(@userId, source.Token, source.TokenExpirationDate, source.Created,
-			source.ReplacedByToken, source.Revoked);
+			MERGE RefreshTokens AS target
+			USING (SELECT Token, TokenExpirationDate, Created, ReplacedByToken, Revoked FROM @refreshTokens) AS source
+			ON (target.UserId = @userId AND target.Token = source.Token)
+			WHEN MATCHED THEN 
+				UPDATE SET Token = COALESCE(source.Token, target.Token),
+						   TokenExpirationDate = CONVERT(DATETIME, source.TokenExpirationDate, 120), 
+						   Created = CONVERT(DATETIME, source.Created, 120),
+						   ReplacedByToken = COALESCE(source.ReplacedByToken, target.ReplacedByToken),
+						   Revoked = COALESCE(source.Revoked, target.Revoked)
+			WHEN NOT MATCHED THEN 
+				INSERT(UserId, Token, TokenExpirationDate, Created, ReplacedByToken, Revoked) 
+				VALUES(@userId, source.Token, source.TokenExpirationDate, source.Created,
+				source.ReplacedByToken, source.Revoked);
 
-		UPDATE ApplicationUsers 
-		SET Email = COALESCE(@email, Email) , 
-		PhoneNumber = COALESCE(@phoneNumber, PhoneNumber),
-		PasswordHash = COALESCE(@password, PasswordHash),
-		ResetToken = @resetToken,
-		ResetTokenExpirationDate = @resetTokenExpirationDate,
-		Modified = GETDATE()
-		WHERE Id = @userId
+			UPDATE ApplicationUsers 
+			SET Email = COALESCE(@email, Email) , 
+			PhoneNumber = COALESCE(@phoneNumber, PhoneNumber),
+			PasswordHash = COALESCE(@password, PasswordHash),
+			ResetToken = @resetToken,
+			ResetTokenExpirationDate = @resetTokenExpirationDate,
+			Modified = GETDATE()
+			WHERE Id = @userId
 
-	COMMIT
+		COMMIT
+	END TRY  
+	BEGIN CATCH
+	    IF (XACT_STATE()) = -1
+        BEGIN
+			ROLLBACK TRANSACTION
+		END
+  
+		IF (XACT_STATE()) = 1
+        BEGIN
+			COMMIT TRANSACTION
+		END
+		
+	END CATCH
 END
 GO

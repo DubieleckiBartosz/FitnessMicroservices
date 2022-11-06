@@ -1,12 +1,4 @@
-﻿using System.Security.Claims;
-using Fitness.Common.Abstractions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Training.API.Commands.ExerciseCommands;
-using Training.API.Commands.TrainingCommands;
-using Training.API.Requests;
-
-namespace Training.API.Controllers;
+﻿namespace Training.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -21,24 +13,27 @@ public class TrainingController : ControllerBase
         _commandBus = commandBus ?? throw new ArgumentNullException(nameof(commandBus));
     }
 
-    [Authorize]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(typeof(object), 400)]
+    [ProducesResponseType(typeof(object), 500)]
+    [ProducesResponseType(typeof(Guid), 200)]
+    [SwaggerOperation(Summary = "Init training")]
+    [Authorize(Roles = Strings.TrainerRole)]
     [HttpPost("[action]")]
     public async Task<IActionResult> InitTraining()
     {
-        var currentUserId = HttpContext.User.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)?.Value;
-        if (int.TryParse(currentUserId, out var userId))
-        {
+        var command = TrainingInitiationCommand.Create();
+        var resultTrainingId = await _commandBus.Send(command);
 
-            var command = TrainingInitiationCommand.Create(userId);
-            var resultTrainingId = await _commandBus.Send(command);
-
-            return Ok(resultTrainingId);
-        }
-
-        return BadRequest();
+        return Ok(resultTrainingId);
     }
 
-    [Authorize]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(typeof(object), 400)]
+    [ProducesResponseType(typeof(object), 500)]
+    [SwaggerOperation(Summary = "Add new exercise to training")]
+    [Authorize(Roles = Strings.TrainerRole)]
     [HttpPost("[action]")]
     public async Task<IActionResult> AddNewExercise([FromBody] AddExerciseRequest request)
     {

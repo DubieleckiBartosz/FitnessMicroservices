@@ -2,18 +2,22 @@
 
 public class StreamState
 {
-    public StreamState(Guid aggregateId, string eventType, string streamType, string streamData)
+    public StreamState(Guid streamId, string eventType, string streamType, string streamData)
     {
         Id = Guid.NewGuid();
-        AggregateId = aggregateId;
+        StreamId = streamId;
         EventType = eventType;
         StreamType = streamType;
         StreamData = streamData;
         Version = 0; 
     }
 
+    internal StreamState()
+    {
+    }
+
     public Guid Id { get; private set; } 
-    public Guid AggregateId { get; set; }
+    public Guid StreamId { get; set; }
     public string EventType { get; set; }
     public string StreamType { get; set; }
     public string StreamData { get; set; }

@@ -1,12 +1,10 @@
-﻿using Fitness.Common.Abstractions; 
-
-namespace Training.API.Commands.TrainingCommands
+﻿namespace Training.API.Commands.TrainingCommands
 {
-    public record TrainingInitiationCommand(int UserId) : ICommand<Guid>
+    public record TrainingInitiationCommand() : ICommand<Guid>
     {
-        public static TrainingInitiationCommand Create(int userId) 
+        public static TrainingInitiationCommand Create() 
         {
-            return new TrainingInitiationCommand(userId);
+            return new TrainingInitiationCommand();
         }
     }
 }

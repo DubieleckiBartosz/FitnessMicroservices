@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Training.API.Trainings.ReadModels;
 
 namespace Training.API.Database.TypeConfigurations
 {
@@ -10,11 +9,17 @@ namespace Training.API.Database.TypeConfigurations
         {
             builder.ToTable("Trainings");
 
-            builder.HasKey(a => a.Id);
+            builder.HasKey(_ => _.Id);
+             
+            builder.OwnsMany(_ => _.TrainingExercises, x =>
+            { 
+                x.HasKey(_ => _.Id);
+                x.Property(_ => _.Id).ValueGeneratedNever();
+                x.ToTable("TrainingExercises");
+            });
 
-            builder.HasMany(_ => _.TrainingExercises).WithOne();
             builder.HasMany(_ => _.TrainingUsers).WithMany(_ => _.Trainings);
-            builder.HasOne<TrainerInfo>().WithMany().HasForeignKey(_ => _.CreatorId).IsRequired();
+            builder.Property(_ => _.TrainerUniqueCode).IsRequired();
 
             builder.Property(_ => _.Price).IsRequired(false);
             builder.Property(_ => _.DurationTrainingInMinutes).IsRequired(false);

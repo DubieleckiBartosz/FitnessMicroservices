@@ -1,7 +1,9 @@
 using Fitness.Common;
 using Fitness.Common.EventStore;
+using Fitness.Common.Logging;
 using Fitness.Common.Projection;
-using Pipelines.Sockets.Unofficial.Arenas;
+using Serilog;
+using Training.API.Common;
 using Training.API.Configurations; 
 using Training.API.Repositories.Interfaces;
 using Training.API.Trainings.TrainingProjections;
@@ -36,6 +38,8 @@ var key = builder.Configuration["JwtSettings:Key"];
 
 builder.Services.RegisterJwtBearer(issuer, audience, key);
 
+builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService());
+
 builder.GetSwaggerConfiguration();
 
 var app = builder.Build();
@@ -47,24 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider; 
-//    var result = app.RegisterProjections(new List<IProjection>
-//    {
-//        new TrainingDetailsProjection(services.GetService<IWrapperRepository>())
-//    });
-
-//    var resultService =builder?.Services?.FirstOrDefault(_ => _.ServiceType == typeof(IEventStore));
-//    if (resultService == null)
-//    {
-//        var descriptorToAdd = new ServiceDescriptor(typeof(IEventStore), _ => resultService, ServiceLifetime.Scoped);
-
-//        builder?.Services?.Add(descriptorToAdd);
-//    }
-//}
-
-
+app.UseCustomExceptionHandler(ErrorMiddleware.GetStatusCode, ErrorMiddleware.GetErrorResponse);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

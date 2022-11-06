@@ -15,6 +15,8 @@ BEGIN
 			VerificationTokenExpirationDate DATETIME NULL,
 			ResetToken VARCHAR(MAX) NULL,
 			ResetTokenExpirationDate DATETIME NULL,
+			TrainerCode VARCHAR(MAX) NULL,
+			TrainerYearsExperience INT  NULL,
 			Created DATETIME NOT NULL DEFAULT GETDATE(),
 			Modified DATETIME NOT NULL DEFAULT GETDATE()
 		)

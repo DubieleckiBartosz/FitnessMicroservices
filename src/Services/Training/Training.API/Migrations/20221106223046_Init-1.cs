@@ -10,18 +10,24 @@ namespace Training.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TrainerInfos",
+                name: "Trainings",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    YearsExperience = table.Column<int>(type: "integer", nullable: false),
-                    TrainerName = table.Column<string>(type: "text", nullable: false)
+                    TrainerUniqueCode = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Availability = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: true),
+                    DurationTrainingInMinutes = table.Column<int>(type: "integer", nullable: true),
+                    BreakBetweenExercisesInMinutes = table.Column<int>(type: "integer", nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainerInfos", x => x.Id);
+                    table.PrimaryKey("PK_Trainings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,28 +46,23 @@ namespace Training.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Trainings",
+                name: "TrainingExercises",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    Availability = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: true),
-                    DurationTrainingInMinutes = table.Column<int>(type: "integer", nullable: true),
-                    BreakBetweenExercisesInMinutes = table.Column<int>(type: "integer", nullable: true),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ExternalExerciseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NumberRepetitions = table.Column<int>(type: "integer", nullable: false),
+                    BreakBetweenSetsInMinutes = table.Column<int>(type: "integer", nullable: false),
+                    TrainingDetailsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Trainings", x => x.Id);
+                    table.PrimaryKey("PK_TrainingExercises", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Trainings_TrainerInfos_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "TrainerInfos",
+                        name: "FK_TrainingExercises_Trainings_TrainingDetailsId",
+                        column: x => x.TrainingDetailsId,
+                        principalTable: "Trainings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -90,27 +91,6 @@ namespace Training.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "TrainingExercises",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ExternalExerciseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    NumberRepetitions = table.Column<int>(type: "integer", nullable: false),
-                    BreakBetweenSetsInMinutes = table.Column<int>(type: "integer", nullable: false),
-                    TrainingDetailsId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrainingExercises", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TrainingExercises_Trainings_TrainingDetailsId",
-                        column: x => x.TrainingDetailsId,
-                        principalTable: "Trainings",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_TrainingDetailsTrainingUser_TrainingsId",
                 table: "TrainingDetailsTrainingUser",
@@ -120,11 +100,6 @@ namespace Training.API.Migrations
                 name: "IX_TrainingExercises_TrainingDetailsId",
                 table: "TrainingExercises",
                 column: "TrainingDetailsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trainings_CreatorId",
-                table: "Trainings",
-                column: "CreatorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -140,9 +115,6 @@ namespace Training.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Trainings");
-
-            migrationBuilder.DropTable(
-                name: "TrainerInfos");
         }
     }
 }

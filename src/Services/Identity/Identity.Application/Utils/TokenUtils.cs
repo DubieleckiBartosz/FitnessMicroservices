@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using Fitness.Common;
 
 namespace Identity.Application.Utils;
 
@@ -9,6 +10,11 @@ public static class TokenUtils
 
         var roleClaims = new List<Claim>();
         roleClaims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Name)).ToList());
+        if (user.TrainerCode != null)
+        {
+            roleClaims.Add(new Claim(CommonConstants.ClaimTrainerType, user.TrainerCode));
+        }
+
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, $"{user.FirstName}_{user.LastName}_{user.UserName}"),

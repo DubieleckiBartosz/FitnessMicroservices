@@ -1,33 +1,29 @@
-﻿using Fitness.Common.Abstractions;
+﻿using Fitness.Common.CommonServices;
 using Fitness.Common.Core.Exceptions;
 using Fitness.Common.EventStore.Repository;
-using Training.API.Commands.TrainingCommands;
-using Training.API.Constants;
-using Training.API.Repositories.Interfaces;
 
 namespace Training.API.Handlers;
 
 public class InitiationTrainingHandler : ICommandHandler<TrainingInitiationCommand, Guid>
 {
     private readonly IRepository<Trainings.Training> _trainingRepository;
-    private readonly ITrainerRepository _trainerRepository;
+    private readonly ICurrentUser _currentUser;
 
-    public InitiationTrainingHandler(IRepository<Trainings.Training> trainingRepository,
-        IWrapperRepository wrapperRepository)
+    public InitiationTrainingHandler(IRepository<Trainings.Training> trainingRepository, ICurrentUser currentUser)
     {
         _trainingRepository = trainingRepository ?? throw new ArgumentNullException(nameof(trainingRepository));
-        _trainerRepository = wrapperRepository?.TrainerRepository ?? throw new ArgumentNullException(nameof(wrapperRepository));
+        _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
     }
 
     public async Task<Guid> Handle(TrainingInitiationCommand request, CancellationToken cancellationToken)
     {
-        var trainer = await _trainerRepository.GetTrainerByUserIdAsync(request.UserId);
-        if (trainer == null)
+        var trainerUniqueCode = _currentUser.TrainerCode;
+        if (!Guid.TryParse(trainerUniqueCode, out Guid resultTrainerUniqueCode))
         {
-            throw new NotFoundException(Strings.TrainerNotFoundMessage, Strings.TrainerNotFoundTitle);
+            throw new NotFoundException(Strings.IncorrectTrainerCodeMessage, Strings.IncorrectTrainerCodeTitle);
         }
-
-        var initiation = Trainings.Training.Create(trainer.Id);
+                    
+        var initiation = Trainings.Training.Create(resultTrainerUniqueCode);
         await _trainingRepository.AddAsync(initiation);
 
         return initiation.Id;
