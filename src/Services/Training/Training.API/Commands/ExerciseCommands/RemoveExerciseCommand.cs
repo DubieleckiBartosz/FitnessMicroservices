@@ -1,12 +1,11 @@
 ﻿using MediatR;
 
-namespace Training.API.Commands.ExerciseCommands
+namespace Training.API.Commands.ExerciseCommands;
+
+public record RemoveExerciseCommand(Guid TrainingId, Guid ExerciseId, int NumberRepetitions) : ICommand<Unit>
 {
-    public record RemoveExerciseCommand(Guid TrainingId, Guid ExerciseId) : ICommand<Unit>
+    public static RemoveExerciseCommand Create(RemoveExerciseRequest request)
     {
-        public static RemoveExerciseCommand Create(Guid trainingId, Guid exerciseId)
-        {
-            return new RemoveExerciseCommand(trainingId, exerciseId);
-        }
+        return new RemoveExerciseCommand(request.TrainingId, request.ExerciseId, request.NumberRepetitions);
     }
 }

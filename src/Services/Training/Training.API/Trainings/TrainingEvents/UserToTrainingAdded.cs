@@ -1,10 +1,9 @@
-﻿namespace Training.API.Trainings.TrainingEvents
+﻿namespace Training.API.Trainings.TrainingEvents;
+
+public record UserToTrainingAdded(Guid UserId, Guid TrainingId) : IEvent
 {
-    public record UserToTrainingAdded(Guid UserId, Guid TrainingId) : IEvent
+    public static UserToTrainingAdded Create(Guid userId, Guid TrainingId)
     {
-        public static UserToTrainingAdded Create(Guid userId, Guid TrainingId)
-        {
-            return new UserToTrainingAdded(userId, TrainingId);
-        }
+        return new UserToTrainingAdded(userId, TrainingId);
     }
 }

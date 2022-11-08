@@ -18,11 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Validators\" />
-    <Folder Include="Queries\TrainingQueries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Fitness.Common\Fitness.Common.csproj" />
   </ItemGroup>
 

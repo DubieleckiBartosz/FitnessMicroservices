@@ -15,12 +15,15 @@ public class Strings
     public const string UserDuplicationMessage = "One user cannot have the same training twice.";
     public const string ExerciseDuplicationMessage = "The exercise already exists, update the existing exercise.";
     public const string ExerciseNotFoundMessage = "The exercise has not been assigned to a training.";
+    public const string TrainingBadStatusMessage = "The current training status does not allow you to change to the desired status.";
+
 
     //Titles
     public const string TrainingNotFoundTitle = "Training not found.";
     public const string ApiExceptionTitle = "Training API Exception";
     public const string IncorrectTrainerCodeTitle = "Bad code.";
     public const string UserDuplicationTitle = "User duplication.";
+    public const string TrainingBadStatusTitle = "Not valid status.";
     public const string ExerciseDuplicationTitle = "Exercise duplication.";
     public const string ExerciseNotFoundTitle = "Exercise not found.";
 }

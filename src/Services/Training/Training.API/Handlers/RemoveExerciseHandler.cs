@@ -2,28 +2,28 @@
 using Fitness.Common.EventStore.Repository;
 using MediatR;
 
-namespace Training.API.Handlers
+namespace Training.API.Handlers;
+
+public class RemoveExerciseHandler : ICommandHandler<RemoveExerciseCommand, Unit>
 {
-    public class RemoveExerciseHandler : ICommandHandler<RemoveExerciseCommand, Unit>
+    private readonly IRepository<Trainings.Training> _repository;
+
+    public RemoveExerciseHandler(IRepository<Trainings.Training> repository)
     {
-        private readonly IRepository<Trainings.Training> _repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
 
-        public RemoveExerciseHandler(IRepository<Trainings.Training> repository)
+    public async Task<Unit> Handle(RemoveExerciseCommand request, CancellationToken cancellationToken)
+    {
+        var trainingResult = await _repository.GetAsync(request.TrainingId);
+        if (trainingResult == null)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            throw new NotFoundException(Strings.TrainingNotFoundMessage, Strings.TrainingNotFoundTitle);
         }
-        public async Task<Unit> Handle(RemoveExerciseCommand request, CancellationToken cancellationToken)
-        {
-            var trainingResult = await _repository.GetAsync(request.TrainingId);
-            if (trainingResult == null)
-            {
-                throw new NotFoundException(Strings.TrainingNotFoundMessage, Strings.TrainingNotFoundTitle);
-            }
 
-            trainingResult.RemoveExercise(request.ExerciseId);
+        trainingResult.RemoveExercise(request.ExerciseId, request.NumberRepetitions);
 
-            await _repository.UpdateAndPublishAsync(trainingResult);
-            return Unit.Value;
-        }
+        await _repository.UpdateAndPublishAsync(trainingResult);
+        return Unit.Value;
     }
 }

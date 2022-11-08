@@ -1,5 +1,5 @@
-using Fitness.Common;
-using Fitness.Common.EventStore;
+using System.Reflection;
+using Fitness.Common; 
 using Fitness.Common.Logging;
 using Fitness.Common.Projection;
 using Serilog;
@@ -26,7 +26,7 @@ builder.EventStoreConfiguration(_ => new List<IProjection>
         new TrainingDetailsProjection(_.GetService<IWrapperRepository>())
     }, typeof(Program), typeof(AssemblyCommonReference))
     .RegisterTypes()
-    .GetDatabaseConfiguration();
+    .GetDatabaseConfiguration().GetAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

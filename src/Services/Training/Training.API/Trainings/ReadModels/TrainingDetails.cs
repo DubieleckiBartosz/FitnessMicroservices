@@ -1,23 +1,24 @@
 ﻿using Fitness.Common.Extensions;
-using Fitness.Common.Projection;
+using Fitness.Common.Projection; 
 
 namespace Training.API.Trainings.ReadModels;
 
 public class TrainingDetails : IRead 
 {
+    private int _numberUsersEnrolled => TrainingUsers.Count;
     public Guid Id { get; private set; }
     public bool IsDeleted { get; set; }
-    public Guid TrainerUniqueCode { get; set; }
-    public bool IsActive { get; set; }
-    public decimal? Price { get; set; }
-    public TrainingStatus Status { get; set; }
-    public TrainingAvailability Availability { get; set; }
-    public TrainingType? Type { get; set; }
-    public int? DurationTrainingInMinutes { get; set; }
-    public int? BreakBetweenExercisesInMinutes { get; set; }
-    public DateTime Created { get; set; }
-    public List<TrainingExercise> TrainingExercises { get; set; }
-    public List<TrainingUser> TrainingUsers { get; set; }
+    public Guid TrainerUniqueCode { get; private set; }
+    public bool IsActive { get; private set; }
+    public decimal? Price { get; private set; }
+    public TrainingStatus Status { get; private set; }
+    public TrainingAvailability Availability { get; private set; }
+    public TrainingType? Type { get; private set; }
+    public int? DurationTrainingInMinutes { get; private set; }
+    public int? BreakBetweenExercisesInMinutes { get; private set; }
+    public DateTime Created { get; private set; }
+    public List<TrainingExercise> TrainingExercises { get; private set; }
+    public List<TrainingUser> TrainingUsers { get; private set; }
 
     internal TrainingDetails()
     {
@@ -40,7 +41,7 @@ public class TrainingDetails : IRead
     public TrainingDetails UserAdded(UserToTrainingAdded @event)
     {
         var user = TrainingUsers.First(_ => _.Id == @event.UserId);
-        TrainingUsers.Remove(user);
+        TrainingUsers.Add(user);
 
         return this;
     }
@@ -69,10 +70,27 @@ public class TrainingDetails : IRead
 
     public TrainingDetails TrainingExerciseRemoved(ExerciseRemoved @event)
     {
-        var exercise = TrainingExercises.First(_ => _.Id == @event.ExerciseId);
-        TrainingExercises.Remove(exercise);
+        var result = TrainingExercises.First(_ => _.Id == @event.ExerciseId); 
+
+        if (result.NumberRepetitions == @event.NumberRepetitions)
+        {
+            TrainingExercises.Remove(result);
+        }
+        else
+        {
+            TrainingExercises.Replace(result,
+                result.Update(@event.NumberRepetitions, null));
+        }
+
+        return this;
+    }
+    public TrainingDetails Shared(TrainingShared @event)
+    {
+        Status = TrainingStatus.Shared;
+        IsActive = true;
 
         return this;
     }
 
+    public int GetUsersEnrolledCount() => _numberUsersEnrolled;
 }
