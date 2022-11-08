@@ -17,6 +17,7 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         Projects<UserToTrainingAdded>(Handle);
         Projects<ExerciseAdded>(Handle);
         Projects<ExerciseRemoved>(Handle);
+        Projects<TrainingShared>(Handle);
     }
 
     private async Task Handle(NewTrainingInitiated @event, CancellationToken cancellationToken = default)
@@ -28,6 +29,19 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 
         var newTraining = TrainingDetails.Create(@event);
         await _trainingRepository.CreateAsync(newTraining, cancellationToken);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+    
+    private async Task Handle(TrainingShared @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+
+        training.Shared(@event);
         await _wrapperRepository.SaveAsync(cancellationToken);
     }
 

@@ -64,11 +64,11 @@ public static class CommonConfigurations
         return services;
     }
 
-    public static IServiceCollection GetAutoMapper(this IServiceCollection services, Assembly assembly)
+    public static WebApplicationBuilder GetAutoMapper(this WebApplicationBuilder builder, Assembly assembly)
     {
-        services.AddAutoMapper(assembly);
+        builder.Services.AddAutoMapper(assembly);
 
-        return services;
+        return builder;
     }
     public static IServiceCollection GetMediatR(this IServiceCollection services, params Type[] types)
     {

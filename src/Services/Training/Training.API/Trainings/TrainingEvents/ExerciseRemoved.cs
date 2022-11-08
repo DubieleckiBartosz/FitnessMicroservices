@@ -1,10 +1,9 @@
-﻿namespace Training.API.Trainings.TrainingEvents
+﻿namespace Training.API.Trainings.TrainingEvents;
+
+public record ExerciseRemoved(Guid ExerciseId, Guid TrainingId, int NumberRepetitions) : IEvent
 {
-    public record ExerciseRemoved(Guid ExerciseId, Guid TrainingId) : IEvent
+    public static ExerciseRemoved Create(Guid exerciseId, Guid trainingId, int NumberRepetitions)
     {
-        public static ExerciseRemoved Create(Guid exerciseId, Guid trainingId)
-        {
-            return new ExerciseRemoved(exerciseId, trainingId);
-        }
+        return new ExerciseRemoved(exerciseId, trainingId, NumberRepetitions);
     }
 }

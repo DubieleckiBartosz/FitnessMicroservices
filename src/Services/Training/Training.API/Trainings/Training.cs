@@ -1,4 +1,5 @@
-﻿using Fitness.Common.Extensions;
+﻿using Fitness.Common.EventStore.Events;
+using Fitness.Common.Extensions;
 using Training.API.Common.Exceptions;
 
 namespace Training.API.Trainings;
@@ -23,12 +24,23 @@ public class Training : Aggregate
 
     private Training(Guid trainerUniqueCode)
     {
-    
         var @event = NewTrainingInitiated.Create(trainerUniqueCode, Guid.NewGuid(), DateTime.UtcNow);
         this.Apply(@event);
         this.Enqueue(@event);
     }
 
+    public void Share()
+    {
+        if (Status == TrainingStatus.Shared || (Status == TrainingStatus.Init))
+        {
+            throw new TrainingServiceBusinessException(Strings.TrainingBadStatusTitle, Strings.TrainingBadStatusMessage);
+        }
+
+        var @event = TrainingShared.Create(this.Id);
+        this.Apply(@event);
+        this.Enqueue(@event);
+    }
+    
     public void AddUser(TrainingUser user)
     {
         var userAlreadyAdded = TrainingUsers.Any(_ => _.Id == user.Id);
@@ -53,7 +65,7 @@ public class Training : Aggregate
         Enqueue(@event);
     }
 
-    public void RemoveExercise(Guid exerciseId)
+    public void RemoveExercise(Guid exerciseId, int repetitionsToRemove)
     {
         var exercise = FindExercise(exerciseId);
         if (exercise == null)
@@ -61,7 +73,7 @@ public class Training : Aggregate
             throw new TrainingServiceBusinessException(Strings.ExerciseNotFoundTitle, Strings.ExerciseNotFoundMessage);
         }
 
-        var @event = ExerciseRemoved.Create(exercise.Id, this.Id);
+        var @event = ExerciseRemoved.Create(exercise.Id, this.Id, repetitionsToRemove);
         Apply(@event);
         this.Enqueue(@event);
     }
@@ -87,6 +99,9 @@ public class Training : Aggregate
             case ExerciseRemoved e:
                 TrainingExerciseRemoved(e);
                 break;
+            case TrainingShared e:
+                Shared(e);
+                break;
             default:
                 break; 
         }
@@ -108,6 +123,12 @@ public class Training : Aggregate
     {
         var user = TrainingUsers.First(_ => _.Id == @event.UserId);
         TrainingUsers.Add(user);
+    }
+
+    public void Shared(TrainingShared @event)
+    {
+        Status = TrainingStatus.Shared;
+        IsActive = true;
     }
 
     public void NewExerciseAdded(ExerciseAdded @event)
@@ -138,7 +159,15 @@ public class Training : Aggregate
             throw new TrainingServiceBusinessException(Strings.ExerciseNotFoundTitle, Strings.ExerciseNotFoundMessage);
         }
 
-        TrainingExercises.Remove(result);
+        if (result.NumberRepetitions == @event.NumberRepetitions)
+        {
+            TrainingExercises.Remove(result);
+        }
+        else
+        {
+            TrainingExercises.Replace(result,
+                result.Update(@event.NumberRepetitions, null));
+        }
     }
 
     private TrainingExercise? FindExercise(Guid exerciseId) => TrainingExercises.FirstOrDefault(_ => _.Id == exerciseId);

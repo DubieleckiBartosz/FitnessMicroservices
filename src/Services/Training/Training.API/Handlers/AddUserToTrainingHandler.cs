@@ -1,6 +1,5 @@
-﻿namespace Training.API.Handlers
+﻿namespace Training.API.Handlers;
+
+public class AddUserToTrainingHandler
 {
-    public class AddUserToTrainingHandler
-    {
-    }
 }
