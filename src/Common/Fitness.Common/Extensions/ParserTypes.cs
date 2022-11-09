@@ -3,7 +3,7 @@
 public static class ParserTypes
 {
     public static Guid ParseToGuidOrThrow(this string? input)
-    {
+    { 
         if (string.IsNullOrEmpty(input))
         {
             throw new InvalidOperationException("String is null or empty.");

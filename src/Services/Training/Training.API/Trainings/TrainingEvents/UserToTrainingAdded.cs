@@ -2,8 +2,8 @@
 
 public record UserToTrainingAdded(Guid UserId, Guid TrainingId) : IEvent
 {
-    public static UserToTrainingAdded Create(Guid userId, Guid TrainingId)
+    public static UserToTrainingAdded Create(Guid userId, Guid trainingId)
     {
-        return new UserToTrainingAdded(userId, TrainingId);
+        return new UserToTrainingAdded(userId, trainingId);
     }
 }

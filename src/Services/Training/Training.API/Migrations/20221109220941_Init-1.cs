@@ -51,7 +51,6 @@ namespace Training.API.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ExternalExerciseId = table.Column<Guid>(type: "uuid", nullable: false),
                     NumberRepetitions = table.Column<int>(type: "integer", nullable: false),
                     BreakBetweenSetsInMinutes = table.Column<int>(type: "integer", nullable: false),
                     TrainingDetailsId = table.Column<Guid>(type: "uuid", nullable: false)

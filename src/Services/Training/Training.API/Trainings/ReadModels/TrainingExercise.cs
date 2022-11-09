@@ -4,9 +4,9 @@ namespace Training.API.Trainings.ReadModels;
 
 public class TrainingExercise : IRead
 {
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
     public bool IsDeleted { get; set; }
-    public Guid ExternalExerciseId { get; }
+    public Guid ExternalExerciseId { get; private set; }
     public int NumberRepetitions { get; private set; }
     public int BreakBetweenSetsInMinutes { get; private set; }
 

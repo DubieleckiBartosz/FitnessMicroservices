@@ -4,7 +4,10 @@
     {
         Task CreateAsync(TrainingDetails training, CancellationToken cancellationToken = default);
         void Update(TrainingDetails training);
-        Task<TrainingDetails> GetTrainingDetailsAsync(Guid trainingId, CancellationToken cancellationToken = default);
+
+        Task<TrainingDetails> FindTrainingDetailsAsync(Guid trainingId, Guid? trainerCode, int? userId,
+            CancellationToken cancellationToken = default);
+        Task<TrainingDetails> GetTrainingDetailsByIdAsync(Guid trainingId, CancellationToken cancellationToken = default);
         Task<TrainingDetails> GetTrainingsByStatusAsync(Guid trainingId, TrainingStatus status, CancellationToken cancellationToken = default);
     }
 }

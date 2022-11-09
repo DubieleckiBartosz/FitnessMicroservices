@@ -87,7 +87,7 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 
     private async Task<TrainingDetails> GetTrainingDetails(Guid trainingId, CancellationToken cancellationToken = default)
     {
-        var training = await _trainingRepository.GetTrainingDetailsAsync(trainingId, cancellationToken);
+        var training = await _trainingRepository.GetTrainingDetailsByIdAsync(trainingId, cancellationToken);
 
         if (training == null)
         {

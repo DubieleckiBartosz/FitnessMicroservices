@@ -4,7 +4,8 @@ using Fitness.Common.Logging;
 using Fitness.Common.Projection;
 using Serilog;
 using Training.API.Common;
-using Training.API.Configurations; 
+using Training.API.Configurations;
+using Training.API.Database;
 using Training.API.Repositories.Interfaces;
 using Training.API.Trainings.TrainingProjections;
 
@@ -42,7 +43,12 @@ builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService());
 
 builder.GetSwaggerConfiguration();
 
-var app = builder.Build();
+var app = builder.Build()
+    .MigrateDatabase<TrainingContext>((services, ex) =>
+{
+    var logger = services.GetRequiredService<ILoggerManager<Program>>();
+    logger.LogError(ex, "An error occurred while migrating the database.");
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
