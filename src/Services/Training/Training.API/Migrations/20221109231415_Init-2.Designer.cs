@@ -12,8 +12,8 @@ using Training.API.Database;
 namespace Training.API.Migrations
 {
     [DbContext(typeof(TrainingContext))]
-    [Migration("20221106223046_Init-1")]
-    partial class Init1
+    [Migration("20221109231415_Init-2")]
+    partial class Init2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,7 @@ namespace Training.API.Migrations
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingDetails", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<int>("Availability")
@@ -110,7 +111,6 @@ namespace Training.API.Migrations
                     b.OwnsMany("Training.API.Trainings.ReadModels.TrainingExercise", "TrainingExercises", b1 =>
                         {
                             b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<int>("BreakBetweenSetsInMinutes")

@@ -17,6 +17,9 @@ using Fitness.Common.Behaviours;
 using Fitness.Common.CommonServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Fitness.Common;
 
@@ -200,6 +203,46 @@ public static class CommonConfigurations
             });
 
         return services;
+    }
+
+    public static WebApplication MigrateDatabase<TDbContext>(this WebApplication webApplication,
+        Action<IServiceProvider, Exception> handlingExceptionAction) where TDbContext : DbContext
+    {
+        using var scope = webApplication.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
+        {
+            var db = services.GetRequiredService<TDbContext>();
+            var dbExists = db.Database.GetService<IRelationalDatabaseCreator>().Exists();
+            if (dbExists)
+            {
+                if (db.Database.CanConnect())
+                {
+                    if (db.Database.IsRelational())
+                    {
+                        var pendingMigrations = db.Database.GetPendingMigrations();
+                        if (pendingMigrations.Any())
+                        {
+                            db.Database.Migrate();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var pendingMigrations = db.Database.GetPendingMigrations();
+                if (pendingMigrations.Any())
+                {
+                    db.Database.Migrate();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            handlingExceptionAction.Invoke(services, ex);
+        }
+
+        return webApplication;
     }
 }
 

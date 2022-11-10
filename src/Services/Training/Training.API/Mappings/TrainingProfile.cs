@@ -7,7 +7,9 @@ public class TrainingProfile : Profile
 {
     public TrainingProfile()
     {
-        this.CreateMap<TrainingDetails, TrainingDetailsViewModel>();
-        this.CreateMap<TrainingExercise, ExerciseViewModel>();
+        CreateMap<TrainingDetails, TrainingDetailsViewModel>()
+            .ForMember(dest => dest.NumberUsersEnrolled, opt => opt.MapFrom(src => src.GetUsersEnrolledCount()));
+
+        CreateMap<TrainingExercise, ExerciseViewModel>();
     }
 }
