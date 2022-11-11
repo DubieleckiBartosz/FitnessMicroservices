@@ -101,12 +101,12 @@ namespace Training.API.Migrations
 
                     b.HasIndex("TrainingsId");
 
-                    b.ToTable("TrainingDetailsTrainingUser");
+                    b.ToTable("TrainingDetailsTrainingUser", (string)null);
                 });
 
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingDetails", b =>
                 {
-                    b.OwnsMany("Training.API.Trainings.ReadModels.TrainingExercise", "TrainingExercises", b1 =>
+                    b.OwnsMany("Training.API.Trainings.ReadModels.TrainingDetails.TrainingExercises#Training.API.Trainings.ReadModels.TrainingExercise", "TrainingExercises", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .HasColumnType("uuid");
