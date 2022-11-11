@@ -2,7 +2,7 @@
 
 namespace Fitness.Common.Extensions;
 
-public static class Serialize
+public static class BaseSerialize
 {
     public static byte[]? DataSerialize<T>(this T data)
     {
