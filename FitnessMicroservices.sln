@@ -54,6 +54,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStoreDb", "EventStoreD
 		EventStore-create-tables.sql = EventStore-create-tables.sql
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Enrollment", "Enrollment", "{BB19C004-A165-42B5-8C48-E05AD14B62C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrollment.API", "src\Services\Enrollment\Enrollment.API\Enrollment.API.csproj", "{217924C8-2C73-42EC-8267-F42CBBB448C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +88,10 @@ Global
 		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91495425-CF90-45AD-8D3C-24E8B2716C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{217924C8-2C73-42EC-8267-F42CBBB448C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{217924C8-2C73-42EC-8267-F42CBBB448C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{217924C8-2C73-42EC-8267-F42CBBB448C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{217924C8-2C73-42EC-8267-F42CBBB448C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +113,8 @@ Global
 		{91495425-CF90-45AD-8D3C-24E8B2716C49} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
 		{39365B6A-E8A4-48DB-89D5-DBBE29F33164} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
 		{E144686E-3CF0-454A-A43D-71A55E8A2CFC} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
+		{BB19C004-A165-42B5-8C48-E05AD14B62C4} = {9FB2A015-61FA-4A38-8457-88922F66085E}
+		{217924C8-2C73-42EC-8267-F42CBBB448C6} = {BB19C004-A165-42B5-8C48-E05AD14B62C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}
