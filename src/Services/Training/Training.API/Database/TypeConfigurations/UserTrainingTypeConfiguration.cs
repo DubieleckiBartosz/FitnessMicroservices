@@ -10,10 +10,9 @@ namespace Training.API.Database.TypeConfigurations
             builder.ToTable("Users");
 
             builder.HasKey(a => a.Id);
+            builder.Property(_ => _.Id).ValueGeneratedNever();
 
             builder.Property(_ => _.UserId).IsRequired();
-            builder.Property(_ => _.Email).IsRequired();
-            builder.Property(_ => _.UserName).HasMaxLength(30).IsRequired();
 
             base.Configure(builder);
         }

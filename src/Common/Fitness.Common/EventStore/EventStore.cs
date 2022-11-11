@@ -1,6 +1,7 @@
 ﻿using Fitness.Common.EventStore.Aggregate;
 using Fitness.Common.EventStore.Events;
 using Fitness.Common.Projection;
+using Fitness.Common.Tools;
 using Newtonsoft.Json; 
 
 namespace Fitness.Common.EventStore;
@@ -71,6 +72,8 @@ public class EventStore : IEventStore
         {
             var data = JsonConvert.DeserializeObject<IEvent>(@event.StreamData, new JsonSerializerSettings
             {
+                ContractResolver = new PrivateResolver(),
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
                 TypeNameHandling = TypeNameHandling.All
             });
 
