@@ -109,6 +109,21 @@ services:
         - fitness-microservice-network
 
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+     - RABBITMQ_DEFAULT_USER=user
+     - RABBITMQ_DEFAULT_PASS=${RABBITMQ_FITNESS_SERVICES_PASSWORD}
+    ports:
+     - "5672:5672"
+     - "15672:15672"
+    networks:
+        - fitness-microservice-network
+
+
+
 
 #volumes:
 #  fitness-sqldata:

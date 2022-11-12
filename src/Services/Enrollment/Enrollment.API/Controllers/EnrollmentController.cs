@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Enrollment.API.Controllers
 {
@@ -7,5 +6,8 @@ namespace Enrollment.API.Controllers
     [ApiController]
     public class EnrollmentController : ControllerBase
     {
+        //New enrollment
+        //Remove enrollment
+        //Get enrollments
     }
 }
