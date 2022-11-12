@@ -12,5 +12,12 @@
     "CollectionName": "Messages",
     "DatabaseName": "OutboxDatabase",
     "ConnectionString": "mongodb://rootuser:rootpass@localhost:27018"
+  },
+  "RabbitOptions": {
+    "User": "user",
+    "Host": "localhost",
+    "Port": "15672",
+    "Password": "nucswRTF#W$Efrw"
   }
 }
+
