@@ -86,16 +86,21 @@ public static class CommonConfigurations
     }
 
     public static WebApplicationBuilder EventStoreConfiguration(this WebApplicationBuilder builder, Func<IServiceProvider, List<IProjection>>? projectionFunc = null, params Type[] types)
-    {        
+    {
         builder.Services.ConfigurationMongoOutboxDatabase(builder.Configuration);
         builder.Services.GetFullDependencyInjection(projectionFunc);
         builder.Services.GetMediatR(types);
+        builder.RegisterRabbitMq();
 
         builder.Services.Configure<EventStoreOptions>(builder.Configuration.GetSection("EventStoreOptions"));
 
         return builder;
     }
 
+    public static void RegisterRabbitMq(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection("RabbitOptions"));
+    }
     public static IServiceCollection RegisterBackgroundProcess(this IServiceCollection services)
     {
         services.AddHostedService<OutboxProcessor>();
