@@ -32,7 +32,8 @@ public class EventBus : IEventBus
 
     public async Task CommitStreamAsync(StreamState stream)
     {
-        var message = Mapping.Map<StreamState, OutboxMessage>(stream);
+        // Mapping.Map<StreamState, OutboxMessage>(stream);
+        var message = new OutboxMessage(stream.EventType, stream.StreamData);
         await _outboxListener.Commit(message);
     }
 
@@ -41,3 +42,4 @@ public class EventBus : IEventBus
         await _outboxListener.Commit(@event);
     }
 }
+ 
