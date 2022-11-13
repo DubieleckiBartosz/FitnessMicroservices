@@ -10,4 +10,8 @@
     <Folder Include="Enrollments\GettingEnrollments\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Fitness.Common\Fitness.Common.csproj" />
+  </ItemGroup>
+
 </Project>

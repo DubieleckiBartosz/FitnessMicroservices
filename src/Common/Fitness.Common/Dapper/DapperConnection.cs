@@ -16,7 +16,7 @@ namespace Fitness.Common.Dapper
 
             var policy = new PolicySetup();
             this._retryAsyncPolicyConnection = policy.PolicyConnectionAsync(this._loggerManager);
-            this._retryAsyncPolicyQuery = policy.PolicyQueryAsync(this._loggerManager);
+            this._retryAsyncPolicyQuery = policy. PolicyQueryAsync(this._loggerManager);
         }
 
         public async Task<T> WithConnection<T>(Func<IDbConnection, Task<T>> funcData)

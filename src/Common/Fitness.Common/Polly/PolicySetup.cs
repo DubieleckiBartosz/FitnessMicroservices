@@ -1,10 +1,27 @@
-﻿namespace Fitness.Common.Polly
+﻿using RabbitMQ.Client.Exceptions;
+using System.Net.Sockets;
+
+namespace Fitness.Common.Polly
 {
     public class PolicySetup
     {
+        private const int RetryCount = 3;
         public PolicySetup()
         {
         }
+
+        public Policy PolicyBrokerConnection<T>(ILoggerManager<T> logger) => Policy.Handle<BrokerUnreachableException>()
+            .Or<SocketException>()
+            .WaitAndRetry(RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+            {
+                logger.LogWarning(new
+                {
+                    Message = "Could not publish event",
+                    Timeout = $"{time.TotalSeconds:n1}",
+                    ExceptionMessage = ex.Message 
+                }); 
+            });
+
 
         public AsyncPolicy PolicyConnectionAsync<T>(ILoggerManager<T> logger) => Policy
             .Handle<SqlException>()

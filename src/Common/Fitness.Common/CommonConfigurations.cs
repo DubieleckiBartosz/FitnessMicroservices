@@ -99,6 +99,7 @@ public static class CommonConfigurations
 
     public static void RegisterRabbitMq(this WebApplicationBuilder builder)
     {
+        builder.Services.AddSingleton<IRabbitBase, RabbitBase>();
         builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection("RabbitOptions"));
     }
     public static IServiceCollection RegisterBackgroundProcess(this IServiceCollection services)
@@ -135,10 +136,22 @@ public static class CommonConfigurations
 
         return services;
     }
-
-    public static IApplicationBuilder UseSubscribeEvent<T>(this IApplicationBuilder app) where T : IEvent
+    public static IApplicationBuilder UseSubscribeAllEvents(this IApplicationBuilder app, Assembly assembly)
     {
-        app.ApplicationServices.GetRequiredService<IRabbitEventListener>().Subscribe<T>();
+        var types = assembly.GetTypes()
+            .Where(mytype => mytype.GetInterfaces().Contains(typeof(IEvent)));
+
+        foreach (var type in types)
+        {
+            app.UseSubscribeEvent(type);
+        }
+
+        return app;
+    }
+
+    public static IApplicationBuilder UseSubscribeEvent(this IApplicationBuilder app, Type type) 
+    {
+        app.ApplicationServices.GetRequiredService<IRabbitEventListener>().Subscribe(type);
 
         return app;
     }

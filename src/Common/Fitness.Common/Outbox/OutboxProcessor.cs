@@ -62,8 +62,8 @@ public class OutboxProcessor : BackgroundService
 
                     continue;
                 }
-
-                await _rabbitEventListener.Publish(message.Data, message.Type);
+                
+                _rabbitEventListener.Publish(message.Data, message.Type);
                 await store.SetMessageToProcessedAsync(message.Id);
 
                 _loggerManager.LogInformation($"---------- Message Processed: {messageId} ----------");
