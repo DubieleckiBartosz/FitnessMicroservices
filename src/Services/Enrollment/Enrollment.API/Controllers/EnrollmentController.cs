@@ -9,5 +9,15 @@ namespace Enrollment.API.Controllers
         //New enrollment
         //Remove enrollment
         //Get enrollments
+        public EnrollmentController()
+        {
+            
+        }
+
+        [HttpGet]
+        public IActionResult Test()
+        {
+            return Ok(new {message = "ok."});
+        }
     }
 }

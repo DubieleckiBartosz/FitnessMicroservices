@@ -92,5 +92,12 @@ public class TrainingDetails : IRead
         return this;
     }
 
+    public TrainingDetails TrainingAvailabilityChanged(AvailabilityChanged @event)
+    {
+        Availability = @event.NewAvailability;
+
+        return this;
+    }
+
     public int GetUsersEnrolledCount() => _numberUsersEnrolled;
 }

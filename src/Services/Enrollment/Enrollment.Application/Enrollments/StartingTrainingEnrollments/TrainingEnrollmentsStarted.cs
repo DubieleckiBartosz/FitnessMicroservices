@@ -1,5 +1,7 @@
-﻿namespace Enrollment.Application.Enrollments.StartingTrainingEnrollments;
+﻿using Fitness.Common.EventStore.Events;
 
-public class TrainingEnrollmentsStarted
+namespace Enrollment.Application.Enrollments.StartingTrainingEnrollments;
+
+public record TrainingEnrollmentsStarted() : IEvent
 {
 }

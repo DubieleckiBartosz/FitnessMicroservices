@@ -5,10 +5,10 @@ namespace Enrollment.Application;
 
 public static class Configurations
 {
-    public static IApplicationBuilder SubscribeEvents(this IApplicationBuilder builder)
+    public static WebApplication SubscribeEvents(this WebApplication app)
     {
-        builder.UseSubscribeAllEvents(typeof(AssemblyEnrollmentApplicationReference).Assembly);
+        app.UseSubscribeAllEvents(typeof(AssemblyEnrollmentApplicationReference).Assembly);
 
-        return builder;
+        return app;
     }
 }

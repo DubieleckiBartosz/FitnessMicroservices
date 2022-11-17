@@ -1,5 +1,7 @@
-﻿namespace Enrollment.Application.Enrollments.DeletingEnrollments;
+﻿using Fitness.Common.EventStore.Events;
 
-public class EnrollmentsDeleted
+namespace Enrollment.Application.Enrollments.DeletingEnrollments;
+
+public record EnrollmentsDeleted : IEvent
 {
 }

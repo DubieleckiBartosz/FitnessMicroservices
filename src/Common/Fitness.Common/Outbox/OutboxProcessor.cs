@@ -8,21 +8,19 @@ namespace Fitness.Common.Outbox;
 
 public class OutboxProcessor : BackgroundService
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IRabbitEventListener _rabbitEventListener;
+    private readonly IServiceScopeFactory _serviceScopeFactory; 
     private readonly ILoggerManager<OutboxProcessor> _loggerManager;
     private readonly MongoOutboxOptions _outboxOptions;
 
     public OutboxProcessor(IServiceScopeFactory serviceScopeFactory, IOptions<MongoOutboxOptions> outboxOptions,
-        IRabbitEventListener rabbitEventListener, ILoggerManager<OutboxProcessor> loggerManager)
+            ILoggerManager<OutboxProcessor> loggerManager)
     {
         if (outboxOptions == null)
         {
             throw new ArgumentNullException(nameof(outboxOptions));
         }
 
-        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
-        _rabbitEventListener = rabbitEventListener ?? throw new ArgumentNullException(nameof(rabbitEventListener));
+        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory)); 
         _loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
         _outboxOptions = outboxOptions.Value;
     }
@@ -62,8 +60,9 @@ public class OutboxProcessor : BackgroundService
 
                     continue;
                 }
-                
-                _rabbitEventListener.Publish(message.Data, message.Type);
+
+                var serviceRabbitListener = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
+                serviceRabbitListener.Publish(message.Data, message.Type);
                 await store.SetMessageToProcessedAsync(message.Id);
 
                 _loggerManager.LogInformation($"---------- Message Processed: {messageId} ----------");
