@@ -29,6 +29,24 @@ public class Training : Aggregate
         this.Enqueue(@event);
     }
 
+    public void ChangeAvailability(TrainingAvailability newAvailability, Guid trainerUniqueCode)
+    {  
+        if (!IsCreator(trainerUniqueCode))
+        {
+            throw new TrainingServiceBusinessException(Strings.BadTrainerCodeTitle, Strings.BadTrainerCodeMessage);
+        }
+
+        if (Availability == newAvailability)
+        {
+            throw new TrainingServiceBusinessException(Strings.TrainingTheSameAvailabilityTitle, Strings.TrainingBadAvailabilityStatusMessage);
+        }
+         
+        var @event = AvailabilityChanged.Create(this.Id, newAvailability);
+        this.Apply(@event);
+        this.Enqueue(@event);
+
+    }
+
     public void Share()
     {
         if (Status == TrainingStatus.Shared || (Status == TrainingStatus.Init))
@@ -102,6 +120,9 @@ public class Training : Aggregate
             case TrainingShared e:
                 Shared(e);
                 break;
+            case AvailabilityChanged e:
+                TrainingAvailabilityChanged(e);
+                break;
             default:
                 break; 
         }
@@ -170,5 +191,11 @@ public class Training : Aggregate
         }
     }
 
+    public void TrainingAvailabilityChanged(AvailabilityChanged @event)
+    {
+        Availability = @event.NewAvailability;
+    }
+
     private TrainingExercise? FindExercise(Guid exerciseId) => TrainingExercises.FirstOrDefault(_ => _.Id == exerciseId);
+    private bool IsCreator(Guid trainerCode) => TrainerUniqueCode == trainerCode;
 }

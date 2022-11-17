@@ -26,8 +26,9 @@ builder.EventStoreConfiguration(_ => new List<IProjection>
     {
         new TrainingDetailsProjection(_.GetService<IWrapperRepository>())
     }, typeof(Program), typeof(AssemblyCommonReference))
-    .RegisterTypes()
-    .GetDatabaseConfiguration().GetAutoMapper(Assembly.GetExecutingAssembly());
+    .RegisterTypes().RegisterBackgroundProcess()
+    .GetDatabaseConfiguration()
+    .GetAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

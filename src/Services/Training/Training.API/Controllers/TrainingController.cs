@@ -89,4 +89,19 @@ public class TrainingController : ControllerBase
 
         return Ok();
     }
+
+    [ProducesResponseType(401)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(typeof(object), 400)]
+    [ProducesResponseType(typeof(object), 500)]
+    [SwaggerOperation(Summary = "Change training availability")]
+    [Authorize(Roles = Strings.TrainerRole)]
+    [HttpPut("[action]")]
+    public async Task<IActionResult> NewAvailability([FromBody] NewAvailabilityRequest request)
+    {
+        var command = NewAvailabilityCommand.Create(request);
+        await _commandBus.Send(command);
+
+        return Ok();
+    }
 }

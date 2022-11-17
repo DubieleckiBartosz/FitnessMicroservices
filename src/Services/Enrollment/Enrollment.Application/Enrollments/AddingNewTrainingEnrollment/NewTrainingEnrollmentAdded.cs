@@ -1,5 +1,7 @@
-﻿namespace Enrollment.Application.Enrollments.AddingNewTrainingEnrollment;
+﻿using Fitness.Common.EventStore.Events;
 
-public class NewTrainingEnrollmentAdded
+namespace Enrollment.Application.Enrollments.AddingNewTrainingEnrollment;
+
+public class NewTrainingEnrollmentAdded : IEvent
 {
 }

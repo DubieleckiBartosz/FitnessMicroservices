@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fitness.Common.EventStore.Events;
 
-namespace Enrollment.Application.Enrollments.EnrollmentCancellation
+namespace Enrollment.Application.Enrollments.EnrollmentCancellation;
+
+public record EnrollmentCancelled() : IEvent
 {
-    public class EnrollmentCancelled
-    {
-    }
 }

@@ -31,7 +31,7 @@ public static class CommonConfigurations
         services.AddScoped<IEmailRepository, EmailRepository>();
 
         //LOGGER
-        services.AddScoped(typeof(ILoggerManager<>), typeof(LoggerManager<>));
+        services.AddSingleton(typeof(ILoggerManager<>), typeof(LoggerManager<>));
          
         return services;
     }
@@ -102,11 +102,11 @@ public static class CommonConfigurations
         builder.Services.AddSingleton<IRabbitBase, RabbitBase>();
         builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection("RabbitOptions"));
     }
-    public static IServiceCollection RegisterBackgroundProcess(this IServiceCollection services)
+    public static WebApplicationBuilder RegisterBackgroundProcess(this WebApplicationBuilder builder)
     {
-        services.AddHostedService<OutboxProcessor>();
+        builder.Services.AddHostedService<OutboxProcessor>();
 
-        return services;
+        return builder;
     }
 
     public static IServiceCollection ConfigurationMongoOutboxDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -136,7 +136,7 @@ public static class CommonConfigurations
 
         return services;
     }
-    public static IApplicationBuilder UseSubscribeAllEvents(this IApplicationBuilder app, Assembly assembly)
+    public static WebApplication UseSubscribeAllEvents(this WebApplication app, Assembly assembly)
     {
         var types = assembly.GetTypes()
             .Where(mytype => mytype.GetInterfaces().Contains(typeof(IEvent)));
@@ -149,9 +149,13 @@ public static class CommonConfigurations
         return app;
     }
 
-    public static IApplicationBuilder UseSubscribeEvent(this IApplicationBuilder app, Type type) 
+    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type)
     {
-        app.ApplicationServices.GetRequiredService<IRabbitEventListener>().Subscribe(type);
+        using var scope = app.Services.CreateScope();
+
+        var requiredService = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
+
+        requiredService?.Subscribe(type);
 
         return app;
     }

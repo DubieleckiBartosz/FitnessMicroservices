@@ -9,7 +9,6 @@ namespace Fitness.Common.RabbitMQ;
 
 public class RabbitEventListener : IRabbitEventListener
 {
-    private readonly string? _queueName;
     private readonly JsonSerializerSettings _settings = new JsonSerializerSettings
     {
         ContractResolver = new PrivateResolver(),
@@ -23,9 +22,8 @@ public class RabbitEventListener : IRabbitEventListener
     private readonly ILoggerManager<RabbitEventListener> _loggerManager;
 
     public RabbitEventListener(IRabbitBase rabbitBase, IServiceScopeFactory serviceFactory,
-        ILoggerManager<RabbitEventListener> loggerManager, string? queueName)
+        ILoggerManager<RabbitEventListener> loggerManager)
     {
-        _queueName = queueName;
         _rabbitBase = rabbitBase ?? throw new ArgumentNullException(nameof(rabbitBase));
         _serviceFactory = serviceFactory;
         _loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
@@ -36,7 +34,7 @@ public class RabbitEventListener : IRabbitEventListener
         using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
         var args = _rabbitBase.CreateDeadLetterQueue(channel);
 
-        var name = _queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
+        var name = AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
         _rabbitBase.CreateConsumer(channel, ExchangeName, name, GetTypeName(type), args);
 
         var mainConsumer = new AsyncEventingBasicConsumer(channel);

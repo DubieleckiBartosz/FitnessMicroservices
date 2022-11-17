@@ -1,10 +1,10 @@
-﻿using Fitness.Common.Polly;
+﻿using Fitness.Common.Polly; 
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client; 
 
 namespace Fitness.Common.RabbitMQ;
 
-public abstract class RabbitBase : IRabbitBase
+public class RabbitBase : IRabbitBase
 { 
     private readonly Policy _policy;
     private const string ExchangeName = "dead_exchange"; 
@@ -22,7 +22,7 @@ public abstract class RabbitBase : IRabbitBase
     private IConnection? _connection;
     private readonly ConnectionFactory _connectionFactory; 
 
-    protected RabbitBase(IOptions<RabbitOptions> options, ILoggerManager<RabbitBase> logger)
+    public RabbitBase(IOptions<RabbitOptions> options, ILoggerManager<RabbitBase> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var rabbitOptions = options?.Value ?? throw new ArgumentNullException(nameof(options));

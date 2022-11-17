@@ -12,13 +12,17 @@ public class Strings
     public const string TrainerCodeDoesNotMatchToTrainingMessage =
         "You are not authorized to add an exercise to this training.";
 
+    public const string BadTrainerCodeMessage = "You are not authorized for this training.";
+
     public const string UserDuplicationMessage = "One user cannot have the same training twice.";
     public const string ExerciseDuplicationMessage = "The exercise already exists, update the existing exercise.";
     public const string ExerciseNotFoundMessage = "The exercise has not been assigned to a training.";
     public const string TrainingBadStatusMessage = "The current training status does not allow you to change to the desired status.";
+    public const string TrainingBadAvailabilityStatusMessage = "Availability cannot be changed to the same.";
 
 
     //Titles
+    public const string BadTrainerCodeTitle = "Bad trainer code.";
     public const string TrainingNotFoundTitle = "Training not found.";
     public const string ApiExceptionTitle = "Training API Exception";
     public const string IncorrectTrainerCodeTitle = "Bad code.";
@@ -26,4 +30,5 @@ public class Strings
     public const string TrainingBadStatusTitle = "Not valid status.";
     public const string ExerciseDuplicationTitle = "Exercise duplication.";
     public const string ExerciseNotFoundTitle = "Exercise not found.";
+    public const string TrainingTheSameAvailabilityTitle = "The availability is the same.";
 }
