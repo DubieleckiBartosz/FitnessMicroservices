@@ -37,7 +37,6 @@ public class OutboxProcessor : BackgroundService
 
     private async Task Process()
     {
-        _loggerManager.LogInformation("---------- New Process Started ----------");
         using var scope = _serviceScopeFactory.CreateScope();
         var store = scope.ServiceProvider.GetRequiredService<IOutboxStore>();
         var messageIds = await store.GetUnprocessedMessageIdsAsync();
@@ -46,6 +45,8 @@ public class OutboxProcessor : BackgroundService
         {
             foreach (var messageId in messageIds)
             {
+                _loggerManager.LogInformation("---------- New Process Started ----------");
+
                 _loggerManager.LogInformation($"---------- Process Message Id: {messageId} ----------");
 
                 var message = await store.GetMessageAsync(messageId);
@@ -70,8 +71,11 @@ public class OutboxProcessor : BackgroundService
                 publishedMessageIds.Add(message.Id);
             }
 
-            _loggerManager.LogInformation(
-                $"---------- Message to remove: {string.Join(", ", publishedMessageIds)} ----------");
+            if (publishedMessageIds.Any())
+            {
+                _loggerManager.LogInformation(
+                    $"---------- Message to remove: {string.Join(", ", publishedMessageIds)} ----------");
+            }
         }
         finally
         {

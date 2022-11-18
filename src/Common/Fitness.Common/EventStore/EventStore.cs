@@ -96,7 +96,7 @@ public class EventStore : IEventStore
 
         var initialVersion = aggregate.Version - events.Count;
         foreach (var @event in events)
-        { 
+        {
             await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion++, action);
         }
     }

@@ -28,8 +28,9 @@ public class RabbitBase : IRabbitBase
         var rabbitOptions = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _connectionFactory = new ConnectionFactory
         {
-            HostName = rabbitOptions.Host,
-            Port = rabbitOptions.Port,
+            //HostName = rabbitOptions.Host ?? "localhost",
+            HostName = "localhost",
+            //Port = rabbitOptions.Port,
             Password = rabbitOptions.Password,
             UserName = rabbitOptions.User 
         };

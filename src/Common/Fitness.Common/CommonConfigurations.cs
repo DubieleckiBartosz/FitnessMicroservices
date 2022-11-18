@@ -128,7 +128,8 @@ public static class CommonConfigurations
         if (!options.Enabled)
         {
             services.AddDistributedMemoryCache();
-        }        else
+        }   
+        else
         {
             services.AddStackExchangeRedisCache(cacheOptions =>
                 cacheOptions.Configuration = options.RedisConnection);
@@ -138,24 +139,32 @@ public static class CommonConfigurations
     }
     public static WebApplication UseSubscribeAllEvents(this WebApplication app, Assembly assembly)
     {
-        var types = assembly.GetTypes()
-            .Where(mytype => mytype.GetInterfaces().Contains(typeof(IEvent)));
+        var types = assembly.GetTypes();
 
         foreach (var type in types)
         {
-            app.UseSubscribeEvent(type);
+            var attribute = Attribute.GetCustomAttribute(type, typeof(EventQueueAttribute));
+            if (attribute == null)
+            {
+                continue;
+            }
+
+            var valueQueue = ((EventQueueAttribute) attribute)?.QueueName;
+
+            app.UseSubscribeEvent(type, valueQueue);
+
         }
 
         return app;
     }
 
-    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type)
+    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type, string? queueName = null)
     {
         using var scope = app.Services.CreateScope();
 
         var requiredService = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
 
-        requiredService?.Subscribe(type);
+        requiredService?.Subscribe(type, queueName);
 
         return app;
     }

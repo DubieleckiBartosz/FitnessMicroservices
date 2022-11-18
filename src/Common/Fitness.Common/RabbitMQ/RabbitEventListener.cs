@@ -29,13 +29,13 @@ public class RabbitEventListener : IRabbitEventListener
         _loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
     }
 
-    public void Subscribe(Type type)
+    public void Subscribe(Type type, string? queueName = null)
     {
         using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
         var args = _rabbitBase.CreateDeadLetterQueue(channel);
 
-        var name = AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
-        _rabbitBase.CreateConsumer(channel, ExchangeName, name, GetTypeName(type), args);
+        var name = queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
+        _rabbitBase.CreateConsumer(channel, ExchangeName, name, CreateRoutingKey(type), args);
 
         var mainConsumer = new AsyncEventingBasicConsumer(channel);
 
@@ -57,7 +57,7 @@ public class RabbitEventListener : IRabbitEventListener
         using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
         var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event));
 
-        _rabbitBase.CreatePublisher(channel, ExchangeName, GetTypeName(typeof(TEvent)), body);
+        _rabbitBase.CreatePublisher(channel, ExchangeName, CreateRoutingKey(typeof(TEvent)), body);
         
         return Task.CompletedTask;
     }
@@ -96,11 +96,11 @@ public class RabbitEventListener : IRabbitEventListener
         }
     } 
      
-    private string GetTypeName(Type type)
+    private string CreateRoutingKey(Type type)
     {
-        var name = type.FullName?.ToLower().Replace("+", ".");
+        var name = type.Name.ToLower();
 
-        if (type is IEvent)
+        if (type.GetInterfaces().Contains(typeof(IEvent)))
         {
             name += "_event";
         }

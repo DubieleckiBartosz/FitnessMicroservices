@@ -109,7 +109,7 @@ services:
         - fitness-microservice-network
 
 
-  rabbitmq:
+  messages:
     image: rabbitmq:3-management-alpine
     hostname: "rabbitmq"
     container_name: rabbitmq
@@ -120,6 +120,8 @@ services:
     ports:
      - "5672:5672"
      - "15672:15672"
+    #volumes:
+    #    - rabbitmq:/var/lib/rabbitmq/mnesia
     networks:
         - fitness-microservice-network
 
@@ -132,3 +134,4 @@ services:
 #  redis-data:
 #  fitness-postgresql-data:
 #  fitness-pgadmin-data:
+#  rabbitmq:

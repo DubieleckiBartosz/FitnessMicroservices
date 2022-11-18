@@ -16,7 +16,7 @@
   "RabbitOptions": {
     "User": "user",
     "Host": "rabbitmq",
-    "Port": "15672",
+    "Port": "5672",
     "Password": "nucswRTF#W$Efrw"
   }
 }
