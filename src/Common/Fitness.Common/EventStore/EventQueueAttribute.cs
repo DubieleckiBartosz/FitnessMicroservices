@@ -3,14 +3,15 @@
 [AttributeUsage(AttributeTargets.Class)]
 public class EventQueueAttribute : Attribute
 {
-    //Routing or sth
+    public string? RoutingKey { get; init; }
     public string? QueueName { get; init; }
 
     public EventQueueAttribute()
     {
     }
-    public EventQueueAttribute(string? queueName)
+    public EventQueueAttribute(string? queueName = null, string? routingKey = null)
     {
         QueueName = queueName;
+        RoutingKey = routingKey;
     }
 }

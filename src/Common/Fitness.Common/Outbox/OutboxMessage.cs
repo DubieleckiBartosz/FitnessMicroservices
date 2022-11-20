@@ -8,11 +8,12 @@ public class OutboxMessage : IIdentifier
     {
     }
 
-    public OutboxMessage(string type, string data)
+    public OutboxMessage(string type, string data, string? queueKey = null)
     {
         Id = Guid.NewGuid();
         Type = type;
         Data = data;
+        QueueKey = queueKey;
         Created = DateTime.UtcNow;
     }
 
@@ -20,5 +21,6 @@ public class OutboxMessage : IIdentifier
     public DateTime Created { get; private set; }
     public string Type { get; set; }
     public string Data { get; set; }
+    public string? QueueKey { get; set; }
     public DateTime? Processed { get; set; }
 }

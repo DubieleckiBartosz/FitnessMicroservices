@@ -63,7 +63,7 @@ public class OutboxProcessor : BackgroundService
                 }
 
                 var serviceRabbitListener = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
-                serviceRabbitListener.Publish(message.Data, message.Type);
+                serviceRabbitListener.Publish(message.Data, message.QueueKey ?? message.Type);
                 await store.SetMessageToProcessedAsync(message.Id);
 
                 _loggerManager.LogInformation($"---------- Message Processed: {messageId} ----------");

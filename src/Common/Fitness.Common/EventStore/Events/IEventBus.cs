@@ -4,5 +4,5 @@ public interface IEventBus
 {
     Task PublishLocalAsync(params IEvent[] events);
     Task CommitAsync(params IEvent[] events);
-    Task CommitStreamAsync(StreamState stream);
+    Task CommitStreamAsync(StreamState stream, string? key = null);
 }

@@ -1,8 +1,4 @@
-﻿using Fitness.Common.EventStore.Aggregate;
-using Fitness.Common.EventStore.Events;
-using Fitness.Common.Projection;
-
-namespace Fitness.Common.EventStore;
+﻿namespace Fitness.Common.EventStore;
 
 public interface IEventStore
 {
@@ -13,9 +9,9 @@ public interface IEventStore
         DateTime? atTimestamp = null);
 
     Task AppendEventAsync<TAggregate>(Guid streamId, IEvent @event, long? expectedVersion = null,
-        Func<StreamState, Task>? action = null) where TAggregate : Aggregate.Aggregate;
+        Func<StreamState, string?, Task>? action = null) where TAggregate : Aggregate.Aggregate;
 
-    Task StoreAsync<TAggregate>(TAggregate aggregate, Func<StreamState, Task>? action = null)
+    Task StoreAsync<TAggregate>(TAggregate aggregate, Func<StreamState, string?, Task>? action = null)
         where TAggregate : Aggregate.Aggregate;
     void RegisterProjection(IProjection projection);
 

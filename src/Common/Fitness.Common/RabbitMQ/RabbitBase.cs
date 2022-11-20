@@ -1,18 +1,21 @@
 ﻿using Fitness.Common.Polly; 
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client; 
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Fitness.Common.RabbitMQ;
 
 public class RabbitBase : IRabbitBase
 { 
     private readonly Policy _policy;
-    private const string ExchangeName = "dead_exchange"; 
-    private const string QueueName = "dead_queue"; 
+    private const string DeadExchangeName = "dead_exchange"; 
+    private const string DeadQueueName = "dead_queue"; 
+    private const string DeadLetterRoutingKey = "dlx_key"; 
 
     private new readonly Dictionary<string, object> _args = new()
     {
-        {"x-dead-letter-exchange", ExchangeName},
+        {"x-dead-letter-exchange", DeadExchangeName},
+        {"x-dead-letter-routing-key", DeadLetterRoutingKey},
         {"x-message-ttl", 30000} ,
         {"x-max-length", 10000}
     };
@@ -27,12 +30,11 @@ public class RabbitBase : IRabbitBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var rabbitOptions = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _connectionFactory = new ConnectionFactory
-        {
-            //HostName = rabbitOptions.Host ?? "localhost",
-            HostName = "localhost",
-            //Port = rabbitOptions.Port,
+        { 
+            HostName = "localhost", 
             Password = rabbitOptions.Password,
-            UserName = rabbitOptions.User 
+            UserName = rabbitOptions.User,
+            DispatchConsumersAsync = true
         };
 
         var policySetup = new PolicySetup();
@@ -71,12 +73,11 @@ public class RabbitBase : IRabbitBase
     {
         model.ExchangeDeclare(
             exchangeName,
-            ExchangeType.Direct,
-            true);
+            ExchangeType.Direct, true, false);
 
         model.QueueDeclare(
             queueName,
-            false,
+            true,
             false,
             false,
             useArgs);
@@ -95,31 +96,58 @@ public class RabbitBase : IRabbitBase
             true,
             false);
 
+        var properties = model.CreateBasicProperties();
+        properties.MessageId = Guid.NewGuid().ToString("N");
+        properties.CorrelationId = Guid.NewGuid().ToString("N");
+        properties.ContentType = "application/json"; 
+
         _policy.Execute(() =>
         {
             model.BasicPublish(
-                exchangeName, routingKey, body: body);
+                exchangeName, routingKey, body: body, basicProperties: properties);
         });
 
-    }
+    } 
 
-
-    public Dictionary<string, object> CreateDeadLetterQueue(IModel model)
+    public async Task<Dictionary<string, object>> CreateDeadLetterQueue(IModel model)
     {
         model.ExchangeDeclare(
-            ExchangeName,
+            DeadExchangeName,
             ExchangeType.Direct,
             true);
 
         model.QueueDeclare(
-            QueueName,
+            DeadQueueName,
             true,
             false,
             false);
 
-        model.QueueBind(QueueName, ExchangeName, string.Empty);
+        model.QueueBind(DeadQueueName, DeadExchangeName, DeadLetterRoutingKey);
 
-        return _args;
+        var consumer = new AsyncEventingBasicConsumer(model);
+
+        consumer.Received += (sender, eventArgs) =>
+        {
+            var message = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+            var deathReasonBytes = (byte[])eventArgs.BasicProperties.Headers["x-first-death-reason"]; 
+
+            var stringResult = Encoding.UTF8.GetString(deathReasonBytes);
+
+            _logger.LogInformation(new
+            {
+                DeadQueue = "------- DLX -------",
+                UnprocessedMessage = message,
+                Reason = stringResult
+            });
+
+            model.BasicReject(eventArgs.DeliveryTag, false);
+
+            return Task.CompletedTask;
+        };
+
+        model.BasicConsume(queue: DeadQueueName, false, consumer: consumer);
+
+        return await Task.FromResult(_args);
     }
 
     public void Dispose()

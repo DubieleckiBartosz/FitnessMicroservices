@@ -1,6 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-using Fitness.Common.Tools;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -29,19 +27,51 @@ public class RabbitEventListener : IRabbitEventListener
         _loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
     }
 
-    public void Subscribe(Type type, string? queueName = null)
+    public void Subscribe(Type type, string? queueName = null, string? routingKey = null)
     {
-        using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
-        var args = _rabbitBase.CreateDeadLetterQueue(channel);
+        var model = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
 
-        var name = queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
-        _rabbitBase.CreateConsumer(channel, ExchangeName, name, CreateRoutingKey(type), args);
+        var args = _rabbitBase.CreateDeadLetterQueue(model).GetAwaiter().GetResult(); 
+         
+        var name = queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name; 
 
-        var mainConsumer = new AsyncEventingBasicConsumer(channel);
+        _rabbitBase.CreateConsumer(model, ExchangeName, name, routingKey ?? CreateRoutingKey(type), args);
 
-        mainConsumer.Received += ConsumerMessageReceived;
+        var mainConsumer = new AsyncEventingBasicConsumer(model);
+         
+        mainConsumer.Received += async (m, ea) =>
+        {
+            try
+            {
 
-        channel.BasicConsume(
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+
+                _loggerManager.LogInformation(new
+                {
+                    MessageId = ea.BasicProperties.MessageId,
+                    Message = $"Received a message: {message}",
+                });
+
+                var data = JsonConvert.DeserializeObject<IEvent>(message, _settings);
+
+                using var scope = _serviceFactory.CreateScope();
+                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                if (data != null)
+                {
+                    await eventBus?.PublishLocalAsync(data)!;
+                }
+
+                model.BasicAck(ea.DeliveryTag, false);
+
+            }
+            catch
+            {
+                model.BasicNack(ea.DeliveryTag, false, false);
+            }
+        };
+
+        model.BasicConsume(
             queue: name,
             autoAck: false,
             consumer: mainConsumer); 
@@ -54,48 +84,31 @@ public class RabbitEventListener : IRabbitEventListener
 
     public Task Publish<TEvent>(TEvent @event) where TEvent : IEvent
     {
-        using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
+        var model = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
         var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event));
 
-        _rabbitBase.CreatePublisher(channel, ExchangeName, CreateRoutingKey(typeof(TEvent)), body);
+        _rabbitBase.CreatePublisher(model, ExchangeName, CreateRoutingKey(typeof(TEvent)), body);
         
         return Task.CompletedTask;
     }
 
-    public void Publish(string message, string type)
+    public void Publish(string message, string key)
     {
         if (string.IsNullOrWhiteSpace(message))
         {
             throw new ArgumentNullException(nameof(message), "Event message can not be null.");
         }
 
-        if (string.IsNullOrWhiteSpace(type))
+        if (string.IsNullOrWhiteSpace(key))
         {
-            throw new ArgumentNullException(nameof(type), "Event type can not be null.");
+            throw new ArgumentNullException(nameof(key), "Event type can not be null.");
         }
 
-        using var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
+        var channel = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
 
-        _rabbitBase.CreatePublisher(channel, ExchangeName, type, Encoding.UTF8.GetBytes(message));
+        _rabbitBase.CreatePublisher(channel, ExchangeName, key, Encoding.UTF8.GetBytes(message));
     }
-
-    private async Task ConsumerMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
-    {
-        var body = eventArgs.Body.ToArray();
-        var message = Encoding.UTF8.GetString(body);
-
-        _loggerManager.LogInformation($"Received new message: {message}");
-
-        var data = JsonConvert.DeserializeObject<IEvent>(message, _settings);
-
-        using var scope = _serviceFactory.CreateScope();
-        var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-        if (data != null)
-        {
-            await eventBus?.PublishLocalAsync(data)!;
-        }
-    } 
-     
+    
     private string CreateRoutingKey(Type type)
     {
         var name = type.Name.ToLower();

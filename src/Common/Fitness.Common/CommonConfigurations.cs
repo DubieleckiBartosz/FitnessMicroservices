@@ -8,10 +8,8 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Fitness.Common.EventStore;
-using Fitness.Common.EventStore.Events;
 using Fitness.Common.EventStore.Repository;
 using Fitness.Common.RabbitMQ;
-using Fitness.Common.Projection;
 using Fitness.Common.Abstractions;
 using Fitness.Common.Behaviours;
 using Fitness.Common.CommonServices;
@@ -149,22 +147,25 @@ public static class CommonConfigurations
                 continue;
             }
 
-            var valueQueue = ((EventQueueAttribute) attribute)?.QueueName;
+            var attr = (EventQueueAttribute) attribute;
+            var valueQueueName = attr?.QueueName;
+            var valueRoutingKey = attr?.RoutingKey;
 
-            app.UseSubscribeEvent(type, valueQueue);
+            app.UseSubscribeEvent(type, valueQueueName, valueRoutingKey);
 
         }
 
         return app;
     }
 
-    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type, string? queueName = null)
+    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type, string? queueName = null,
+        string? routingKey = null)
     {
         using var scope = app.Services.CreateScope();
 
         var requiredService = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
 
-        requiredService?.Subscribe(type, queueName);
+        requiredService?.Subscribe(type, queueName, routingKey);
 
         return app;
     }

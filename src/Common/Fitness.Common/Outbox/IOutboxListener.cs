@@ -1,6 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-
-namespace Fitness.Common.Outbox;
+﻿namespace Fitness.Common.Outbox;
 
 public interface IOutboxListener
 {
