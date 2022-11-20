@@ -5,6 +5,8 @@ public class UserNewRoleParametersValidator : AbstractValidator<UserNewRoleParam
     public UserNewRoleParametersValidator()
     {
         RuleFor(r => r.Email).EmailValidator();
-        RuleFor(r => r.Role).IsEnumName(typeof(Roles));
+        RuleFor(r => r.Role).IsEnumName(typeof(Roles)).Must(_ =>
+            !string.Equals(_, Roles.Trainer.ToString(), StringComparison.CurrentCultureIgnoreCase)) 
+            .WithMessage("Bad endpoint");
     }
 }
