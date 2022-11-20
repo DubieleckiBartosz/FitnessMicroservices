@@ -1,4 +1,5 @@
-﻿using Training.API.Handlers.ViewModels;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Training.API.Handlers.ViewModels;
 using Training.API.Queries.TrainingQueries;
 
 namespace Training.API.Controllers;
@@ -21,7 +22,7 @@ public class TrainingController : ControllerBase
     [ProducesResponseType(typeof(TrainingDetailsViewModel), 200)]
     [SwaggerOperation(Summary = "Get training by identifier")]
     [Authorize(Roles = Strings.TrainerRole)]
-    [HttpPost("[action]/{trainingId}")]
+    [HttpGet("[action]/{trainingId}")]
     public async Task<IActionResult> GetTraining([FromRoute] Guid trainingId)
     {
         var query = GetTrainingByIdQuery.Create(trainingId);

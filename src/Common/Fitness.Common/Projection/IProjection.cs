@@ -1,6 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-
-namespace Fitness.Common.Projection;
+﻿namespace Fitness.Common.Projection;
 
 public interface IProjection
 {

@@ -1,8 +1,4 @@
-﻿using Fitness.Common.EventStore.Aggregate;
-using Fitness.Common.EventStore.Events;
-using Fitness.Common.Projection;
-using Fitness.Common.Tools;
-using Newtonsoft.Json; 
+﻿using Newtonsoft.Json; 
 
 namespace Fitness.Common.EventStore;
 
@@ -18,7 +14,7 @@ public class EventStore : IEventStore
     }
 
     public async Task AppendEventAsync<TAggregate>(Guid streamId, IEvent @event, long? expectedVersion = null,
-        Func<StreamState, Task>? action = null) where TAggregate : Aggregate.Aggregate
+        Func<StreamState, string?, Task>? action = null) where TAggregate : Aggregate.Aggregate
     {
         var assemblyQualifiedName = typeof(TAggregate)?.AssemblyQualifiedName;
         if (assemblyQualifiedName != null)
@@ -34,7 +30,14 @@ public class EventStore : IEventStore
 
                 if (action != null)
                 {
-                    await action(stream);
+                    var attribute = Attribute.GetCustomAttribute(typeof(IEvent), typeof(EventQueueAttribute));
+                    string? valueKey = null;
+                    if (attribute != null)
+                    {
+                        valueKey = ((EventQueueAttribute)attribute)?.QueueName; 
+                    }
+
+                    await action(stream, valueKey);
                 }
 
                 if (@event != null)
@@ -89,14 +92,14 @@ public class EventStore : IEventStore
         return aggregate;
     }
 
-    public async Task StoreAsync<TAggregate>(TAggregate aggregate, Func<StreamState, Task>? action = null)
+    public async Task StoreAsync<TAggregate>(TAggregate aggregate, Func<StreamState, string?, Task>? action = null)
         where TAggregate : Aggregate.Aggregate
     {
         var events = aggregate.DequeueUncommittedEvents();
 
         var initialVersion = aggregate.Version - events.Count;
         foreach (var @event in events)
-        { 
+        {
             await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion++, action);
         }
     }

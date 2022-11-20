@@ -1,7 +1,4 @@
-﻿using Fitness.Common.EventStore.Aggregate;
-using Fitness.Common.EventStore.Events;
-
-namespace Fitness.Common.EventStore.Repository;
+﻿namespace Fitness.Common.EventStore.Repository;
 
 public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate : Aggregate.Aggregate
 {
@@ -50,13 +47,13 @@ public class Repository<TAggregate> : IRepository<TAggregate> where TAggregate :
         await _eventStore.StoreAsync(aggregate, PublishEvent);
     }
 
-    private async Task PublishEvent(StreamState stream)
+    private async Task PublishEvent(StreamState stream, string? queueKey = null)
     {
         if (stream is null)
         {
             throw new EventException($"{nameof(stream)} was null.", "Stream Is NULL");
         }
 
-        await _eventBus.CommitStreamAsync(stream);
+        await _eventBus.CommitStreamAsync(stream, queueKey);
     }
 }

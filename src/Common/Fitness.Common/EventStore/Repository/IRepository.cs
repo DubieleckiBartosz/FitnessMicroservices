@@ -1,6 +1,4 @@
-﻿using Fitness.Common.EventStore.Aggregate; 
-
-namespace Fitness.Common.EventStore.Repository;
+﻿namespace Fitness.Common.EventStore.Repository;
 
 public interface IRepository<TAggregate> where TAggregate : Aggregate.Aggregate
 {

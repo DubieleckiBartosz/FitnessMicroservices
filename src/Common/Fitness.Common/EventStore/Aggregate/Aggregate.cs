@@ -1,5 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Fitness.Common.EventStore.Aggregate;
 

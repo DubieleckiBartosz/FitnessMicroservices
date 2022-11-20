@@ -1,5 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-using Fitness.Common.Outbox.MongoOutbox;
+﻿using Fitness.Common.Outbox.MongoOutbox;
 using Newtonsoft.Json;
 
 namespace Fitness.Common.Outbox

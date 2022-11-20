@@ -31,6 +31,8 @@ public class ShareTrainingHandler : ICommandHandler<ShareTrainingCommand, Unit>
         }
 
         trainingResult.Share();
+
+        await _repository.AddAndPublishAsync(trainingResult);
         return Unit.Value;
     }
 }
