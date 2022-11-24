@@ -1,9 +1,8 @@
-﻿using Fitness.Common.Extensions;
-using Fitness.Common.Projection; 
+﻿using Fitness.Common.Extensions; 
 
 namespace Training.API.Trainings.ReadModels;
 
-public class TrainingDetails : IRead 
+public class TrainingDetails : ITrainingRead
 {
     private int _numberUsersEnrolled => TrainingUsers.Count;
     public Guid Id { get; private set; }

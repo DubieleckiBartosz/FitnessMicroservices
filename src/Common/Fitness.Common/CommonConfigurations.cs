@@ -151,21 +151,21 @@ public static class CommonConfigurations
             var valueQueueName = attr?.QueueName;
             var valueRoutingKey = attr?.RoutingKey;
 
-            app.UseSubscribeEvent(type, valueQueueName, valueRoutingKey);
+            app.UseSubscribeEvent(assembly, type, valueQueueName, valueRoutingKey);
 
         }
 
         return app;
     }
 
-    public static WebApplication UseSubscribeEvent(this WebApplication app, Type type, string? queueName = null,
+    public static WebApplication UseSubscribeEvent(this WebApplication app, Assembly assembly, Type type, string? queueName = null,
         string? routingKey = null)
     {
         using var scope = app.Services.CreateScope();
 
         var requiredService = scope.ServiceProvider.GetRequiredService<IRabbitEventListener>();
 
-        requiredService?.Subscribe(type, queueName, routingKey);
+        requiredService?.Subscribe(assembly, type, queueName, routingKey);
 
         return app;
     }

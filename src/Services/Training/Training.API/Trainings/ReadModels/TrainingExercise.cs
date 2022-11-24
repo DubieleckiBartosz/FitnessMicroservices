@@ -1,8 +1,6 @@
-﻿using Fitness.Common.Projection;
+﻿namespace Training.API.Trainings.ReadModels;
 
-namespace Training.API.Trainings.ReadModels;
-
-public class TrainingExercise : IRead
+public class TrainingExercise : ITrainingRead
 {
     public Guid Id { get; private set; }
     public bool IsDeleted { get; set; }

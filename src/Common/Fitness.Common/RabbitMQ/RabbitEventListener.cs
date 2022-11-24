@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Fitness.Common.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Reflection;
 
 namespace Fitness.Common.RabbitMQ;
 
@@ -27,15 +29,15 @@ public class RabbitEventListener : IRabbitEventListener
         _loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
     }
 
-    public void Subscribe(Type type, string? queueName = null, string? routingKey = null)
+    public void Subscribe(Assembly assembly, Type type, string? queueName = null, string? routingKey = null)
     {
         var model = _rabbitBase.GetOrCreateNewModelWhenItIsClosed();
 
         var args = _rabbitBase.CreateDeadLetterQueue(model).GetAwaiter().GetResult(); 
          
-        var name = queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name; 
-
-        _rabbitBase.CreateConsumer(model, ExchangeName, name, routingKey ?? CreateRoutingKey(type), args);
+        var name = queueName ?? AppDomain.CurrentDomain.FriendlyName.Trim().Trim('_') + "_" + type.Name;
+        var key = routingKey ?? CreateRoutingKey(type);
+        _rabbitBase.CreateConsumer(model, ExchangeName, name, key, args);
 
         var mainConsumer = new AsyncEventingBasicConsumer(model);
          
@@ -53,7 +55,7 @@ public class RabbitEventListener : IRabbitEventListener
                     Message = $"Received a message: {message}",
                 });
 
-                var data = JsonConvert.DeserializeObject<IEvent>(message, _settings);
+                var data = message.DeserializeQueueEvent(assembly, key);
 
                 using var scope = _serviceFactory.CreateScope();
                 var eventBus = scope.ServiceProvider.GetService<IEventBus>();
@@ -77,9 +79,9 @@ public class RabbitEventListener : IRabbitEventListener
             consumer: mainConsumer); 
     }
 
-    public void Subscribe<TEvent>() where TEvent : IEvent
+    public void Subscribe<TEvent>(Assembly assembly) where TEvent : IEvent
     {
-        Subscribe(typeof(TEvent));
+        Subscribe(assembly, typeof(TEvent));
     }
 
     public Task Publish<TEvent>(TEvent @event) where TEvent : IEvent

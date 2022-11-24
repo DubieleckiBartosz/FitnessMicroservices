@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Training.API.Handlers.ViewModels;
+﻿using Training.API.Handlers.ViewModels;
 using Training.API.Queries.TrainingQueries;
 
 namespace Training.API.Controllers;

@@ -1,22 +1,24 @@
-﻿using Fitness.Common.EventStore.Events;
+﻿using Enrollment.Application.Commands;
+using Fitness.Common.Abstractions;
 using Fitness.Common.EventStore.Repository;
+using MediatR;
 
 namespace Enrollment.Application.Enrollments.StartingTrainingEnrollments;
 
-public class StartingEnrollments //: IEventHandler<TrainingEnrollmentsStarted>
+public class StartingEnrollments : ICommandHandler<StartEnrollmentsCommand, Unit>
 {
-    private readonly IRepository<Enrollment> _repository;
+    private readonly IRepository<Enrollment> _enrollmentRepository;
 
-    public StartingEnrollments(IRepository<Enrollment> repository)
+    public StartingEnrollments(IRepository<Enrollment> enrollmentRepository)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _enrollmentRepository = enrollmentRepository ?? throw new ArgumentNullException(nameof(enrollmentRepository));
     }
-    public async Task Handle(TrainingEnrollmentsStarted notification, CancellationToken cancellationToken)
+
+    public async Task<Unit> Handle(StartEnrollmentsCommand request, CancellationToken cancellationToken)
     {
-        if (notification == null)
-        {
-            throw new ArgumentNullException(nameof(notification));
-        }
-         
+        var newEnrollment = Enrollment.Create(request.TrainingId);
+        await _enrollmentRepository.AddAsync(newEnrollment);
+
+        return Unit.Value;
     }
 }

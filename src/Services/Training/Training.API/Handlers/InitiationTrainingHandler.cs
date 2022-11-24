@@ -18,7 +18,7 @@ public class InitiationTrainingHandler : ICommandHandler<TrainingInitiationComma
     public async Task<Guid> Handle(TrainingInitiationCommand request, CancellationToken cancellationToken)
     {
         var trainerUniqueCode = _currentUser.TrainerCode;
-        if (!Guid.TryParse(trainerUniqueCode, out Guid resultTrainerUniqueCode))
+        if (!Guid.TryParse(trainerUniqueCode, out var resultTrainerUniqueCode))
         {
             throw new NotFoundException(Strings.IncorrectTrainerCodeMessage, Strings.IncorrectTrainerCodeTitle);
         }
