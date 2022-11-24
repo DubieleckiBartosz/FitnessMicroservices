@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Training.API.Database.TypeConfigurations
 {
-    public class BaseTypeConfiguration<TReadModel> : IEntityTypeConfiguration<TReadModel> where TReadModel : class, IRead
+    public class BaseTypeConfiguration<TReadModel> : IEntityTypeConfiguration<TReadModel> where TReadModel : class, ITrainingRead
     {
         public virtual void Configure(EntityTypeBuilder<TReadModel> builder)
         {

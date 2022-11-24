@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json; 
+﻿using Fitness.Common.Extensions;
+using Newtonsoft.Json; 
 
 namespace Fitness.Common.EventStore;
 
@@ -73,12 +74,14 @@ public class EventStore : IEventStore
         var version = 0;
         foreach (var @event in events)
         {
-            var data = JsonConvert.DeserializeObject<IEvent>(@event.StreamData, new JsonSerializerSettings
-            {
-                ContractResolver = new PrivateResolver(),
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                TypeNameHandling = TypeNameHandling.All
-            });
+            var data = @event.StreamData.DeserializeEvent();
+
+            //var data = JsonConvert.DeserializeObject<IEvent>(@event.StreamData, new JsonSerializerSettings
+            //{
+            //    ContractResolver = new PrivateResolver(),
+            //    ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+            //    TypeNameHandling = TypeNameHandling.All
+            //});
 
             if (data == null)
             {

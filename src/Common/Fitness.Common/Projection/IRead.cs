@@ -2,6 +2,5 @@
 
 public interface IRead
 {
-    public Guid Id { get; }
-    public bool IsDeleted { get; set; }
+    public Guid Id { get; } 
 }
