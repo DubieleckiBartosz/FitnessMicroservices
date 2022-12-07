@@ -2,10 +2,10 @@
 
 namespace Enrollment.Application.Enrollments.StartingTrainingEnrollments;
 
-public record TrainingEnrollmentsStarted(Guid TrainingId) : IEvent 
+public record TrainingEnrollmentsStarted(Guid EnrollmentId, Guid TrainingId, Guid Creator) : IEvent 
 {
-    public static TrainingEnrollmentsStarted Create(Guid trainingId)
+    public static TrainingEnrollmentsStarted Create(Guid enrollmentId, Guid trainingId, Guid creator)
     { 
-        return new TrainingEnrollmentsStarted(trainingId);
+        return new TrainingEnrollmentsStarted(enrollmentId, trainingId, creator);
     }
 }
