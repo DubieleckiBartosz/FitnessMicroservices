@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Enrollment.Application.Enrollments;
+using Enrollment.Application.Enrollments.ProjectionSection.ReadModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Enrollment.Infrastructure.Database.TypeConfigurations
+namespace Enrollment.Infrastructure.Database.TypeConfigurations;
+
+public class UserEnrollmentTypeConfiguration : IEntityTypeConfiguration<UserEnrollment>
 {
-    public class UserEnrollmentTypeConfiguration
-    {
+    public void Configure(EntityTypeBuilder<UserEnrollment> builder)
+    { 
+        builder.HasKey(a => a.Id);
+        builder.Property(_ => _.Id).ValueGeneratedNever();
+
+        builder.HasOne<Application.Enrollments.Enrollment>().WithMany(_ => _.UserEnrollments)
+            .HasForeignKey(_ => _.EnrollmentId);
     }
 }

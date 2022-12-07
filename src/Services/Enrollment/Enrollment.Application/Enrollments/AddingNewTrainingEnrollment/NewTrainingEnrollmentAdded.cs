@@ -2,6 +2,10 @@
 
 namespace Enrollment.Application.Enrollments.AddingNewTrainingEnrollment;
 
-public class NewTrainingEnrollmentAdded : IEvent
+public record NewTrainingEnrollmentAdded(Guid UserId, Guid TrainingId) : IEvent
 {
+    public static NewTrainingEnrollmentAdded Create(Guid userId, Guid trainingId)
+    {
+        return new NewTrainingEnrollmentAdded(userId, trainingId);
+    }
 }

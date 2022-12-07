@@ -5,10 +5,10 @@ using Fitness.Common.EventStore.Events;
 namespace Enrollment.Application.Processes.ProcessingStartEnrollments;
 
 [EventQueue(routingKey: Keys.TrainingKeyQueueRoutingKey)]
-public record TrainingPublished(Guid TrainingId) : IEvent
+public record TrainingPublished(Guid TrainingId, Guid Creator) : IEvent
 {
-    public static TrainingPublished Create(Guid trainingId)
+    public static TrainingPublished Create(Guid trainingId, Guid creator)
     {
-        return new TrainingPublished(trainingId);
+        return new TrainingPublished(trainingId, creator);
     }
 }

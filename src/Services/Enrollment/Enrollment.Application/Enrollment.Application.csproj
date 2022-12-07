@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Enrollments\GettingEnrollments\" />
-    <Folder Include="Enrollments\ReadModels\" />
+    <Compile Remove="Enrollments\GettingEnrollments\**" />
+    <EmbeddedResource Remove="Enrollments\GettingEnrollments\**" />
+    <None Remove="Enrollments\GettingEnrollments\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Enrollments\GettingEnrollmentsBySearch\" />
     <Folder Include="Queries\" />
   </ItemGroup>
 

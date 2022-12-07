@@ -1,9 +1,9 @@
 ﻿namespace Training.API.Trainings.TrainingEvents;
 
-public record TrainingShared(Guid TrainingId) : IEvent
+public record TrainingShared(Guid TrainingId, Guid TrainerCode) : IEvent
 {
-    public static TrainingShared Create(Guid trainingId)
+    public static TrainingShared Create(Guid trainingId, Guid trainerCode)
     {
-        return new TrainingShared(trainingId);
+        return new TrainingShared(trainingId, trainerCode);
     }
 }

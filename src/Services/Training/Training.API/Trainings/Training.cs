@@ -1,5 +1,4 @@
-﻿using Fitness.Common.EventStore.Events;
-using Fitness.Common.Extensions;
+﻿using Fitness.Common.Extensions;
 using Training.API.Common.Exceptions;
 
 namespace Training.API.Trainings;
@@ -43,10 +42,9 @@ public class Training : Aggregate
          
         var @event = AvailabilityChanged.Create(this.Id, newAvailability);
         this.Apply(@event);
-        this.Enqueue(@event);
-
+        this.Enqueue(@event); 
     }
-
+     
     public void Share()
     {
         if (Status == TrainingStatus.Shared || (Status == TrainingStatus.Init))
@@ -54,7 +52,7 @@ public class Training : Aggregate
             throw new TrainingServiceBusinessException(Strings.TrainingBadStatusTitle, Strings.TrainingBadStatusMessage);
         }
 
-        var @event = TrainingShared.Create(this.Id);
+        var @event = TrainingShared.Create(this.Id, this.TrainerUniqueCode);
         this.Apply(@event);
         this.Enqueue(@event);
     }

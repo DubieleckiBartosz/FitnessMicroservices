@@ -1,5 +1,4 @@
-﻿using Fitness.Common.Projection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Training.API.Database.TypeConfigurations
