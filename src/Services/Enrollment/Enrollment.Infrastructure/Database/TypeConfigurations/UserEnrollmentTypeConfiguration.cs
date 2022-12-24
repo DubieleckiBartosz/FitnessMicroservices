@@ -1,5 +1,4 @@
-﻿using Enrollment.Application.Enrollments;
-using Enrollment.Application.Enrollments.ProjectionSection.ReadModels;
+﻿using Enrollment.Application.Enrollments.ProjectionSection.ReadModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +11,7 @@ public class UserEnrollmentTypeConfiguration : IEntityTypeConfiguration<UserEnro
         builder.HasKey(a => a.Id);
         builder.Property(_ => _.Id).ValueGeneratedNever();
 
-        builder.HasOne<Application.Enrollments.Enrollment>().WithMany(_ => _.UserEnrollments)
+        builder.HasOne<TrainingEnrollmentsDetails>().WithMany(_ => _.UserEnrollments)
             .HasForeignKey(_ => _.EnrollmentId);
     }
 }

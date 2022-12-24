@@ -9,9 +9,7 @@ public class EnrollmentContext : DbContext
     public DbSet<UserEnrollment> UserEnrollments { get; set; }
      
     public EnrollmentContext(DbContextOptions<EnrollmentContext> options) : base(options)
-    {
-        todo
-        Database.EnsureCreated();
+    {  
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
