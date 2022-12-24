@@ -19,6 +19,8 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         Projects<ExerciseRemoved>(Handle);
         Projects<TrainingShared>(Handle);
         Projects<AvailabilityChanged>(Handle);
+        Projects<TrainingMarkedAsHistorical>(Handle);
+        Projects<EnrollmentAssigned>(Handle);
     }
 
     private async Task Handle(NewTrainingInitiated @event, CancellationToken cancellationToken = default)
@@ -30,6 +32,18 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 
         var newTraining = TrainingDetails.Create(@event);
         await _trainingRepository.CreateAsync(newTraining, cancellationToken);
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    } 
+    private async Task Handle(EnrollmentAssigned @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+
+        training.EnrollmentIdAssigned(@event);
         await _wrapperRepository.SaveAsync(cancellationToken);
     }
     
@@ -95,6 +109,19 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
 
         var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
         training.TrainingExerciseRemoved(@event);
+
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    }
+    
+    private async Task Handle(TrainingMarkedAsHistorical @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        } 
+         
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+        training.MarkedAsHistory(@event);
 
         await _wrapperRepository.SaveAsync(cancellationToken);
     }

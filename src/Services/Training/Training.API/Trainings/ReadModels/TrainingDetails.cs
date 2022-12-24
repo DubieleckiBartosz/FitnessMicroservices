@@ -4,11 +4,13 @@ namespace Training.API.Trainings.ReadModels;
 
 public class TrainingDetails : ITrainingRead
 {
-    private int _numberUsersEnrolled => TrainingUsers.Count;
+    private int NumberUsersEnrolled => TrainingUsers.Count;
     public Guid Id { get; private set; }
     public bool IsDeleted { get; set; }
+    public Guid? EnrollmentId { get; private set; }
     public Guid TrainerUniqueCode { get; private set; }
     public bool IsActive { get; private set; }
+    public bool IsHistoric { get; private set; }
     public decimal? Price { get; private set; }
     public TrainingStatus Status { get; private set; }
     public TrainingAvailability Availability { get; private set; }
@@ -83,9 +85,11 @@ public class TrainingDetails : ITrainingRead
 
         return this;
     }
+
     public TrainingDetails Shared(TrainingShared @event)
     {
         Status = TrainingStatus.Shared;
+        Availability = @event.IsPublic ? TrainingAvailability.Public : TrainingAvailability.Group;
         IsActive = true;
 
         return this;
@@ -97,6 +101,13 @@ public class TrainingDetails : ITrainingRead
 
         return this;
     }
-
-    public int GetUsersEnrolledCount() => _numberUsersEnrolled;
+    public void MarkedAsHistory(TrainingMarkedAsHistorical @event)
+    {
+        IsHistoric = true;
+    }
+    public void EnrollmentIdAssigned(EnrollmentAssigned @event)
+    {
+        EnrollmentId = @event.EnrollmentId;
+    }
+    public int GetUsersEnrolledCount() => NumberUsersEnrolled;
 }

@@ -30,9 +30,16 @@ public class ShareTrainingHandler : ICommandHandler<ShareTrainingCommand, Unit>
             throw new BadRequestException(Strings.TrainerCodeDoesNotMatchToTrainingMessage, Strings.IncorrectTrainerCodeTitle);
         }
 
-        trainingResult.Share();
+        trainingResult.Share(request.IsPublic);
+        if (request.IsPublic)
+        {
+            await _repository.AddAsync(trainingResult);
+        }
+        else
+        {
+            await _repository.AddAndPublishAsync(trainingResult);
+        }
 
-        await _repository.AddAndPublishAsync(trainingResult);
         return Unit.Value;
     }
 }

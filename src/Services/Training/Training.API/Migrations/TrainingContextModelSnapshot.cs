@@ -40,10 +40,16 @@ namespace Training.API.Migrations
                     b.Property<int?>("DurationTrainingInMinutes")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("EnrollmentId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsHistoric")
                         .HasColumnType("boolean");
 
                     b.Property<decimal?>("Price")

@@ -1,9 +1,9 @@
 ﻿namespace Training.API.Trainings.TrainingEvents;
 
-public record AvailabilityChanged(Guid TrainingId, TrainingAvailability NewAvailability) : IEvent
+public record AvailabilityChanged(Guid TrainingId, Guid? EnrollmentId, TrainingAvailability NewAvailability, Guid ChangedBy) : IEvent
 {
-    public static AvailabilityChanged Create(Guid trainingId, TrainingAvailability newAvailability)
+    public static AvailabilityChanged Create(Guid trainingId, Guid? enrollmentId, TrainingAvailability newAvailability, Guid changedBy)
     {
-        return new AvailabilityChanged(trainingId, newAvailability);
+        return new AvailabilityChanged(trainingId, enrollmentId, newAvailability, changedBy);
     }
 }

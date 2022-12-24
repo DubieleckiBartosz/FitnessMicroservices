@@ -5,6 +5,7 @@ using Enrollment.Application.Enrollments.CancellationUserEnrollment;
 using Enrollment.Application.Enrollments.ClearingUserEnrollmentList;
 using Enrollment.Application.Enrollments.ClosingEnrollment;
 using Enrollment.Application.Enrollments.Enums;
+using Enrollment.Application.Enrollments.OpeningEnrollment;
 using Enrollment.Application.Enrollments.ProjectionSection.ReadModels;
 using Enrollment.Application.Enrollments.StartingTrainingEnrollments;
 using Enrollment.Application.Exceptions;
@@ -73,6 +74,45 @@ public class Enrollment : Aggregate
         Enqueue(@event);
     }
 
+    public void Suspend(Guid suspendBy)
+    {
+        if (suspendBy != Creator)
+        {
+            throw new EnrollmentServiceBusinessException(Strings.NoPermissionsTitle,
+                Strings.NoPermissionsMessage);
+        }
+
+        if (CurrentStatus != Status.Open)
+        {
+            throw new EnrollmentServiceBusinessException(Strings.InvalidStatusTitle,
+                Strings.InvalidStatusWhenToBeSuspendMessage);
+        }
+
+        var @event = EnrollmentClosed.Create(this.Id);
+        Apply(@event);
+        Enqueue(@event);
+    }
+
+    public void Open(Guid openBy)
+    {
+        if (openBy != Creator)
+        {
+            throw new EnrollmentServiceBusinessException(Strings.NoPermissionsTitle,
+                Strings.NoPermissionsMessage);
+        }
+
+        if (CurrentStatus != Status.Suspended)
+        {
+            throw new EnrollmentServiceBusinessException(Strings.InvalidStatusTitle,
+                Strings.InvalidStatusWhenToBeOpenMessage);
+        }
+
+        var @event = EnrollmentOpened.Create(this.Id);
+        Apply(@event);
+        Enqueue(@event);
+    }
+
+
     public void ClearUserEnrollmentList(Guid cleanBy)
     { 
         if (cleanBy != Creator)
@@ -86,7 +126,7 @@ public class Enrollment : Aggregate
         Enqueue(@event);
     }
 
-    public void CancelUserEnrollment(Guid userEnrollmentId, Guid cancelBy)
+    public void CancelUserEnrollment(Guid userEnrollmentId, int currentUser, Guid? creator)
     {
         var userEnrollment = UserEnrollments?.FirstOrDefault(_ => _.Id == userEnrollmentId);
         if (userEnrollment == null)
@@ -95,23 +135,27 @@ public class Enrollment : Aggregate
                 Strings.UserEnrollmentNotFoundMessage);
         }
 
-        if (userEnrollment.UserId == cancelBy)
+        if (userEnrollment.UserId == currentUser)
         {
             StatusMustBeOpen(); 
         }
 
-        if (userEnrollment.UserId != cancelBy && cancelBy != Creator)
+        var isUser = userEnrollment.UserId != currentUser;
+        var isCreator = creator != null && creator != Creator;
+
+        if (isUser || isCreator)
         {
             throw new EnrollmentServiceBusinessException(Strings.NoPermissionsTitle,
                 Strings.NoPermissionsMessage);
         }
          
-        var @event = UserEnrollmentCancelled.Create(userEnrollmentId, cancelBy);
+        var @event = UserEnrollmentCancelled.Create(userEnrollmentId, (Guid)creator!, currentUser);
+
         Apply(@event);
         Enqueue(@event);
     }
 
-    public void NewUserTrainingEnrollment(Guid userId)
+    public void NewUserTrainingEnrollment(int userId)
     {
         StatusMustBeOpen();
 
@@ -122,10 +166,11 @@ public class Enrollment : Aggregate
                 Strings.UserHasEnrollmentMessage);
         }
 
-        var @event = NewTrainingEnrollmentAdded.Create(userId, this.TrainingId);
+        var @event = NewTrainingEnrollmentAdded.Create(this.Id, userId, this.TrainingId);
         Apply(@event);
         Enqueue(@event);
     }
+     
 
     protected override void When(IEvent @event)
     {
@@ -148,6 +193,9 @@ public class Enrollment : Aggregate
                 break;
             case EnrollmentClosed e:
                 TrainingEnrollmentClosed(e);
+                break;
+            case EnrollmentOpened e:
+                Open(e);
                 break;
         }
     }
@@ -185,6 +233,11 @@ public class Enrollment : Aggregate
     public void TrainingEnrollmentClosed(EnrollmentClosed @event)
     {
         CurrentStatus = Status.Closed;
+    }
+
+    public void Open(EnrollmentOpened @event)
+    {
+        CurrentStatus = Status.Open;
     }
 
     private void StatusMustBeOpen()

@@ -25,7 +25,7 @@ public class TrainingEnrollmentsDetails : IEnrollmentRead
         return new TrainingEnrollmentsDetails(enrollmentId, trainingId, creator);
     }
 
-    public void TrainingEnrollmentAdded(Guid userId)
+    public void TrainingEnrollmentAdded(int userId)
     {
         var newUserTrainingEnrollment = UserEnrollment.Create(Id, userId);
         UserEnrollments ??= new List<UserEnrollment>();
@@ -51,5 +51,9 @@ public class TrainingEnrollmentsDetails : IEnrollmentRead
     public void TrainingEnrollmentClosed()
     {
         CurrentStatus = Status.Closed;
-    } 
+    }
+    public void Open()
+    {
+        CurrentStatus = Status.Open;
+    }
 }

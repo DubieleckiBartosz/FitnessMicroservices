@@ -51,6 +51,8 @@ var app = builder.Build()
     logger.LogError(ex, "An error occurred while migrating the database.");
 });
 
+app.ListenEvents();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -3,6 +3,7 @@ using Enrollment.Application.Enrollments.AddingNewTrainingEnrollment;
 using Enrollment.Application.Enrollments.CancellationUserEnrollment;
 using Enrollment.Application.Enrollments.ClearingUserEnrollmentList;
 using Enrollment.Application.Enrollments.ClosingEnrollment;
+using Enrollment.Application.Enrollments.OpeningEnrollment;
 using Enrollment.Application.Enrollments.ProjectionSection.ReadModels;
 using Enrollment.Application.Enrollments.StartingTrainingEnrollments;
 using Enrollment.Application.Interfaces;
@@ -18,12 +19,14 @@ public class EnrollmentProjections : ReadModelAction<TrainingEnrollmentsDetails>
     {
         _enrollmentRepository = enrollmentRepository ?? throw new ArgumentNullException(nameof(enrollmentRepository));
         Projects<TrainingEnrollmentsStarted>(Handle);
+        Projects<NewTrainingEnrollmentAdded>(Handle);
         Projects<UserEnrollmentListCleared>(Handle);
         Projects<UserEnrollmentAccepted>(Handle);
         Projects<UserEnrollmentCancelled>(Handle);
         Projects<EnrollmentClosed>(Handle);
+        Projects<EnrollmentOpened>(Handle);
     }
-
+     
     private async Task Handle(TrainingEnrollmentsStarted @event, CancellationToken cancellationToken = default)
     {
         if (@event == null)
@@ -48,6 +51,19 @@ public class EnrollmentProjections : ReadModelAction<TrainingEnrollmentsDetails>
         enrollment?.TrainingEnrollmentClosed();
         await _enrollmentRepository.SaveAsync(cancellationToken);
     }
+    
+    private async Task Handle(EnrollmentOpened @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var enrollment =
+            await _enrollmentRepository.GetTrainingEnrollmentsWithoutUserEnrollmentsByIdAsync(@event.EnrollmentId, cancellationToken);
+        enrollment?.Open();
+        await _enrollmentRepository.SaveAsync(cancellationToken);
+    }
 
     private async Task Handle(UserEnrollmentListCleared @event, CancellationToken cancellationToken = default)
     {
@@ -68,7 +84,7 @@ public class EnrollmentProjections : ReadModelAction<TrainingEnrollmentsDetails>
             throw new ArgumentNullException(nameof(@event));
         }
         var enrollment =
-            await _enrollmentRepository.GetTrainingEnrollmentsDetailsByIdAsync(@event.UserId, cancellationToken);
+            await _enrollmentRepository.GetTrainingEnrollmentsDetailsByIdAsync(@event.EnrollmentId, cancellationToken);
         enrollment?.TrainingEnrollmentAdded(@event.UserId);
         await _enrollmentRepository.SaveAsync(cancellationToken);
     }

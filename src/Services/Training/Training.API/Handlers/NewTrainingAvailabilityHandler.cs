@@ -28,7 +28,14 @@ public class NewTrainingAvailabilityHandler : ICommandHandler<NewAvailabilityCom
         var trainerCode = _currentUser.TrainerCode;
         trainingResult.ChangeAvailability(request.NewAvailability, trainerCode.ParseToGuidOrThrow());
 
-        await _repository.AddAndPublishAsync(trainingResult);
+        if (trainingResult.EnrollmentId != null)
+        {
+            await _repository.AddAndPublishAsync(trainingResult);
+        }
+        else
+        {
+            await _repository.AddAsync(trainingResult);
+        }
 
         return Unit.Value;
     }
