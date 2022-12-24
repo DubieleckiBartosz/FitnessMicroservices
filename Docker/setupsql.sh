@@ -6,6 +6,8 @@ SCRIPTS[4]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C
 SCRIPTS[5]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C -d master -i EventStore-create-db.sql"
 SCRIPTS[6]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C -d FitnessEventStore -i EventStore-create-tables.sql"
 SCRIPTS[7]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C -d FitnessEventStore -i EventStore-create-storedProcedures.sql"
+SCRIPTS[8]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C -d FitnessEventStoreTests -i EventStore-create-tables.sql"
+SCRIPTS[9]="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P a?i0/cEFB@v3dweF7C -d FitnessEventStoreTests -i EventStore-create-storedProcedures.sql"
 
 
 for ((i = 0; i < ${#SCRIPTS[@]}; i++))
