@@ -9,6 +9,9 @@ public class Strings
     public const string NoPermissionsMessage = "Only the creator can do this.";
     public const string UserEnrollmentIsCancelledMessage = "User enrollment cannot be accepted when it is cancelled.";
     public const string InvalidStatusMessage = "Enrollment must be open or suspended.";
+    public const string InvalidStatusWhenToBeSuspendMessage = "Enrollment must be open when to suspend.";
+    public const string InvalidStatusWhenToBeOpenMessage = "Enrollment must be suspended when it is to be opened..";
+    public const string EnrollmentNotFoundMessage = "Enrollment cannot be null.";
 
     //Titles
     public const string UserHasEnrollmentTitle = "User is already enrolled in this training.";
@@ -17,4 +20,5 @@ public class Strings
     public const string NoPermissionsTitle = "No permissions.";
     public const string UserEnrollmentIsCancelledTitle = "User enrollment is cancelled.";
     public const string InvalidStatusTitle = "Invalid status.";
+    public const string EnrollmentNotFoundTitle = "Enrollment not found.";
 }

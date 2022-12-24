@@ -4,7 +4,7 @@ using Fitness.Common.EventStore.Events;
 
 namespace Enrollment.Application.Processes.ProcessingStartEnrollments;
 
-[EventQueue(routingKey: Keys.TrainingKeyQueueRoutingKey)]
+[EventQueue(routingKey: Keys.ShareTrainingQueueRoutingKey)]
 public record TrainingPublished(Guid TrainingId, Guid Creator) : IEvent
 {
     public static TrainingPublished Create(Guid trainingId, Guid creator)

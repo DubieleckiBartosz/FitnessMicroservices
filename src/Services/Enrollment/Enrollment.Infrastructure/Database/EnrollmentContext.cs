@@ -7,9 +7,17 @@ public class EnrollmentContext : DbContext
 {
     public DbSet<TrainingEnrollmentsDetails> Enrollments { get; set; }
     public DbSet<UserEnrollment> UserEnrollments { get; set; }
-
+     
     public EnrollmentContext(DbContextOptions<EnrollmentContext> options) : base(options)
     {
+        todo
+        Database.EnsureCreated();
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -32,5 +40,4 @@ public class EnrollmentContext : DbContext
 
         return base.SaveChangesAsync(cancellationToken);
     }
-     
 }

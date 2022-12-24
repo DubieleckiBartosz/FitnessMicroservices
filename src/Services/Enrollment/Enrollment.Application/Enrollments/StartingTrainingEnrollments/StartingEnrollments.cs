@@ -17,7 +17,7 @@ public class StartingEnrollments : ICommandHandler<StartEnrollmentsCommand, Unit
     public async Task<Unit> Handle(StartEnrollmentsCommand request, CancellationToken cancellationToken)
     {
         var newEnrollment = Enrollment.Create(request.TrainingId, request.Creator);
-        await _repository.AddAsync(newEnrollment);
+        await _repository.AddAndPublishAsync(newEnrollment);
 
         return Unit.Value;
     }

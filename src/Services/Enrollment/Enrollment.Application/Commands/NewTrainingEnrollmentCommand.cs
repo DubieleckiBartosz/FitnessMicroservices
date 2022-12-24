@@ -3,10 +3,10 @@ using MediatR;
 
 namespace Enrollment.Application.Commands;
 
-public record NewTrainingEnrollmentCommand(Guid UserId, Guid EnrollmentId) : ICommand<Unit>
+public record NewTrainingEnrollmentCommand(Guid EnrollmentId) : ICommand<Unit>
 {
-    public static NewTrainingEnrollmentCommand Create(Guid userId, Guid enrollmentId)
+    public static NewTrainingEnrollmentCommand Create(Guid enrollmentId)
     {
-        return new NewTrainingEnrollmentCommand(userId, enrollmentId);
+        return new NewTrainingEnrollmentCommand(enrollmentId);
     }
 }
