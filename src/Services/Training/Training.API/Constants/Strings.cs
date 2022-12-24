@@ -19,6 +19,10 @@ public class Strings
     public const string ExerciseNotFoundMessage = "The exercise has not been assigned to a training.";
     public const string TrainingBadStatusMessage = "The current training status does not allow you to change to the desired status.";
     public const string TrainingBadAvailabilityStatusMessage = "Availability cannot be changed to the same.";
+    public const string TrainingCannotBePrivateMessage = "Availability cannot be private when some users are using training.";
+    public const string TrainingCannotBeHistoricMessage = "If the training is to be history, the list of users must be empty.";
+    public const string StatusMustBeSharedMessage = "Status must be 'Shared'.";
+    public const string EnrollmentIdCannotBeNullMessage = "EnrollmentId must exist if you want to close enrollment.";
 
 
     //Titles
@@ -31,4 +35,8 @@ public class Strings
     public const string ExerciseDuplicationTitle = "Exercise duplication.";
     public const string ExerciseNotFoundTitle = "Exercise not found.";
     public const string TrainingTheSameAvailabilityTitle = "The availability is the same.";
+    public const string TrainingCannotBePrivateTitle = "The availability cannot be private.";
+    public const string TrainingCannotBeHistoricTitle = "The user list must be empty.";
+    public const string StatusMustBeSharedTitle = "Bad status.";
+    public const string EnrollmentIdCannotBeNullTitle = "EnrollmentId cannot be null.";
 }

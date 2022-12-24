@@ -7,6 +7,7 @@ public class Training : Aggregate
 {
     public bool IsActive { get; private set; }
     public decimal? Price { get; private set; }
+    public Guid? EnrollmentId { get; private set; }
     public TrainingStatus Status { get; private set; }
     public TrainingAvailability Availability { get; private set; }
     public TrainingType? Type { get; private set; }
@@ -14,6 +15,7 @@ public class Training : Aggregate
     public int? BreakBetweenExercisesInMinutes { get; private set; }
     public DateTime Created { get; private set; }
     public Guid TrainerUniqueCode { get; private set; }
+    public bool IsHistoric { get; private set; }
     public List<TrainingExercise> TrainingExercises { get; private set; }
     public List<TrainingUser> TrainingUsers { get; private set; }
 
@@ -39,20 +41,55 @@ public class Training : Aggregate
         {
             throw new TrainingServiceBusinessException(Strings.TrainingTheSameAvailabilityTitle, Strings.TrainingBadAvailabilityStatusMessage);
         }
-         
-        var @event = AvailabilityChanged.Create(this.Id, newAvailability);
+
+        if (newAvailability == TrainingAvailability.Private && TrainingUsers.Any())
+        {
+            throw new TrainingServiceBusinessException(Strings.TrainingCannotBePrivateTitle, Strings.TrainingCannotBePrivateMessage);
+        }
+
+        var @event = AvailabilityChanged.Create(this.Id, this.EnrollmentId, newAvailability, this.TrainerUniqueCode);
+        this.Apply(@event);
+        this.Enqueue(@event); 
+    }
+
+    public void AssignEnrollment(Guid enrollmentId)
+    {
+        var @event = EnrollmentAssigned.Create(this.Id, enrollmentId);
+        this.Apply(@event);
+        this.Enqueue(@event);
+    }
+
+    public void ToHistory(Guid trainerUniqueCode)
+    {  
+        if (!IsCreator(trainerUniqueCode))
+        {
+            throw new TrainingServiceBusinessException(Strings.BadTrainerCodeTitle, Strings.BadTrainerCodeMessage);
+        }
+
+        //If the status is InProgress or Init, it will be deleted automatically (in background)
+        if (Status != TrainingStatus.Shared)
+        {
+            throw new TrainingServiceBusinessException(Strings.StatusMustBeSharedTitle, Strings.StatusMustBeSharedMessage);
+        }
+
+        if (TrainingUsers.Any())
+        {
+            throw new TrainingServiceBusinessException(Strings.TrainingCannotBeHistoricTitle, Strings.TrainingCannotBeHistoricMessage);
+        }
+
+        var @event = TrainingMarkedAsHistorical.Create(this.Id, this.EnrollmentId, trainerUniqueCode);
         this.Apply(@event);
         this.Enqueue(@event); 
     }
      
-    public void Share()
+    public void Share(bool isPublic)
     {
         if (Status == TrainingStatus.Shared || (Status == TrainingStatus.Init))
         {
             throw new TrainingServiceBusinessException(Strings.TrainingBadStatusTitle, Strings.TrainingBadStatusMessage);
         }
 
-        var @event = TrainingShared.Create(this.Id, this.TrainerUniqueCode);
+        var @event = TrainingShared.Create(this.Id, this.TrainerUniqueCode, isPublic);
         this.Apply(@event);
         this.Enqueue(@event);
     }
@@ -121,6 +158,12 @@ public class Training : Aggregate
             case AvailabilityChanged e:
                 TrainingAvailabilityChanged(e);
                 break;
+            case TrainingMarkedAsHistorical e:
+                MarkedAsHistory(e);
+                break;
+            case EnrollmentAssigned e:
+                EnrollmentIdAssigned(e);
+                break;
             default:
                 break; 
         }
@@ -147,6 +190,7 @@ public class Training : Aggregate
     public void Shared(TrainingShared @event)
     {
         Status = TrainingStatus.Shared;
+        Availability = @event.IsPublic ? TrainingAvailability.Public : TrainingAvailability.Group;
         IsActive = true;
     }
 
@@ -187,6 +231,16 @@ public class Training : Aggregate
             TrainingExercises.Replace(result,
                 result.Update(@event.NumberRepetitions, null));
         }
+    }
+
+    public void EnrollmentIdAssigned(EnrollmentAssigned @event)
+    {
+        EnrollmentId = @event.EnrollmentId;
+    }
+
+    public void MarkedAsHistory(TrainingMarkedAsHistorical @event)
+    {
+        IsHistoric = true;
     }
 
     public void TrainingAvailabilityChanged(AvailabilityChanged @event)

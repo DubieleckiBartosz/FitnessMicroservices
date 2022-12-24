@@ -7,13 +7,13 @@ public class UserEnrollment : IEnrollmentRead
 {
     public Guid Id { get; private set; }
     public Guid EnrollmentId { get; private set; }
-    public Guid UserId { get; private set; }
+    public int UserId { get; private set; }
     public bool Cancelled { get; private set; }
     public DateTime? CancelledDate { get; private set; }
     public bool Accepted { get; private set; }
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
-    private UserEnrollment(Guid enrollmentId, Guid userId)
+    private UserEnrollment(Guid enrollmentId, int userId)
     {
         Id = Guid.NewGuid();
         EnrollmentId = enrollmentId;
@@ -23,7 +23,7 @@ public class UserEnrollment : IEnrollmentRead
         CancelledDate = null;
     }
 
-    public static UserEnrollment Create(Guid enrollmentId, Guid userId)
+    public static UserEnrollment Create(Guid enrollmentId, int userId)
     {
         return new UserEnrollment(enrollmentId, userId);
     }

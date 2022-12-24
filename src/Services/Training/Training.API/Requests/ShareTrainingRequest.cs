@@ -1,3 +1,3 @@
 ﻿namespace Training.API.Requests;
 
-public record ShareTrainingRequest(Guid TrainingId);
+public record ShareTrainingRequest(Guid TrainingId, bool IsPublic);

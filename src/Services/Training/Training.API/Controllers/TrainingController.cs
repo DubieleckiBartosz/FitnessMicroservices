@@ -48,7 +48,7 @@ public class TrainingController : ControllerBase
     [ProducesResponseType(401)]
     [ProducesResponseType(typeof(object), 400)]
     [ProducesResponseType(typeof(object), 500)]
-    [ProducesResponseType(typeof(Guid), 200)]
+    [ProducesResponseType(204)]
     [SwaggerOperation(Summary = "Share training")]
     [Authorize(Roles = Strings.TrainerRole)]
     [HttpPost("[action]")]
@@ -57,11 +57,11 @@ public class TrainingController : ControllerBase
         var command = ShareTrainingCommand.Create(request);
         await _commandBus.Send(command);
 
-        return Ok();
+        return NoContent();
     }
 
     [ProducesResponseType(401)]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(typeof(object), 400)]
     [ProducesResponseType(typeof(object), 500)]
     [SwaggerOperation(Summary = "Add new exercise to training")]
@@ -72,11 +72,11 @@ public class TrainingController : ControllerBase
         var command = AddExerciseCommand.Create(request);
         await _commandBus.Send(command);
 
-        return Ok();
+        return NoContent();
     }
 
     [ProducesResponseType(401)]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(typeof(object), 400)]
     [ProducesResponseType(typeof(object), 500)]
     [SwaggerOperation(Summary = "Remove exercise")]
@@ -87,11 +87,11 @@ public class TrainingController : ControllerBase
         var command = RemoveExerciseCommand.Create(request);
         await _commandBus.Send(command);
 
-        return Ok();
+        return NoContent();
     }
 
     [ProducesResponseType(401)]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(typeof(object), 400)]
     [ProducesResponseType(typeof(object), 500)]
     [SwaggerOperation(Summary = "Change training availability")]
@@ -102,6 +102,21 @@ public class TrainingController : ControllerBase
         var command = NewAvailabilityCommand.Create(request);
         await _commandBus.Send(command);
 
-        return Ok();
+        return NoContent();
+    }
+    
+    [ProducesResponseType(401)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(typeof(object), 400)]
+    [ProducesResponseType(typeof(object), 500)]
+    [SwaggerOperation(Summary = "Add training to history")]
+    [Authorize(Roles = Strings.TrainerRole)]
+    [HttpPut("[action]")]
+    public async Task<IActionResult> TrainingTo([FromBody] TrainingToHistoryRequest request)
+    {
+        var command = TrainingToHistoryCommand.Create(request);
+        await _commandBus.Send(command);
+
+        return NoContent();
     }
 }
