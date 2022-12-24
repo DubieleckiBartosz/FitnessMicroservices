@@ -23,36 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{544011
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitness.Common", "src\Common\Fitness.Common\Fitness.Common.csproj", "{B7D4213F-AEC2-4007-BECA-6D45A4424A8B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityDb", "IdentityDb", "{7A97FD73-21C4-4CDA-AF38-28BD35A762FE}"
-	ProjectSection(SolutionItems) = preProject
-		Identity-create-db.sql = Identity-create-db.sql
-		Identity-create-storedProcedures.sql = Identity-create-storedProcedures.sql
-		Identity-create-tables.sql = Identity-create-tables.sql
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{A47A2932-F83B-4DAE-BD50-71C82AB7EF02}"
-	ProjectSection(SolutionItems) = preProject
-		.env = .env
-		docker-compose.yml = docker-compose.yml
-		entrypoint.sh = entrypoint.sh
-		setupsql.sh = setupsql.sh
-		sql.Dockerfile = sql.Dockerfile
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Training", "Training", "{8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Training.API", "src\Services\Training\Training.API\Training.API.csproj", "{91495425-CF90-45AD-8D3C-24E8B2716C49}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{39365B6A-E8A4-48DB-89D5-DBBE29F33164}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStoreDb", "EventStoreDb", "{E144686E-3CF0-454A-A43D-71A55E8A2CFC}"
-	ProjectSection(SolutionItems) = preProject
-		EventStore-create-db.sql = EventStore-create-db.sql
-		EventStore-create-storedProcedures.sql = EventStore-create-storedProcedures.sql
-		EventStore-create-tables.sql = EventStore-create-tables.sql
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Enrollment", "Enrollment", "{BB19C004-A165-42B5-8C48-E05AD14B62C4}"
 EndProject
@@ -60,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.API", "src\Servi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.Application", "src\Services\Enrollment\Enrollment.Application\Enrollment.Application.csproj", "{DA59D87D-7DA6-4D3A-956C-1FA03FBC633F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrollment.Infrastructure", "src\Services\Enrollment\Enrollment.Infrastructure\Enrollment.Infrastructure.csproj", "{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.Infrastructure", "src\Services\Enrollment\Enrollment.Infrastructure\Enrollment.Infrastructure.csproj", "{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Training.IntegrationTests", "src\Services\Training\Tests\Training.IntegrationTests\Training.IntegrationTests.csproj", "{DD4D5786-206E-4ED8-B5C8-311C3F6796B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +81,10 @@ Global
 		{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4D5786-206E-4ED8-B5C8-311C3F6796B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4D5786-206E-4ED8-B5C8-311C3F6796B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4D5786-206E-4ED8-B5C8-311C3F6796B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4D5786-206E-4ED8-B5C8-311C3F6796B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,17 +99,14 @@ Global
 		{200274FD-59B1-4708-B1C3-FB3E9D0206C9} = {60F0878C-0989-4621-B081-DB5583BD713D}
 		{544011F2-0F0B-4E89-A0D6-540896BC7869} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
 		{B7D4213F-AEC2-4007-BECA-6D45A4424A8B} = {544011F2-0F0B-4E89-A0D6-540896BC7869}
-		{2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
-		{7A97FD73-21C4-4CDA-AF38-28BD35A762FE} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
-		{A47A2932-F83B-4DAE-BD50-71C82AB7EF02} = {18B747B2-8B07-4829-AC01-BDA9DFDCA8A1}
 		{8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F} = {9FB2A015-61FA-4A38-8457-88922F66085E}
 		{91495425-CF90-45AD-8D3C-24E8B2716C49} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
 		{39365B6A-E8A4-48DB-89D5-DBBE29F33164} = {8EAF3E9E-4F5E-4DE6-9AD3-6B3E9368907F}
-		{E144686E-3CF0-454A-A43D-71A55E8A2CFC} = {2A7CB60A-79D7-4D3D-8F7A-715DEEF4FF4C}
 		{BB19C004-A165-42B5-8C48-E05AD14B62C4} = {9FB2A015-61FA-4A38-8457-88922F66085E}
 		{217924C8-2C73-42EC-8267-F42CBBB448C6} = {BB19C004-A165-42B5-8C48-E05AD14B62C4}
 		{DA59D87D-7DA6-4D3A-956C-1FA03FBC633F} = {BB19C004-A165-42B5-8C48-E05AD14B62C4}
 		{53A8E014-DA9E-47AA-B4FF-6207501A7E7D} = {BB19C004-A165-42B5-8C48-E05AD14B62C4}
+		{DD4D5786-206E-4ED8-B5C8-311C3F6796B6} = {39365B6A-E8A4-48DB-89D5-DBBE29F33164}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}
