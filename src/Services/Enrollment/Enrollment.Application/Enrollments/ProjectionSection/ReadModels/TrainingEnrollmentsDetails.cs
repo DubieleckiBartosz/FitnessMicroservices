@@ -12,6 +12,9 @@ public class TrainingEnrollmentsDetails : IEnrollmentRead
     public DateTime Modified { get; set; }
     public List<UserEnrollment>? UserEnrollments { get; private set; }
 
+    public TrainingEnrollmentsDetails()
+    {
+    }
     private TrainingEnrollmentsDetails(Guid enrollmentId, Guid trainingId, Guid creator)
     {
         Id = enrollmentId;

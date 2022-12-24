@@ -13,6 +13,10 @@ public class UserEnrollment : IEnrollmentRead
     public bool Accepted { get; private set; }
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
+
+    public UserEnrollment()
+    {
+    }
     private UserEnrollment(Guid enrollmentId, int userId)
     {
         Id = Guid.NewGuid();

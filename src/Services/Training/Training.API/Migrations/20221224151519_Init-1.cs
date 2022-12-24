@@ -15,8 +15,10 @@ namespace Training.API.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    EnrollmentId = table.Column<Guid>(type: "uuid", nullable: true),
                     TrainerUniqueCode = table.Column<Guid>(type: "uuid", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsHistoric = table.Column<bool>(type: "boolean", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Availability = table.Column<int>(type: "integer", nullable: false),
@@ -36,9 +38,7 @@ namespace Training.API.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,6 +51,7 @@ namespace Training.API.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    ExternalExerciseId = table.Column<Guid>(type: "uuid", nullable: false),
                     NumberRepetitions = table.Column<int>(type: "integer", nullable: false),
                     BreakBetweenSetsInMinutes = table.Column<int>(type: "integer", nullable: false),
                     TrainingDetailsId = table.Column<Guid>(type: "uuid", nullable: false)

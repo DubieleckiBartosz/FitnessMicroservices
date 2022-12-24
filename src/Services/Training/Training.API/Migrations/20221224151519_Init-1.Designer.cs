@@ -12,8 +12,8 @@ using Training.API.Database;
 namespace Training.API.Migrations
 {
     [DbContext(typeof(TrainingContext))]
-    [Migration("20221109231415_Init-2")]
-    partial class Init2
+    [Migration("20221224151519_Init-1")]
+    partial class Init1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,10 +42,16 @@ namespace Training.API.Migrations
                     b.Property<int?>("DurationTrainingInMinutes")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("EnrollmentId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsHistoric")
                         .HasColumnType("boolean");
 
                     b.Property<decimal?>("Price")
@@ -68,23 +74,13 @@ namespace Training.API.Migrations
             modelBuilder.Entity("Training.API.Trainings.ReadModels.TrainingUser", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
