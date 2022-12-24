@@ -1,3 +1,20 @@
-﻿namespace Training.API.Requests;
+﻿using Newtonsoft.Json;
 
-public record ShareTrainingRequest(Guid TrainingId, bool IsPublic);
+namespace Training.API.Requests;
+
+public class ShareTrainingRequest
+{ 
+    public Guid TrainingId { get; init; }
+    public bool IsPublic { get; init; }
+
+    public ShareTrainingRequest()
+    {
+    }
+
+    [JsonConstructor]
+    public ShareTrainingRequest(Guid trainingId, bool isPublic)
+    {
+        TrainingId = trainingId;
+        IsPublic = isPublic;
+    }
+}

@@ -21,4 +21,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Base\" />
+    <Folder Include="Tools\" />
+    <Folder Include="Tests\Configurations\" />
+    <Folder Include="Tests\Controllers\" />
+  </ItemGroup>
+
 </Project>
