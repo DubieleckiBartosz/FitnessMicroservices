@@ -6,8 +6,7 @@ namespace Identity.Application.Utils;
 public static class TokenUtils
 {
     public static string CreateJwtToken(this User user, JwtSettings jwtSettings)
-    { 
-
+    {  
         var roleClaims = new List<Claim>();
         roleClaims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Name)).ToList());
         if (user.TrainerCode != null)
