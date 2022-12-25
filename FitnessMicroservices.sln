@@ -37,13 +37,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.Application", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.Infrastructure", "src\Services\Enrollment\Enrollment.Infrastructure\Enrollment.Infrastructure.csproj", "{53A8E014-DA9E-47AA-B4FF-6207501A7E7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Training.IntegrationTests", "src\Services\Training\Tests\Training.IntegrationTests\Training.IntegrationTests.csproj", "{9C60FEE9-7B63-4885-A90C-3BE179C85547}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Training.IntegrationTests", "src\Services\Training\Tests\Training.IntegrationTests\Training.IntegrationTests.csproj", "{9C60FEE9-7B63-4885-A90C-3BE179C85547}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.IntegrationTests", "src\Services\Identity\Tests\Identity.IntegrationTests\Identity.IntegrationTests.csproj", "{B346BAE7-6B07-48EF-8816-FAAE5EA89684}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.IntegrationTests", "src\Services\Identity\Tests\Identity.IntegrationTests\Identity.IntegrationTests.csproj", "{B346BAE7-6B07-48EF-8816-FAAE5EA89684}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{137710BB-62FC-4D25-A773-C0D7DE11F731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrollment.IntegrationTests", "src\Services\Enrollment\Tests\Enrollment.IntegrationTests\Enrollment.IntegrationTests.csproj", "{E6E409DD-0E2C-4403-A7FE-98E24A3C4536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enrollment.IntegrationTests", "src\Services\Enrollment\Tests\Enrollment.IntegrationTests\Enrollment.IntegrationTests.csproj", "{E6E409DD-0E2C-4403-A7FE-98E24A3C4536}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Exercise", "Exercise", "{34A9D116-EEFF-4AB2-9A6D-9110E16D6987}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise.API", "src\Services\Exercise\Exercise.API\Exercise.API.csproj", "{48A7016E-DCAD-432C-B2C6-C45CE838A279}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +103,10 @@ Global
 		{E6E409DD-0E2C-4403-A7FE-98E24A3C4536}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6E409DD-0E2C-4403-A7FE-98E24A3C4536}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6E409DD-0E2C-4403-A7FE-98E24A3C4536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48A7016E-DCAD-432C-B2C6-C45CE838A279}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48A7016E-DCAD-432C-B2C6-C45CE838A279}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48A7016E-DCAD-432C-B2C6-C45CE838A279}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48A7016E-DCAD-432C-B2C6-C45CE838A279}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +132,8 @@ Global
 		{B346BAE7-6B07-48EF-8816-FAAE5EA89684} = {D8ECE8C1-E00D-4790-8391-B889CBEBF6F8}
 		{137710BB-62FC-4D25-A773-C0D7DE11F731} = {BB19C004-A165-42B5-8C48-E05AD14B62C4}
 		{E6E409DD-0E2C-4403-A7FE-98E24A3C4536} = {137710BB-62FC-4D25-A773-C0D7DE11F731}
+		{34A9D116-EEFF-4AB2-9A6D-9110E16D6987} = {9FB2A015-61FA-4A38-8457-88922F66085E}
+		{48A7016E-DCAD-432C-B2C6-C45CE838A279} = {34A9D116-EEFF-4AB2-9A6D-9110E16D6987}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}
