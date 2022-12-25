@@ -28,8 +28,5 @@ public class TrainingControllerTests : BaseSetup
         Assert.NotNull(result);
         Assert.Equal(1, result?.Count);
         Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
-    }
-
-
-
+    }  
 }
