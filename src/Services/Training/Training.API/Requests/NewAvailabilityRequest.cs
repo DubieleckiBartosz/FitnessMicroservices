@@ -1,3 +1,20 @@
-﻿namespace Training.API.Requests;
+﻿using Newtonsoft.Json;
 
-public record NewAvailabilityRequest(Guid TrainingId, TrainingAvailability NewAvailability);
+namespace Training.API.Requests;
+
+public class NewAvailabilityRequest
+{ 
+    public Guid TrainingId { get; init; }
+    public TrainingAvailability NewAvailability { get; init; }
+
+    public NewAvailabilityRequest()
+    {
+    }
+
+    [JsonConstructor]
+    public NewAvailabilityRequest(Guid trainingId, TrainingAvailability newAvailability)
+    {
+        TrainingId = trainingId;
+        NewAvailability = newAvailability;
+    }
+}

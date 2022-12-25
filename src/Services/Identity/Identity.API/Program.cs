@@ -13,7 +13,6 @@ builder.Configuration.AddJsonFile(Path.Combine(commonFolder, "CommonSettings.jso
     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true).AddEnvironmentVariables(); 
 
 // Add services to the container.
-
 builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService()); 
 
 builder.ApiConfiguration();

@@ -1,4 +1,24 @@
-﻿namespace Training.API.Requests;
+﻿using Newtonsoft.Json;
 
-public record AddExerciseRequest(Guid ExternalExerciseId, int NumberRepetitions, int BreakBetweenSetsInMinutes,
-    Guid TrainingId);
+namespace Training.API.Requests;
+
+public class AddExerciseRequest
+{ 
+    public Guid ExternalExerciseId { get; init; }
+    public int NumberRepetitions { get; init; }
+    public int BreakBetweenSetsInMinutes { get; init; }
+    public Guid TrainingId { get; init; }
+
+    public AddExerciseRequest()
+    {
+    }
+
+    [JsonConstructor]
+    public AddExerciseRequest(Guid externalExerciseId, int numberRepetitions, int breakBetweenSetsInMinutes, Guid trainingId)
+    {
+        ExternalExerciseId = externalExerciseId;
+        NumberRepetitions = numberRepetitions;
+        BreakBetweenSetsInMinutes = breakBetweenSetsInMinutes;
+        TrainingId = trainingId;
+    }
+}

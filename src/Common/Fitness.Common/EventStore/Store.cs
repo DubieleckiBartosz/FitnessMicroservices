@@ -8,7 +8,7 @@ namespace Fitness.Common.EventStore;
 public class Store : IStore
 {
     private readonly DapperConnection<Store> _connection;
-    public Store(IOptions<EventStoreOptions> eventStoreOptions,ILoggerManager<Store> logger)
+    public Store(IOptions<EventStoreOptions> eventStoreOptions, ILoggerManager<Store> logger)
     {
         if (eventStoreOptions == null)
         {

@@ -112,7 +112,7 @@ public class TrainingController : ControllerBase
     [SwaggerOperation(Summary = "Add training to history")]
     [Authorize(Roles = Strings.TrainerRole)]
     [HttpPut("[action]")]
-    public async Task<IActionResult> TrainingTo([FromBody] TrainingToHistoryRequest request)
+    public async Task<IActionResult> TrainingToHistory([FromBody] TrainingToHistoryRequest request)
     {
         var command = TrainingToHistoryCommand.Create(request);
         await _commandBus.Send(command);
