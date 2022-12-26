@@ -109,5 +109,13 @@ public class TrainingDetails : ITrainingRead
     {
         EnrollmentId = @event.EnrollmentId;
     }
+
+    public void Updated(TrainingDataUpdated @event)
+    {
+        DurationTrainingInMinutes = @event.DurationTrainingInMinutes ?? DurationTrainingInMinutes;
+        BreakBetweenExercisesInMinutes = @event.BreakBetweenExercisesInMinutes ?? BreakBetweenExercisesInMinutes;
+        Price = @event.Price ?? Price;
+    }
+
     public int GetUsersEnrolledCount() => NumberUsersEnrolled;
 }

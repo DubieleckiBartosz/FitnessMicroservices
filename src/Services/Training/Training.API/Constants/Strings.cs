@@ -23,6 +23,9 @@ public class Strings
     public const string TrainingCannotBeHistoricMessage = "If the training is to be history, the list of users must be empty.";
     public const string StatusMustBeSharedMessage = "Status must be 'Shared'.";
     public const string EnrollmentIdCannotBeNullMessage = "EnrollmentId must exist if you want to close enrollment.";
+    public const string PriceCannotBeNull = "The price cannot be null during the first data additions.";
+    public const string BreakBetweenExercisesCannotBeNull = "The break between exercises cannot be null during the first data additions.";
+    public const string DurationTrainingCannotBeNull = "The duration cannot be null during the first data additions.";
 
 
     //Titles
@@ -39,4 +42,5 @@ public class Strings
     public const string TrainingCannotBeHistoricTitle = "The user list must be empty.";
     public const string StatusMustBeSharedTitle = "Bad status.";
     public const string EnrollmentIdCannotBeNullTitle = "EnrollmentId cannot be null.";
+    public const string DataMustBeCompleted = "Data must be completed.";
 }

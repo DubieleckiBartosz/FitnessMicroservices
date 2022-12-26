@@ -59,6 +59,34 @@ public class Training : Aggregate
         this.Enqueue(@event);
     }
 
+    public void Update(Guid trainerUniqueCode, int? durationTrainingInMinutes, int? breakBetweenExercisesInMinutes, decimal? price)
+    {
+        if (!IsCreator(trainerUniqueCode))
+        {
+            throw new TrainingServiceBusinessException(Strings.BadTrainerCodeTitle, Strings.BadTrainerCodeMessage);
+        }
+
+        if (durationTrainingInMinutes == null && DurationTrainingInMinutes == null)
+        {
+            throw new TrainingServiceBusinessException(Strings.DataMustBeCompleted, Strings.DurationTrainingCannotBeNull);
+        }
+
+        if (breakBetweenExercisesInMinutes == null && BreakBetweenExercisesInMinutes == null)
+        {
+            throw new TrainingServiceBusinessException(Strings.DataMustBeCompleted, Strings.BreakBetweenExercisesCannotBeNull);
+        }
+
+        if (price == null && Price == null)
+        {
+            throw new TrainingServiceBusinessException(Strings.DataMustBeCompleted, Strings.PriceCannotBeNull);
+        }
+
+        var @event = TrainingDataUpdated.Create(this.Id, durationTrainingInMinutes, breakBetweenExercisesInMinutes, price);
+        Apply(@event);
+        Enqueue(@event);
+    }
+
+
     public void ToHistory(Guid trainerUniqueCode)
     {  
         if (!IsCreator(trainerUniqueCode))
@@ -143,6 +171,9 @@ public class Training : Aggregate
             case NewTrainingInitiated e:
                 Initiated(e);
                 break;
+            case TrainingDataUpdated e:
+                Updated(e);
+                break;
             case UserToTrainingAdded e:
                 UserAdded(e);
                 break;
@@ -180,6 +211,14 @@ public class Training : Aggregate
         TrainingExercises = new List<TrainingExercise>();
         TrainingUsers = new List<TrainingUser>();
     }
+
+    public void Updated(TrainingDataUpdated @event)
+    { 
+        DurationTrainingInMinutes = @event.DurationTrainingInMinutes ?? DurationTrainingInMinutes;
+        BreakBetweenExercisesInMinutes = @event.BreakBetweenExercisesInMinutes ?? BreakBetweenExercisesInMinutes;
+        Price = @event.Price ?? Price;
+    }
+
 
     public void UserAdded(UserToTrainingAdded @event)
     {
