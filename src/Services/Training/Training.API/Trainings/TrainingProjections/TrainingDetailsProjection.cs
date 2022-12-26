@@ -13,6 +13,7 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
     {
         _trainingRepository = wrapperRepository?.TrainingRepository ?? throw new ArgumentNullException(nameof(wrapperRepository));
         _wrapperRepository = wrapperRepository;
+
         Projects<NewTrainingInitiated>(Handle);
         Projects<UserToTrainingAdded>(Handle);
         Projects<ExerciseAdded>(Handle);
@@ -21,6 +22,7 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         Projects<AvailabilityChanged>(Handle);
         Projects<TrainingMarkedAsHistorical>(Handle);
         Projects<EnrollmentAssigned>(Handle);
+        Projects<TrainingDataUpdated>(Handle);
     }
 
     private async Task Handle(NewTrainingInitiated @event, CancellationToken cancellationToken = default)
@@ -34,6 +36,20 @@ public class TrainingDetailsProjection : ReadModelAction<TrainingDetails>
         await _trainingRepository.CreateAsync(newTraining, cancellationToken);
         await _wrapperRepository.SaveAsync(cancellationToken);
     } 
+    
+    private async Task Handle(TrainingDataUpdated @event, CancellationToken cancellationToken = default)
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        var training = await GetTrainingDetails(@event.TrainingId, cancellationToken);
+        training.Updated(@event);
+
+        await _wrapperRepository.SaveAsync(cancellationToken);
+    } 
+
     private async Task Handle(EnrollmentAssigned @event, CancellationToken cancellationToken = default)
     {
         if (@event == null)

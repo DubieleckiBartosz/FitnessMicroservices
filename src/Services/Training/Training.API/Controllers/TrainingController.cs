@@ -94,6 +94,21 @@ public class TrainingController : ControllerBase
     [ProducesResponseType(204)]
     [ProducesResponseType(typeof(object), 400)]
     [ProducesResponseType(typeof(object), 500)]
+    [SwaggerOperation(Summary = "Update basic data")]
+    [Authorize(Roles = Strings.TrainerRole)]
+    [HttpPut("[action]")]
+    public async Task<IActionResult> Update([FromBody] UpdateTrainingRequest request)
+    {
+        var command = UpdateTrainingCommand.Create(request);
+        await _commandBus.Send(command);
+
+        return NoContent();
+    }
+    
+    [ProducesResponseType(401)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(typeof(object), 400)]
+    [ProducesResponseType(typeof(object), 500)]
     [SwaggerOperation(Summary = "Change training availability")]
     [Authorize(Roles = Strings.TrainerRole)]
     [HttpPut("[action]")]
