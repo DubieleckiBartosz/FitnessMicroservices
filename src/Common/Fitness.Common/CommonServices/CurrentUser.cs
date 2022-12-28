@@ -40,4 +40,33 @@ public class CurrentUser : ICurrentUser
            return Claims?.Claims.FirstOrDefault(_ => _.Type == CommonConstants.ClaimTrainerType)?.Value; 
         }
     }
+
+    public string? UserName
+    {
+        get
+        {
+            var result = Claims?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)?.Value;
+            if (result == null)
+            {
+                throw new FitnessApplicationException("User name cannot be null", "User name is null",
+                    HttpStatusCode.Unauthorized);
+            }
+
+            return result;
+        }
+    }
+    public string Email
+    {
+        get
+        {
+            var result = Claims?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)?.Value;
+            if (result == null)
+            {
+                throw new FitnessApplicationException("User mail cannot be null", "User mail is null",
+                    HttpStatusCode.Unauthorized);
+            }
+
+            return result;
+        }
+    }
 }
