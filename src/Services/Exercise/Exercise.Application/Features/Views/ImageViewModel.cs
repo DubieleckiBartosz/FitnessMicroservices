@@ -1,3 +1,3 @@
 ﻿namespace Exercise.Application.Features.Views;
 
-public record ImageViewModel(string ImagePath, string ImageTitle, bool IsMain , string Description);
+public record ImageViewModel(Guid Id, string ImagePath, string ImageTitle, bool IsMain , string? Description);

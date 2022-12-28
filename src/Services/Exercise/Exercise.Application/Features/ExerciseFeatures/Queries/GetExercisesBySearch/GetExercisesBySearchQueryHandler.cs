@@ -13,8 +13,14 @@ public class GetExercisesBySearchQueryHandler : IQueryHandler<GetExercisesBySear
         _exerciseRepository = exerciseRepository ?? throw new ArgumentNullException(nameof(exerciseRepository));
     }
 
-    public Task<List<GetExerciseBySearchViewModel>> Handle(GetExercisesBySearchQuery request, CancellationToken cancellationToken)
+    public async Task<List<GetExerciseBySearchViewModel>> Handle(GetExercisesBySearchQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var resultSearch = await _exerciseRepository.GetBySearchAsync(request.Id, request.Name, request.Sort.Type,
+            request.Sort.Name, request.SearchQuery.PageNumber, request.SearchQuery.PageSize);
+
+        var resultMap = resultSearch?.Select(_ =>
+            new GetExerciseBySearchViewModel(_.Id, _.Name, _.CreatedBy, _.Video?.VideoLink, _.Description.Description)).ToList();
+
+        return resultMap ?? new List<GetExerciseBySearchViewModel>();
     }
 }

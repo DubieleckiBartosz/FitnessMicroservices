@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Exercise.Application.Models.Parameters;
 
 public class AddNewImageToExerciseParameters
 {
+    public IFormFile Image { get; init; }
     public Guid ExerciseId { get; init; }
     public string ImagePath { get; init; }
     public string ImageTitle { get; init; }
@@ -15,8 +17,9 @@ public class AddNewImageToExerciseParameters
     }
 
     [JsonConstructor]
-    public AddNewImageToExerciseParameters(Guid exerciseId, string imagePath, string imageTitle, bool isMain, string description)
+    public AddNewImageToExerciseParameters(IFormFile image, Guid exerciseId, string imagePath, string imageTitle, bool isMain, string description)
     {
+        Image = image;
         ExerciseId = exerciseId;
         ImagePath = imagePath;
         ImageTitle = imageTitle;

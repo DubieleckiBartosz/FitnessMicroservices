@@ -9,16 +9,11 @@ public class ExerciseImage : Entity
     public string ImagePath { get; private set; }
     public string ImageTitle { get; private set; }
     public bool IsMain { get; private set; }
-    public ImageDescription Description { get; private set; }
+    public ImageDescription? Description { get; private set; }
 
 
-    private ExerciseImage(Guid exerciseId, string path, string title, bool isMain, ImageDescription description)
+    private ExerciseImage(Guid exerciseId, string path, string title, bool isMain, ImageDescription? description)
     {
-        if (description == null)
-        {
-            throw new ArgumentNullException(nameof(description));
-        }
-
         if (title == null)
         {
             throw new ArgumentNullException(nameof(title));
@@ -29,23 +24,24 @@ public class ExerciseImage : Entity
             throw new ArgumentNullException(nameof(path));
         }
 
-        (this.ExerciseId, this.ImagePath, this.ImageTitle, this.IsMain, this.Description) =
-            (exerciseId, path, title, isMain, description);
+        (this.Id, this.ExerciseId, this.ImagePath, this.ImageTitle, this.IsMain, this.Description) =
+            (Guid.NewGuid(), exerciseId, path, title, isMain, description);
     }
 
-    private ExerciseImage(Guid id, Guid exerciseId, string path, string title, bool isMain, ImageDescription description) :
+    private ExerciseImage(Guid id, Guid exerciseId, string path, string title, bool isMain, ImageDescription? description) :
         this(exerciseId, path, title, isMain, description)
     {
         this.Id = id;
     }
 
     public static ExerciseImage LoadImage(Guid id, Guid exerciseId, string path, string title, bool isMain,
-        ImageDescription description)
+        ImageDescription? description)
     {
         return new ExerciseImage(id, exerciseId, path, title, isMain, description);
     }
+
     public static ExerciseImage Create(Guid exerciseId, string path, string title, bool isMain,
-        ImageDescription description)
+        ImageDescription? description)
     {
         if (string.IsNullOrEmpty(path))
         {

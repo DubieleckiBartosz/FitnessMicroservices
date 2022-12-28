@@ -6,12 +6,12 @@ namespace Exercise.Domain.Entities;
 public class Exercise : Entity
 {
     public string Name { get; }
-    public Guid CreatedBy { get; }
+    public string CreatedBy { get; }
     public Link? Video { get; private set; }
     public ExerciseDescription Description { get; private set; }
     public List<ExerciseImage> Images { get; private set; }
 
-    private Exercise(string name, Guid createdBy, ExerciseDescription description)
+    private Exercise(string name, string createdBy, ExerciseDescription description)
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -20,7 +20,7 @@ public class Exercise : Entity
         Images = new List<ExerciseImage>();
     }
 
-    public Exercise(Guid id, string name, Guid createdBy, ExerciseDescription description, List<ExerciseImage> images)
+    private Exercise(Guid id, string name, string createdBy, ExerciseDescription description, List<ExerciseImage>? images)
     {
         Id = id;
         Name = name;
@@ -29,14 +29,19 @@ public class Exercise : Entity
         Images = images ?? new List<ExerciseImage>();
     }
 
-    public static Exercise Create(string name, Guid createdBy, ExerciseDescription description)
+    public static Exercise Create(string name, string createdBy, ExerciseDescription description)
     {
         return new Exercise(name, createdBy, description);
     }
 
-    public static Exercise Load(Guid id, string name, Guid createdBy, ExerciseDescription description, List<ExerciseImage> images)
+    public static Exercise Load(Guid id, string name, string createdBy, ExerciseDescription description, List<ExerciseImage> images)
     {
         return new Exercise(id, name, createdBy, description, images);
+    }
+
+    public static Exercise Load(Guid id, string name, string createdBy, ExerciseDescription description)
+    {
+        return new Exercise(id, name, createdBy, description, null);
     }
 
     public void UpdateDescription(ExerciseDescription newDescription)

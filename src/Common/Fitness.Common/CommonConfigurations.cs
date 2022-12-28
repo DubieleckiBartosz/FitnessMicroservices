@@ -13,6 +13,7 @@ using Fitness.Common.RabbitMQ;
 using Fitness.Common.Abstractions;
 using Fitness.Common.Behaviours;
 using Fitness.Common.CommonServices;
+using Fitness.Common.FileOperations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,10 @@ public static class CommonConfigurations
     {
         //EMAIL
         services.GetAccessoriesDependencyInjection();
+
+
+        //FILE
+        services.AddScoped<IFileService, FileService>();
 
         //EVENT
         services.AddScoped<ICommandBus, CommandBus>();

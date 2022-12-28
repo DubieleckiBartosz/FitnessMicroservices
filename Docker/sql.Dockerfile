@@ -14,6 +14,9 @@ COPY ./Database/Identity/Identity-create-storedProcedures.sql ./
 COPY ./Database/EventStore/EventStore-create-db.sql ./
 COPY ./Database/EventStore/EventStore-create-tables.sql ./
 COPY ./Database/EventStore/EventStore-create-storedProcedures.sql ./
+COPY ./Database/Exercise/Exercise-create-db.sql ./
+COPY ./Database/Exercise/Exercise-create-tables.sql ./
+COPY ./Database/Exercise/Exercise-create-storedProcedures.sql ./
 COPY entrypoint.sh ./
 COPY setupsql.sh ./
 
