@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\DataAccessObjects\" />
+    <Folder Include="Models\DataTransferObjects\" />
+    <Folder Include="Models\Parameters\" />
+  </ItemGroup>
+
 </Project>

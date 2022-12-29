@@ -53,13 +53,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Opinion", "Opinion", "{D6D1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opinion.API", "src\Services\Opinion\Opinion.API\Opinion.API.csproj", "{4BA5533A-16CC-4C76-9FD6-44089786CC19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise.Application", "src\Services\Exercise\Exercise.Application\Exercise.Application.csproj", "{D1B2DB83-9798-4A49-9BE2-E6B7C8235503}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise.Application", "src\Services\Exercise\Exercise.Application\Exercise.Application.csproj", "{D1B2DB83-9798-4A49-9BE2-E6B7C8235503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise.Domain", "src\Services\Exercise\Exercise.Domain\Exercise.Domain.csproj", "{46FAE9F5-9072-47C6-A6DE-0BA1BBD63524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise.Domain", "src\Services\Exercise\Exercise.Domain\Exercise.Domain.csproj", "{46FAE9F5-9072-47C6-A6DE-0BA1BBD63524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise.Infrastructure", "src\Services\Exercise\Exercise.Infrastructure\Exercise.Infrastructure.csproj", "{E7F23232-77AC-4E07-A447-AC847FEACC19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise.Infrastructure", "src\Services\Exercise\Exercise.Infrastructure\Exercise.Infrastructure.csproj", "{E7F23232-77AC-4E07-A447-AC847FEACC19}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92BB7FBB-362C-4A37-B57F-F78CA8BA7087}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{19C0F125-3606-4489-A728-25BE6924CC61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,6 +170,7 @@ Global
 		{46FAE9F5-9072-47C6-A6DE-0BA1BBD63524} = {34A9D116-EEFF-4AB2-9A6D-9110E16D6987}
 		{E7F23232-77AC-4E07-A447-AC847FEACC19} = {34A9D116-EEFF-4AB2-9A6D-9110E16D6987}
 		{92BB7FBB-362C-4A37-B57F-F78CA8BA7087} = {34A9D116-EEFF-4AB2-9A6D-9110E16D6987}
+		{19C0F125-3606-4489-A728-25BE6924CC61} = {D6D139D4-67F4-4F55-A856-F4076E2A7543}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A11E29D-7840-4036-BB83-8BBD277BE9E2}
