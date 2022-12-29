@@ -2,16 +2,11 @@
 
 public class ProcessAssignmentEnrollment : IEventHandler<EnrollmentAssigned>
 {
-    private readonly ICommandBus commandBus;
+    private readonly ICommandBus _commandBus;
 
     public ProcessAssignmentEnrollment(ICommandBus commandBus)
     {
-        if (commandBus is null)
-        {
-            throw new ArgumentNullException(nameof(commandBus));
-        }
-
-        this.commandBus = commandBus;
+        this._commandBus = commandBus ?? throw new ArgumentNullException(nameof(commandBus));
     }
     public async Task Handle(EnrollmentAssigned notification, CancellationToken cancellationToken)
     {
@@ -21,6 +16,6 @@ public class ProcessAssignmentEnrollment : IEventHandler<EnrollmentAssigned>
         }
 
         var command = AssignmentEnrollmentCommand.Create(notification.TrainingId, notification.EnrollmentId);
-        await commandBus.Send(command);
+        await _commandBus.Send(command, cancellationToken);
     }
 }
