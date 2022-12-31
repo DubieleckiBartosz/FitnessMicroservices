@@ -2,5 +2,5 @@
 
 public record GetOpinionsAndReactionsForExternalDataViewModel 
 {
-    public TYPE Type { get; set; }
+    //public TYPE Type { get; set; }
 }
