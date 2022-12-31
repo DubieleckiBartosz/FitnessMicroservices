@@ -14,17 +14,11 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Application\Commands\" />
-    <Folder Include="Application\Parameters\" />
-    <Folder Include="Application\Validators\" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Fitness.Common\Fitness.Common.csproj" />
-    <ProjectReference Include="..\..\Exercise\Exercise.Infrastructure\Exercise.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

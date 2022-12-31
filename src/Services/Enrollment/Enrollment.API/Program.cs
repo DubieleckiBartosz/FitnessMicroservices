@@ -8,6 +8,7 @@ using Fitness.Common.Projection;
 using Serilog;
 using System.Reflection;
 using Fitness.Common.Logging;
+using Fitness.Common.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCustomExceptionHandler(_ => 0, ErrorHandlingMiddleware.GetBaseErrorResponse);
 
 app.UseHttpsRedirection();
 

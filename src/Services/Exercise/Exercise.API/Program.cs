@@ -1,11 +1,13 @@
 using Exercise.API.Configurations;
 using Fitness.Common;
 using System.Reflection;
+using Exercise.API.Common;
 using Exercise.Infrastructure.Configurations; 
 using Exercise.Application;
 using Exercise.Application.Configurations;
 using Fitness.Common.Logging;
 using Serilog;
+using Fitness.Common.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +53,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCustomExceptionHandler(ErrorMiddleware.GetStatusCode, ErrorMiddleware.GetErrorResponse);
+
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
