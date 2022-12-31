@@ -8,7 +8,7 @@ namespace Opinion.API.Domain;
 public class Opinion
 {
     public long Id { get; private set; }
-    public int Creator { get; }
+    public string Creator { get; }
     public Guid OpinionFor { get; }
     public List<Reaction>? Reactions { get; }
     public string? Comment { get; }
@@ -17,7 +17,7 @@ public class Opinion
     {
     }
 
-    private Opinion(Guid opinionFor, string? comment, int creator)
+    private Opinion(Guid opinionFor, string? comment, string creator)
     {
         OpinionFor = opinionFor;
         Comment = comment;
@@ -25,19 +25,19 @@ public class Opinion
         Reactions = new List<Reaction>();
     }
 
-    public static Opinion Create(Guid opinionFor, string? comment, int creator)
+    public static Opinion Create(Guid opinionFor, string? comment, string creator)
     {
         return new Opinion(opinionFor, comment, creator);
     }
 
-    public Reaction NewReaction(int userId, ReactionType reactionType)
+    public Reaction NewReaction(string user, ReactionType reactionType)
     {
-        var reaction = Reaction.Create(Id, userId, reactionType);
+        var reaction = Reaction.Create(Id, user, reactionType);
 
         return reaction;
     }
 
-    public void RemoveReaction(int userId, long reactionId, bool isAdmin = false)
+    public void RemoveReaction(string user, long reactionId, bool isAdmin = false)
     {
         var reaction = Reactions?.FirstOrDefault(_ => _.Id == reactionId);
 
@@ -47,7 +47,7 @@ public class Opinion
                 StringMessages.ReactionNotFoundTitle, HttpStatusCode.NotFound);
         }
 
-        if (userId != Creator && userId != reaction.UserId && !isAdmin)
+        if (user != Creator && user != reaction.User && !isAdmin)
         {
             throw new OpinionBusinessException(StringMessages.NoPermissionsToDeleteCommentTitle,
                 StringMessages.NoPermissionsToDeleteCommentTitle, HttpStatusCode.BadRequest);

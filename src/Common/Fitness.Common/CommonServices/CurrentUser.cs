@@ -41,7 +41,7 @@ public class CurrentUser : ICurrentUser
         }
     }
 
-    public string? UserName
+    public string UserName
     {
         get
         {

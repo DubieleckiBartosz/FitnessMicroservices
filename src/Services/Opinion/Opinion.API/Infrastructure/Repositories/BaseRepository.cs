@@ -20,13 +20,18 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     protected void Remove(TEntity entity)
     {
         DbSet.Remove(entity);
+    }
+
+    protected void RemoveRange(List<TEntity> entities)
+    {
+        DbSet.RemoveRange(entities);
     } 
 
     protected void Update(TEntity entity)
     {
         DbSet.Update(entity);
     }
-    public async Task SaveAsync(CancellationToken cancellationToken = default)
+    protected async Task SaveDataAsync(CancellationToken cancellationToken = default)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
