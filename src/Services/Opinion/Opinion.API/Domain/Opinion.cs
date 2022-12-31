@@ -1,23 +1,24 @@
 ﻿using System.Net;
 using Opinion.API.Application.Exceptions;
 using Opinion.API.Constants;
+using Opinion.API.Domain.Common;
 using Opinion.API.Domain.Enums;
 
 namespace Opinion.API.Domain;
 
-public class Opinion
+public class Opinion : BaseEntity
 {
     public long Id { get; private set; }
-    public string Creator { get; }
-    public Guid OpinionFor { get; }
-    public List<Reaction>? Reactions { get; }
-    public string? Comment { get; }
+    public string Creator { get; private set; }
+    public Guid OpinionFor { get; private set; }
+    public List<Reaction>? Reactions { get; private set; }
+    public string Comment { get; private set; }
 
     public Opinion()
     {
     }
 
-    private Opinion(Guid opinionFor, string? comment, string creator)
+    private Opinion(Guid opinionFor, string comment, string creator)
     {
         OpinionFor = opinionFor;
         Comment = comment;
@@ -25,7 +26,7 @@ public class Opinion
         Reactions = new List<Reaction>();
     }
 
-    public static Opinion Create(Guid opinionFor, string? comment, string creator)
+    public static Opinion Create(Guid opinionFor, string comment, string creator)
     {
         return new Opinion(opinionFor, comment, creator);
     }
@@ -49,8 +50,8 @@ public class Opinion
 
         if (user != Creator && user != reaction.User && !isAdmin)
         {
-            throw new OpinionBusinessException(StringMessages.NoPermissionsToDeleteCommentTitle,
-                StringMessages.NoPermissionsToDeleteCommentTitle, HttpStatusCode.BadRequest);
+            throw new OpinionBusinessException(StringMessages.NoPermissionsToDeleteCommentMessage,
+                StringMessages.NoPermissionsTitle, HttpStatusCode.BadRequest);
         }
 
         Reactions?.Remove(reaction);

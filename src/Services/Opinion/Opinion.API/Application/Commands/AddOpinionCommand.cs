@@ -4,7 +4,7 @@ using Opinion.API.Application.Wrappers;
 
 namespace Opinion.API.Application.Commands;
 
-public record AddOpinionCommand(Guid OpinionFor, string? Comment) : ICommand<ResponseData<long>>
+public record AddOpinionCommand(Guid OpinionFor, string Comment) : ICommand<ResponseData<long>>
 {
     public static AddOpinionCommand Create(AddOpinionParameters parameters)
     {

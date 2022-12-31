@@ -86,7 +86,7 @@ CREATE OR ALTER PROCEDURE exercise_updateExercise_U
      @description VARCHAR(MAX)
 AS
 BEGIN
-	UPDATE Exercise SET Video = @video, [ExerciseDescription] = @description
+	UPDATE Exercises SET Video = @video, [ExerciseDescription] = @description
 	WHERE Id = @exerciseId
 END
 GO

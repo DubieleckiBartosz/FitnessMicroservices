@@ -3,10 +3,10 @@ using MediatR;
 
 namespace Opinion.API.Application.Commands;
 
-public record RemoveOpinionsAndReactionsCommand(Guid RemoveFrom, string User) : ICommand<Unit>
+public record RemoveOpinionsAndReactionsCommand(Guid RemoveFrom) : ICommand<Unit>
 {
-    public static RemoveOpinionsAndReactionsCommand Create(Guid removeFrom, string user)
+    public static RemoveOpinionsAndReactionsCommand Create(Guid removeFrom)
     {
-        return new RemoveOpinionsAndReactionsCommand(removeFrom, user);
+        return new RemoveOpinionsAndReactionsCommand(removeFrom);
     }
 }

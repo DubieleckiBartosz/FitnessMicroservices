@@ -10,6 +10,12 @@ public class ReactionRepository : BaseRepository<Reaction>, IReactionRepository
     public ReactionRepository(OpinionContext dbContext) : base(dbContext)
     {
     }
+
+    public async Task<Reaction?> GetReactionByIdAsync(long reactionId, CancellationToken cancellationToken = default)
+    {
+        return await this.DbSet.FirstOrDefaultAsync(_ => _.Id == reactionId, cancellationToken);
+    }
+
     public async Task<List<Reaction>?> GetReactionsWhereOpinionIsNullByDataIdAsync(Guid dataId, CancellationToken cancellationToken = default)
     {
         return await this.DbSet.Where(_ => _.ReactionFor == dataId && _.OpinionId == null).ToListAsync(cancellationToken);
