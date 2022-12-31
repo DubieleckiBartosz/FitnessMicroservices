@@ -19,7 +19,7 @@ public class ProcessStartEnrollments : IEventHandler<TrainingPublished>
             throw new ArgumentNullException(nameof(notification));
         }
 
-        var command = StartEnrollmentsCommand.Create(notification.TrainingId, notification.Creator);
+        var command = StartEnrollmentsCommand.Create(notification.TrainingId, notification.TrainerCode);
         await _commandBus.Send(command, cancellationToken);
     }
 }

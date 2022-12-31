@@ -21,6 +21,9 @@ public class Enrollment : Aggregate
     public Status CurrentStatus { get; private set; }
     public List<UserEnrollment>? UserEnrollments { get; private set; }
 
+    public Enrollment()
+    {
+    }
     private Enrollment(Guid trainingId, Guid creator)
     {
         var @event = TrainingEnrollmentsStarted.Create(Guid.NewGuid(), trainingId, creator);

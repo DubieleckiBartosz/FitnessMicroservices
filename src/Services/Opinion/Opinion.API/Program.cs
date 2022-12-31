@@ -1,15 +1,45 @@
+using Fitness.Common;
 using Fitness.Common.Core;
+using Fitness.Common.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Opinion.API;
 using Opinion.API.Common;
+using Opinion.API.Configurations;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+var env = builder.Environment;
+var commonFolder = Path.Combine(env.ContentRootPath, "..\\..\\..", "Common");
+
+builder.Configuration.AddJsonFile(Path.Combine(commonFolder, "CommonSettings.json"), optional: true)
+    .AddJsonFile("CommonSettings.json", optional: true)
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true).AddEnvironmentVariables();
+
+
+// Add services to the container.
+builder.EventStoreConfiguration(null, typeof(AssemblyOpinionReference), typeof(AssemblyCommonReference))
+    .GetDependencyInjection()
+    .GetDatabaseConfiguration();
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
+var issuer = builder.Configuration["JwtSettings:Issuer"];
+var audience = builder.Configuration["JwtSettings:Audience"];
+var key = builder.Configuration["JwtSettings:Key"];
+
+builder.Services.RegisterJwtBearer(issuer, audience, key);
+
+builder.Host.UseSerilog((ctx, lc) => lc.LogConfigurationService());
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -50,6 +80,9 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseSubscribeAllEvents(typeof(AssemblyOpinionReference).Assembly);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -21,8 +21,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ExerciseImages' and xtype='U
 			IsMain BIT NOT NULL,
 			ImageDescription VARCHAR(MAX) NULL,
 			Created DATETIME DEFAULT GETDATE(),
-			Modified DATETIME DEFAULT GETDATE(),
-			CONSTRAINT Events_Stream_Version UNIQUE (StreamId, [Version])
+			Modified DATETIME DEFAULT GETDATE()
 		)
 	END
 

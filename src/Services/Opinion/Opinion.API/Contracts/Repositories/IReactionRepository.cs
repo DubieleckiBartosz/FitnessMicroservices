@@ -4,6 +4,7 @@ namespace Opinion.API.Contracts.Repositories;
 
 public interface IReactionRepository
 {
+    Task<Reaction?> GetReactionByIdAsync(long reactionId, CancellationToken cancellationToken = default); 
     Task<List<Reaction>?> GetReactionsWhereOpinionIsNullByDataIdAsync(Guid dataId, CancellationToken cancellationToken = default);
     Task AddReactionAsync(Reaction reaction, CancellationToken cancellationToken = default);
     void RemoveReaction(Reaction reaction);

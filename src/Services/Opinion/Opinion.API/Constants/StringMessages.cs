@@ -10,9 +10,10 @@ public class StringMessages
     public const string ReactionNotFoundMessage = "Reaction cannot be null.";
     public const string OpinionNotFoundMessage = "Opinion cannot be null.";
     public const string NoPermissionsToDeleteCommentMessage = "You do not have permission to delete a comment.";
+    public const string NoPermissionsToDeleteReactionMessage = "You do not have permission to delete a reaction.";
 
     //Exception titles
     public const string ReactionNotFoundTitle = "Reaction not found";
     public const string OpinionNotFoundTitle = "Opinion not found";
-    public const string NoPermissionsToDeleteCommentTitle = "No permissions";
+    public const string NoPermissionsTitle = "No permissions";
 }
